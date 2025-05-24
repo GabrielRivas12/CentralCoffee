@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import Boton from '../../Components/Boton'
 
 export default function Ofertas({navigation}){
@@ -14,6 +14,7 @@ export default function Ofertas({navigation}){
             />
 
        </View>
+        
     );
   }
 

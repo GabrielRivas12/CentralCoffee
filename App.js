@@ -8,6 +8,7 @@ export default function App() {
 
       </Navegacion>
   );
+  
 }
 
 const styles = StyleSheet.create({
