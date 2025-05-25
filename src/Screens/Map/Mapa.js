@@ -9,7 +9,7 @@ export default function Mapa({navigation}) {
       <Text> este es el mapa </Text>
       <Boton
         nombreB='boton'
-        onPress={() => navigation.navigate('QR')}
+        onPress={() => navigation.navigate('Informacion')}
         backgroundColor='#fff'
       />
     </View>

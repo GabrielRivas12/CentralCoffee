@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, route } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import 'react-native-gesture-handler';
 import Feather from '@expo/vector-icons/Feather';
 
@@ -13,6 +14,12 @@ import Mapa from './src/Screens/Map/Mapa';
 import Asistente from './src/Screens/IA/Asistente';
 import QRLista from './src/Screens/QR/QRLista';
 import PerfilUsuario from './src/Screens/Perfil/PerfilUsuario';
+import DetallesOferta from './src/Screens/Ofertas/DetallesOfertas';
+import CrearOferta from './src/Screens/Ofertas/CrearOferta';
+import DetallesMapa from './src/Screens/Map/DetallesMapa';
+import CrearPunto from './src/Screens/Map/CrearPunto';
+import Perfil from './src/Screens/Perfil/Perfil';
+import EditarPerfil from './src/Screens/Perfil/EditarPerfil';
 
 
 function Navegacion() {
@@ -26,18 +33,9 @@ function Navegacion() {
 
 const Stack = createStackNavigator();
 
-function StackNavegacion() {
-    return (
-        <Stack.Navigator initialRouteName='Ofertas'>
-            <Stack.Screen name='Ofertas' component={Ofertas} />
-            <Stack.Screen name='IA' component={Asistente} />
-            <Stack.Screen name='Mapa' component={Mapa} />
-            <Stack.Screen name='QR' component={QRLista} />
-            <Stack.Screen name='PerfilUsuario' component={PerfilUsuario} />
 
-        </Stack.Navigator>
-    )
-}
+
+
 
 const Drawer = createDrawerNavigator();
 
@@ -46,27 +44,40 @@ function DrawerNavigate() {
         <Drawer.Navigator
             initialRouteName='Ofertas'
             drawerContent={props => <CustomDrawerContent {...props} />}
-            screenOptions={{
-                headerStyle: {
-      backgroundColor: '#ED6D4A', // Fondo del header
-    },
-                drawerActiveTintColor: 'gray', // Color del texto/icono activo
-                drawerInactiveTintColor: 'gray',  // Color del texto/icono inactivo
-                drawerActiveBackgroundColor: '#F1A89B', // Fondo del ítem activo
-                drawerLabelStyle: {
-                    fontSize: 16,
-                },
+            screenOptions={({ route }) => {
+                const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+
+                const showHeader =
+                    (route.name === 'Ofertas' && (routeName === 'ScreenOfertas' || routeName === '')) ||
+                    (route.name === 'IA' && (routeName === 'Asistente' || routeName === '')) ||
+                    (route.name === 'Mapa' && (routeName === 'ScreenMapa' || routeName === '')) ||
+                    (route.name === 'PerfilUsuario' && (routeName === 'ScreenUsuario' || routeName === '')) ||
+                    (route.name === 'QR' && (routeName === 'ScreenQR' || routeName === ''));
+
+                return {
+                    headerShown: showHeader,
+                    headerStyle: {
+                        backgroundColor: '#ED6D4A',
+                    },
+                    drawerActiveTintColor: 'gray',
+                    drawerInactiveTintColor: 'gray',
+                    drawerActiveBackgroundColor: '#F1A89B',
+                    drawerLabelStyle: {
+                        fontSize: 16,
+                    },
+                };
             }}
         >
 
-            <Drawer.Screen name="Ofertas" component={Ofertas}
+            <Drawer.Screen name="Ofertas" component={StackOfertas}
                 options={{
-                    drawerIcon: ({ color, size }) => (
-                        <Feather name="tag" size={15} color={color} />
-                    )
-                    
+                    drawerIcon: ({ color, size }) =>
+                        <Feather name="tag" size={15} color={color} />,
+
+
+
                 }}
-                
+
             />
             <Drawer.Screen name="IA" component={Asistente}
                 options={{
@@ -74,20 +85,20 @@ function DrawerNavigate() {
                         <Feather name="cpu" size={15} color={color} />
                     )
                 }} />
-            <Drawer.Screen name="Mapa" component={Mapa}
+            <Drawer.Screen name="Mapa" component={StackMapa}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="map" size={15} color={color} />
                     )
                 }} />
 
-            <Drawer.Screen name="QR" component={QRLista}
+            <Drawer.Screen name="QR" component={StackQR}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="layers" size={15} color={color} />
                     )
                 }} />
-            <Drawer.Screen name="PerfilUsuario" component={PerfilUsuario}
+            <Drawer.Screen name="PerfilUsuario" component={StackUsuario}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="user" size={15} color={color} />
@@ -111,6 +122,82 @@ function CustomDrawerContent(props) {
     );
 }
 
+function StackOfertas() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenOfertas'
 
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenOfertas',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A', // color header
+                },
+            })}
+
+        >
+            <Stack.Screen name='ScreenOfertas' component={Ofertas} />
+            <Stack.Screen name='Informacion' component={DetallesOferta} />
+            <Stack.Screen name='Crear' component={CrearOferta} />
+
+        </Stack.Navigator>
+    )
+}
+
+function StackMapa() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenMapa'
+
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenMapa',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A', // color header
+                },
+            })}
+
+        >
+            <Stack.Screen name='ScreenMapa' component={Mapa} />
+            <Stack.Screen name='Informacion' component={DetallesMapa} />
+            <Stack.Screen name='Crear' component={CrearPunto} />
+
+        </Stack.Navigator>
+    )
+}
+
+function StackQR() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenQR'
+
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenQR',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A', // color header
+                },
+            })}
+
+        >
+            <Stack.Screen name='ScreenQR' component={QRLista} />
+
+        </Stack.Navigator>
+    )
+}
+
+function StackUsuario() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenUsuario'
+
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenUsuario',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A', // color header
+                },
+            })}
+
+        >
+            <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
+            <Stack.Screen name='Editar Informacion' component={EditarPerfil} />
+            <Stack.Screen name='Mi Perfil' component={Perfil} />
+
+        </Stack.Navigator>
+    )
+}
 
 export default Navegacion;

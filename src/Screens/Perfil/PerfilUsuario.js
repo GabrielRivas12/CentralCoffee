@@ -7,7 +7,18 @@ export default function PerfilUsuario({ navigation }) {
     <View style={styles.container}>
 
       <Text> este es el perfil de PerfilUsuario </Text>
-     
+      <Boton
+        nombreB='boton'
+        onPress={() => navigation.navigate('Editar Informacion')}
+        backgroundColor='#fff'
+      />
+
+      <Boton
+        nombreB='boton'
+        onPress={() => navigation.navigate('Mi Perfil')}
+        backgroundColor='#fff'
+      />
+
     </View>
   );
 }

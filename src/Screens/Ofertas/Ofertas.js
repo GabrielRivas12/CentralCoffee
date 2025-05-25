@@ -9,7 +9,12 @@ export default function Ofertas({navigation}){
             <Text> estas son las ofertas </Text>
             <Boton
               nombreB='boton'
-              onPress={() => navigation.navigate('IA')}
+             onPress={() => navigation.navigate('Informacion')}
+              backgroundColor = '#fff'
+            />
+            <Boton
+              nombreB='boton'
+              onPress={() => navigation.navigate('Crear')}
               backgroundColor = '#fff'
             />
 

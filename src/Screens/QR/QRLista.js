@@ -7,11 +7,7 @@ export default function QRLista({navigation}){
        <View style={styles.container}>
 
             <Text> Lista de QR </Text>
-             <Boton
-                    nombreB='boton'
-                    onPress={() => navigation.navigate('PerfilUsuario')}
-                    backgroundColor='#fff'
-                  />
+            
 
        </View>
     );
