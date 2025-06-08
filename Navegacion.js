@@ -30,6 +30,8 @@ function Navegacion() {
         </NavigationContainer>
     );
 }
+import Login from './src/Screens/Login/InicioSesion';
+import Registro from './src/Screens/Login/Registro';
 
 const Stack = createStackNavigator();
 
@@ -99,6 +101,13 @@ function DrawerNavigate() {
                     )
                 }} />
             <Drawer.Screen name="PerfilUsuario" component={StackUsuario}
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <Feather name="user" size={15} color={color} />
+                    )
+                }} />
+
+                <Drawer.Screen name="login" component={Stacklogin}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="user" size={15} color={color} />
@@ -195,6 +204,25 @@ function StackUsuario() {
             <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
             <Stack.Screen name='Editar Informacion' component={EditarPerfil} />
             <Stack.Screen name='Mi Perfil' component={Perfil} />
+
+        </Stack.Navigator>
+    )
+}
+
+
+function Stacklogin() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenLogin'
+
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenLogin',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A', // color header
+                },
+            })}
+
+        >
+            <Stack.Screen name='ScreenLogin' component={Login} />
 
         </Stack.Navigator>
     )
