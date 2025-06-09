@@ -25,8 +25,11 @@ import EditarPerfil from './src/Screens/Perfil/EditarPerfil';
 function Navegacion() {
     return (
         <NavigationContainer>
-            <DrawerNavigate />
-
+              <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Registro" component={Registro} />
+                <Stack.Screen name="DrawerNavigate" component={DrawerNavigate} />
+            </Stack.Navigator>
         </NavigationContainer>
     );
 }

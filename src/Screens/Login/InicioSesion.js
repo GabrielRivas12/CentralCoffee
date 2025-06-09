@@ -3,7 +3,7 @@
   import Boton from '../../Components/Boton';
   import { useState } from 'react';
 
-  export default function Login() {
+  export default function Login({navigation}) {
 
     const [Correo, setCorreo] = useState('');
     const [Contraseña, setContraseña] = useState('');
@@ -52,10 +52,12 @@
             <View style={styles.vboton}>  
             <Boton
               nombreB='Iniciar'
+              onPress={() => navigation.navigate('DrawerNavigate')}
             />
             </View>
             <Boton
               nombreB='Registrarse'
+              onPress={() => navigation.navigate('Registro')}
             />
 
 
