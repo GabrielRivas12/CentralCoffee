@@ -4,24 +4,25 @@ import { useState } from 'react';
 import Boton from '../../Components/Boton'
 import InputText from '../../Components/TextInput';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
+import LeerDatos from './Ofertas';
 
 import {
-    collection,
-    getFirestore,
-    query, doc,
-    setDoc, getDocs, getDoc,
-    deleteDoc
+  collection,
+  getFirestore,
+  query, doc,
+  setDoc, getDocs, getDoc,
+  deleteDoc, addDoc
 } from 'firebase/firestore';
 
 
-export default function CrearOferta({ navigation }) {
- 
+export default function CrearOferta({ navigation, route }) {
+
   const db = getFirestore(appFirebase);
 
-   const guardarNuevo = async (nuevo) => {
-        await setDoc(doc(db, 'oferta', nuevo.Ntitulo), nuevo);
-    }
-  
+  const guardarNuevo = async (nuevo) => {
+    await addDoc(collection(db, 'oferta'), nuevo);
+  }
+
 
 
 
@@ -63,14 +64,22 @@ export default function CrearOferta({ navigation }) {
     Fecha de cosecha: ${FechaCosecha}
     Cantidad de produccion: ${CantidadProduccion}
     Oferta por libra: ${OfertaLibra}`
-      ,[
+      , [
         {
           text: 'Aceptar',
-          onPress: () => navigation.navigate('Ofertas')
+          onPress: () => {
+            if (route.params?.onGoBack) {
+              route.params.onGoBack(); // llamo para que recargue la lista
+            }
+            navigation.goBack();
+          }
         }
       ]
 
     );
+
+
+
 
     setTitulo('');
     setTipoCafe('');
@@ -89,6 +98,7 @@ export default function CrearOferta({ navigation }) {
     <View style={styles.container}>
       <ScrollView style={styles.scrol}>
 
+
         <View style={styles.containerImagen}>
 
 
@@ -101,79 +111,86 @@ export default function CrearOferta({ navigation }) {
             NombreLabel='Titulo'
             Valor={Titulo}
             onchangetext={setTitulo}
-            placeholder='nombre'
+            placeholder='Ingrese el título de la oferta'
           />
 
           <InputText
             NombreLabel='Tipo de café'
             Valor={TipoCafe}
             onchangetext={setTipoCafe}
-            placeholder='nombre'
+            placeholder='Ingrese el tipo de café'
           />
 
           <InputText
             NombreLabel='Variedad'
             Valor={Variedad}
             onchangetext={setVariedad}
-            placeholder='nombre'
+            placeholder='Ingrese la variedad'
           />
 
           <InputText
             NombreLabel='Estado del grano'
             Valor={EstadoGrano}
             onchangetext={setEstadoGrano}
-            placeholder='nombre'
+            placeholder='Ingrese el estado del grano'
           />
 
           <InputText
             NombreLabel='Clima'
             Valor={Clima}
             onchangetext={setClima}
-            placeholder='nombre'
+            placeholder='Ingrese el clima'
           />
 
           <InputText
             NombreLabel='Altura'
             Valor={Altura}
             onchangetext={setAltura}
-            placeholder='nombre'
+            placeholder='Ingrese la altura'
           />
 
           <InputText
             NombreLabel='Proceso de corte'
             Valor={ProcesoCorte}
             onchangetext={setProcesoCorte}
-            placeholder='nombre'
+            placeholder='Ingrese el proceso de corte'
           />
 
           <InputText
             NombreLabel='Fecha de cosecha'
             Valor={FechaCosecha}
             onchangetext={setFechaCosecha}
-            placeholder='nombre'
+            placeholder='Ingrese la fecha de cosecha'
           />
 
           <InputText
             NombreLabel='Cantidad de produccion'
             Valor={CantidadProduccion}
             onchangetext={setCantidadProduccion}
-            placeholder='nombre'
+            placeholder='Ingrese la cantidad de producción'
           />
 
           <InputText
             NombreLabel='Oferta por libra'
             Valor={OfertaLibra}
             onchangetext={setOfertaLibra}
-            placeholder='nombre'
-          />
-
-          <Boton
-            nombreB='Publicar'
-            onPress={guardar}
+            placeholder='Ingrese la oferta por libra'
           />
         </View>
+     
+     
+      <Boton
+        nombreB='Publicar'
+        onPress={guardar}
+      />
 
-      </ScrollView>
+      <View style={styles.containerbb}>
+        <Text>        </Text>
+        <Text>       </Text>
+        <Text>       </Text>
+      </View>
+ </ScrollView>
+
     </View>
 
   );
@@ -202,6 +219,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   scrol: {
-  }
+  },
+containerbb: {
+}
+
 
 });

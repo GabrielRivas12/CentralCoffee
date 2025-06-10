@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import Boton from '../Components/Boton'
 
-export default function OfertasCard({ navigation , titulo,precio}) {
+
+export default function OfertasCard({ navigation , titulo,precio, oferta}) {
   return (
     <View style={styles.container}>
 
@@ -29,7 +30,8 @@ export default function OfertasCard({ navigation , titulo,precio}) {
             nombreB='Ver Info'
             ancho={80}
             alto={30}
-            onPress={() => navigation.navigate('Informacion')}
+          onPress={() => navigation.navigate('Informacion', { oferta })}
+
           />
 
         </View>
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#EBEBEB',
-    marginTop: 20,
+    marginTop: 10,
 
   },
   containerListaB: {
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
   containerListaImagen: {
     width: 330,
     height: 140,
-    backgroundColor: 'black',
+    backgroundColor: '#999',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   tituloContainer: {
-  width: '90%', // o 330 si querés fijo
+  width: '90%',
   alignItems: 'flex-start',
   marginTop: 5
 },
@@ -92,7 +94,7 @@ precio:{
 },
 precioContainer: {
    alignItems: 'flex-start',
-   width: '90%', // o 330 si querés fijo
+   width: '90%',
    marginTop: 10
 
 }

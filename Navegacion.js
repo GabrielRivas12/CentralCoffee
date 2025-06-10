@@ -147,8 +147,9 @@ function StackOfertas() {
 
         >
             <Stack.Screen name='ScreenOfertas' component={Ofertas} />
-            <Stack.Screen name='Informacion' component={DetallesOferta} />
             <Stack.Screen name='Crear' component={CrearOferta} />
+            <Stack.Screen name='Informacion' component={DetallesOferta} />
+            
 
         </Stack.Navigator>
     )

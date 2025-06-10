@@ -4,13 +4,14 @@ import Boton from '../../Components/Boton'
 import InputText from '../../Components/TextInput';
 import OfertasCard from '../../Containers/OfertasCard';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
+import { useFocusEffect } from '@react-navigation/native';
 
 import {
-    collection,
-    getFirestore,
-    query, doc,
-    setDoc, getDocs, getDoc,
-    deleteDoc
+  collection,
+  getFirestore,
+  query, doc,
+  setDoc, getDocs, getDoc,
+  deleteDoc
 } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
@@ -18,62 +19,72 @@ const db = getFirestore(appFirebase);
 
 export default function Ofertas({ navigation }) {
 
-      const [Ofertass, setOfertass] = useState([]);
+  useFocusEffect(
+  React.useCallback(() => {
+    LeerDatos();
+  }, [])
+);
+
+  const [Ofertass, setOfertass] = useState([]);
 
 
-        const LeerDatos = async () => {
-        const q = query(collection(db, "oferta"));
-        const querySnapshot = await getDocs(q);
-        const d = [];
-        querySnapshot.forEach((doc) => {
-            const datosBD = doc.data();
-            d.push(
-              {
-                Ntitulo : datosBD.Ntitulo,
-                Nprecio: datosBD.NofertaLibra,
+  const LeerDatos = async () => {
+    const q = query(collection(db, "oferta"));
+    const querySnapshot = await getDocs(q);
+    const d = [];
+    querySnapshot.forEach((doc) => {
+      const datosBD = doc.data();
+      d.push(datosBD);
+    });
+    setOfertass(d);
+  }
 
-              }
-            );
-        });
-        setOfertass(d);
-    }
-
-    useEffect(() => {
-        LeerDatos();
-    }, []);
+  
 
 
   return (
     <View style={styles.container}>
 
+      <View style={styles.containerBusqueda}>
       <InputText
 
         Valor=''
         onchangetext=''
         placeholder='Buscar'
       />
+      </View>
       <ScrollView>
 
-{Ofertass.map((item, index) => (
-  <OfertasCard
-    key={index}
-    titulo={item.Ntitulo}
-    precio={`Precio: C$${item.Nprecio} por libra`}
-    navigation={navigation}
-  />
-))}
+        {Ofertass.map((item, index) => (
+          <OfertasCard
+            key={index}
+            oferta={item}
+            titulo={item.Ntitulo}
+            precio={`Precio: C$${item.NofertaLibra} por libra`}
+            navigation={navigation}
+          />
+        ))}
+
+
+
+
+
 
       </ScrollView>
-
-    <View style={styles.botoncrear}>   
+      <View style={styles.botoncrear}>
       <Boton
-        nombreB='Crear'
-        onPress={() => navigation.navigate('Crear')}
+        onPress={() => navigation.navigate('Crear', { LeerDatos })}
+        alto={70}
+        ancho={70}
+        borderRadius={40}
+        iconName='plus'
+        marginRight={0}
       />
       </View>
 
-
     </View>
+
+
 
   );
 }
@@ -82,7 +93,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
   },
   containerLista: {
     width: 350,
@@ -116,7 +126,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   tituloContainer: {
-    width: '90%', 
+    width: '90%',
     alignItems: 'flex-start',
     marginTop: 5
   },
@@ -124,8 +134,16 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
 
-  botoncrear:{
-    marginBottom: 50
+  botoncrear: {
+    marginBottom: 50,
+    position: 'absolute',
+    bottom: 20,
+    right: 10,
+    borderRadius: 50,
+    backgroundColor: 'transparent',
+  },
+  containerBusqueda: {
+    alignItems: 'center',
   }
 
 });

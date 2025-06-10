@@ -12,6 +12,7 @@ export default function Boton(props) {
         { width: props.ancho || 350 },
         { height: props.alto || 50 },
         { borderColor: props.borderColor || '#ED6D4A' },
+        {  borderRadius: props.borderRadius || 5}
 
         ]}>
         {props.iconName && (
@@ -19,7 +20,7 @@ export default function Boton(props) {
             name={props.iconName}
             size={props.iconSize || 24}
             color={props.iconColor || 'white'}
-            style={{ marginRight: 90, position: 'absolute', }}
+            style={{ marginRight: props.marginRight ?? 90, position: 'absolute', }}
           />
         )}
 
@@ -40,10 +41,11 @@ export default function Boton(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 3
+
   },
   boton: {
     width: 350,
