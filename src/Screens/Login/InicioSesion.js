@@ -22,7 +22,7 @@
             nombreB='Google'
             ColorTexto='black'
             ancho={200}
-            iconName="google"
+            iconName=""
             iconColor="black"
             borderColor="#F8DBD7"
             iconSize={24}
