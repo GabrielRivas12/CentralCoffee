@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, StatusBar, Image } from 'react-native';
 import Boton from '../../Components/Boton'
 import appFirebase from '../../Services/BasedeDatos/Firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   collection,
@@ -40,6 +41,7 @@ export default function DetallesOferta({ navigation, route }) {
   return (
     <View style={styles.container}>
 
+ <SafeAreaView edges={[ 'left', 'right', 'bottom']} style={{ flex: 1 }}>
 
 
       <View style={styles.containerListaImagen}>
@@ -51,7 +53,7 @@ export default function DetallesOferta({ navigation, route }) {
         />
       </View>
 
-
+     
       <Text style={styles.Titulo}>{oferta.Ntitulo}</Text>
 
       <View style={styles.containerInformacion}>
@@ -106,6 +108,7 @@ export default function DetallesOferta({ navigation, route }) {
 
 
       </View>
+      
       <View style={styles.BotonesContacto}>
         <Boton
           nombreB='Correo'
@@ -122,7 +125,7 @@ export default function DetallesOferta({ navigation, route }) {
         />
 
       </View>
-
+ </SafeAreaView>
     </View>
 
   );
@@ -165,7 +168,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-around',
     marginTop: 10,
-    paddingTop: 180
   },
   Titulo: {
     marginLeft: 15,

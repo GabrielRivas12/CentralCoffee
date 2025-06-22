@@ -7,9 +7,11 @@ export default function InputText(props) {
 
   return (
     <View style={styles.container}>
-        <Text style={styles.label}>{props.NombreLabel}</Text>
+        <Text style={styles.label }>{props.NombreLabel}</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input,  { width: props.ancho || 350 },
+        { height: props.alto || 50 }
+      ]}
           value={props.Valor}
           onChangeText={props.onchangetext}
           placeholder={props.placeholder || 'Texto'}

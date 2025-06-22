@@ -54,10 +54,12 @@ export default function Ofertas({ navigation }) {
         Valor=''
         onchangetext=''
         placeholder='Buscar'
+        ancho='370'
       />
       </View>
-      <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1 }}>
-      <ScrollView>
+
+      <SafeAreaView edges={['left', 'right', 'bottom', ]} style={{ flex: 1 }}>
+      <ScrollView >
         
 
         {Ofertass.map((item, index) => (
@@ -151,6 +153,8 @@ const styles = StyleSheet.create({
   },
   containerBusqueda: {
     alignItems: 'center',
+    bottom: 10,
+    height: 70
   }
 
 });

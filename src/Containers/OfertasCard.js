@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   containerLista: {
-    width: 350,
+    width: 370,
     height: 230,
     backgroundColor: '#EBEBEB',
     justifyContent: 'center',
