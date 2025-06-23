@@ -1,2 +1,4 @@
-export const presets = ['babel-preset-expo'];
-export const plugins = ['react-Native-reanimated/plugin'];
+module.exports = {
+  presets: ['babel-preset-expo'],
+  plugins: ['react-native-reanimated/plugin'],
+};

@@ -15,13 +15,17 @@ export default function Login({ navigation }) {
   const [Contraseña, setContraseña] = useState('');
 
    const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '169700359408-pqtf47hussegff4dtbsf0kc61bh2lqj1.apps.googleusercontent.com',
+    expoClientId: '415622256017-mlc54lffng7td5qehgt2irkf7045c9en.apps.googleusercontent.com',
     androidClientId: '169700359408-rk56fjne3kae2d8ji84pfuim66c837fv.apps.googleusercontent.com',
   });
 
-  useEffect(() => {
+   useEffect(() => {
     if (response?.type === 'success') {
-      const { id_token } = response.authentication;
+      const { id_token } = response.authentication || {};
+      if (!id_token) {
+        console.error('No se recibió id_token');
+        return;
+      }
       const credential = GoogleAuthProvider.credential(id_token);
 
       signInWithCredential(auth, credential)
@@ -36,6 +40,11 @@ export default function Login({ navigation }) {
 
 
 
+
+
+
+
+
   return (
     <View style={styles.container}>
 
@@ -46,7 +55,8 @@ export default function Login({ navigation }) {
       <View style={styles.containerCuerpo}>
         <Text style={styles.Titulo}>Login</Text>
       
-         <TouchableOpacity style={styles.button} onPress={() => promptAsync().catch((error) => console.error('Error al iniciar sesión con Google:', error))}>
+         <TouchableOpacity style={styles.button}  disabled={!request}
+  onPress={() => promptAsync()}>
       <Image
         source={{
           uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png?20230822192911',

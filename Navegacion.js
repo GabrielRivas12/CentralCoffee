@@ -110,12 +110,7 @@ function DrawerNavigate() {
                     )
                 }} />
 
-                <Drawer.Screen name="login" component={Stacklogin}
-                options={{
-                    drawerIcon: ({ color, size }) => (
-                        <Feather name="user" size={15} color={color} />
-                    )
-                }} />
+              
 
         </Drawer.Navigator>
     )

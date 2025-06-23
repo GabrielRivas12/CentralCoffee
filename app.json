@@ -1,8 +1,7 @@
 {
   "expo": {
     "name": "CentralCoffee",
-    "slug": "CentralCoffee",
-    
+    "slug": "centralcoffee",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -33,10 +32,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "424bb73d-b3c4-41e1-870a-acc8a4c43143"
-        
+        "projectId": "9d7eabd0-90dc-4eac-be92-8c8613ee4e56"
       }
-      
-    }
+    },
+    "owner": "gabrielr12"
   }
 }
