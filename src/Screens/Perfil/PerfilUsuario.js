@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, createContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Boton from '../../Components/Boton'
 
+export const themeContext = createContext();
+
 export default function PerfilUsuario({ navigation }) {
 
-  const [darkMode, setDarkMode] = useState(false);
-
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-  };
+const [darkMode, setDarkMode] = useState(false);
+ const toggleTheme = () => setDarkMode(prev => !prev);
 
  
 
   return (
-    <View style={[styles.container, darkMode ? styles.darkContainer : styles.lightContainer]}>
+       <themeContext.Provider value={{ darkMode, toggleTheme }}>
+         <View style={[styles.container, darkMode ? styles.darkContainer : styles.lightContainer]}> 
+
 
       <Text style={darkMode ? styles.darkText : styles.lightText}>
         este es el perfil de PerfilUsuario
@@ -29,6 +30,9 @@ export default function PerfilUsuario({ navigation }) {
         onPress={() => navigation.navigate('Mi Perfil')}
         backgroundColor='#fff'
       />
+
+
+
       <Boton
         nombreB={darkMode ? 'Tema Claro' : 'Tema Oscuro'}
         onPress={toggleTheme}
@@ -37,9 +41,9 @@ export default function PerfilUsuario({ navigation }) {
       />
 
       
-      
-
-    </View>
+      </View>
+  </themeContext.Provider>
+  
   );
 }
 const styles = StyleSheet.create({

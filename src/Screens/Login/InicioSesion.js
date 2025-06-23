@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import { useState, useEffect } from 'react';
@@ -45,18 +45,17 @@ export default function Login({ navigation }) {
 
       <View style={styles.containerCuerpo}>
         <Text style={styles.Titulo}>Login</Text>
-        <Boton
-          ColorBoton="#F8DBD7"
-          nombreB='Google'
-          ColorTexto='black'
-          ancho={200}
-          iconName=""
-          iconColor="black"
-          borderColor="#F8DBD7"
-          iconSize={24}
-          onPress={() => promptAsync().catch((error) => console.error('Error al iniciar sesión con Google:', error))} // << AQUI
-
-        />
+      
+         <TouchableOpacity style={styles.button} onPress={() => promptAsync().catch((error) => console.error('Error al iniciar sesión con Google:', error))}>
+      <Image
+        source={{
+          uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png?20230822192911',
+        }}
+        style={styles.logo}
+      />
+       <Text style={styles.text}>Sign in with Google</Text>
+      <Text style={styles.text}></Text>
+    </TouchableOpacity>
 
         <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 30, alignSelf: 'flex-start', marginLeft: 25, }} />
         <Text style={{ position: 'absolute', marginVertical: 164 }}> O </Text>
@@ -130,6 +129,27 @@ const styles = StyleSheet.create({
   },
   vboton: {
     marginBottom: 5
-  }
+  },
+  logo: {
+    width: 20,
+    height: 20,
+  },
+   button: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    width: 200,
+    height: 50,
+     shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.39,
+        shadowRadius: 5.30,
+        elevation: 5,
+  },
 
 });

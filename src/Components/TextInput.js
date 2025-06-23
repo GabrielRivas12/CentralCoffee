@@ -10,11 +10,12 @@ export default function InputText(props) {
         <Text style={styles.label }>{props.NombreLabel}</Text>
         <TextInput
           style={[styles.input,  { width: props.ancho || 350 },
-        { height: props.alto || 50 }
+        { height: props.alto || 50 }, { marginRight: props.margenRight || 0}
       ]}
           value={props.Valor}
           onChangeText={props.onchangetext}
           placeholder={props.placeholder || 'Texto'}
+          maxLength={props.maxCaracteres || 100}
         ></TextInput>
     </View>
   );

@@ -6,6 +6,7 @@ import OfertasCard from '../../Containers/OfertasCard';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Octicons from '@expo/vector-icons/Octicons';
 
 
 import {
@@ -82,13 +83,13 @@ export default function Ofertas({ navigation }) {
       <View style={styles.botoncrear}>
       <Boton
         onPress={() => navigation.navigate('Crear')}
-        alto={70}
-        ancho={70}
+        alto={60}
+        ancho={60}
         borderRadius={40}
-        iconName='plus'
         marginRight={0}
+        
       />
-      
+      <Octicons name="pencil" size={24} color="white" position='absolute' top={20} left={20} />
       </View>
 </SafeAreaView>
     </View>
