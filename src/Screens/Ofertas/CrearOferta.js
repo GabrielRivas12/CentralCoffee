@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useState } from 'react';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
 
@@ -12,6 +12,9 @@ import OfertaFormulario from '../../Containers/OfertaFormulario';
 
 
 
+
+
+
 import {
   collection,
   getFirestore,
@@ -19,6 +22,7 @@ import {
   setDoc, getDocs, getDoc,
   deleteDoc, addDoc
 } from 'firebase/firestore';
+import ComboboxPickerDate from '../../Components/PickerDate';
 
 
 
@@ -37,6 +41,34 @@ export default function CrearOferta({ navigation }) {
   const [FechaCosecha, setFechaCosecha] = useState('');
   const [CantidadProduccion, setCantidadProduccion] = useState('');
   const [OfertaLibra, setOfertaLibra] = useState('');
+
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState('date');
+  const [text, setText] = useState('Ingrese la fecha');
+
+  const verMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  }
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'android'); // corregí Platform.android a Platform.OS y que oculte bien
+    setShow(false);
+    setDate(currentDate);
+
+    let temDate = new Date(currentDate);
+    let fDate = temDate.getDate() + '/' + (temDate.getMonth() + 1) + '/' + temDate.getFullYear();
+    setText(fDate)
+    setFechaCosecha(fDate)
+
+
+  }
+
+
+
+
 
   const handlePickImagen = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -109,6 +141,7 @@ export default function CrearOferta({ navigation }) {
 
   return (
     <View style={styles.container}>
+      
 
       <OfertaFormulario
         imagen={imagen}
@@ -124,9 +157,18 @@ export default function CrearOferta({ navigation }) {
         CantidadProduccion={CantidadProduccion} setCantidadProduccion={setCantidadProduccion}
         OfertaLibra={OfertaLibra} setOfertaLibra={setOfertaLibra}
         onSubmit={guardar}
+
+         date={date}
+          show={show}
+          mode={mode}
+          text={text}
+          verMode={verMode}
+          onChange={onChange}
+
+        
       />
 
-
+    
     </View>
 
   );

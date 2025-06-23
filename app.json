@@ -2,12 +2,12 @@
   "expo": {
     "name": "CentralCoffee",
     "slug": "centralcoffee",
+    "scheme": "centralcoffee",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "scheme": "myapp",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -35,6 +35,16 @@
         "projectId": "9d7eabd0-90dc-4eac-be92-8c8613ee4e56"
       }
     },
-    "owner": "gabrielr12"
+    "owner": "gabrielr12",
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "firebase",
+          "buffer",
+          "base64-arraybuffer"
+        ],
+        "listUnknownPackages": false
+      }
+    }
   }
 }

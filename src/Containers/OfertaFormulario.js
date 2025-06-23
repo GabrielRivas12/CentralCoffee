@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Boton from '../Components/Boton'
 import InputText from '../Components/TextInput';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ComboboxPickerDate from '../Components/PickerDate';
 
 export default function OfertaFormulario({
   imagen,
@@ -17,7 +18,8 @@ export default function OfertaFormulario({
   FechaCosecha, setFechaCosecha,
   CantidadProduccion, setCantidadProduccion,
   OfertaLibra, setOfertaLibra,
-  onSubmit
+  onSubmit, date, show, mode, text, onChange, verMode
+
 }) {
   return (
     <View style={styles.container}>
@@ -38,17 +40,17 @@ export default function OfertaFormulario({
               )}
             </TouchableOpacity>
           </View>
-              
-              <View style={styles.encabezado}>   
-          <InputText
 
-            NombreLabel='Titulo'
-            Valor={Titulo}
-            onchangetext={setTitulo}
-            placeholder='Ingrese el título de la oferta'
-            maxCaracteres= {50}
-          />
-          <Text>Características</Text>
+          <View style={styles.encabezado}>
+            <InputText
+
+              NombreLabel='Titulo'
+              Valor={Titulo}
+              onchangetext={setTitulo}
+              placeholder='Ingrese el título de la oferta'
+              maxCaracteres={50}
+            />
+            <Text>Características</Text>
 
           </View>
 
@@ -119,15 +121,16 @@ export default function OfertaFormulario({
               />
             </View>
             <View style={styles.formContainerInputTipo}>
-              <InputText
-                ancho='170'
-                margenRight='10'
-                NombreLabel='Fecha de cosecha'
-                Valor={FechaCosecha}
-                onchangetext={setFechaCosecha}
-                placeholder='Ingrese la fecha'
-              />
 
+              <ComboboxPickerDate
+                date={date}
+                show={show}
+                mode={mode}
+                text={text}
+                verMode={verMode}
+                onChange={onChange}
+
+              />
               <InputText
                 ancho='170'
                 NombreLabel='Cantidad de p'
@@ -143,7 +146,10 @@ export default function OfertaFormulario({
               onchangetext={setOfertaLibra}
               placeholder='Ingrese la oferta por libra'
             />
+
           </View>
+
+
 
 
           <Boton
