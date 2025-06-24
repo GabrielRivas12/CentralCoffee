@@ -35,16 +35,7 @@
         "projectId": "9d7eabd0-90dc-4eac-be92-8c8613ee4e56"
       }
     },
-    "owner": "gabrielr12",
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        "exclude": [
-          "firebase",
-          "buffer",
-          "base64-arraybuffer"
-        ],
-        "listUnknownPackages": false
-      }
-    }
+    "owner": "gabrielr12"
+   
   }
 }
