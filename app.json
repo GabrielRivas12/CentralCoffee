@@ -23,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": false,
-       "package": "com.gabrielr12.centralcoffee"
+      "package": "com.gabrielr12.centralcoffee"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,10 +33,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "9d7eabd0-90dc-4eac-be92-8c8613ee4e56"
+        "projectId": "4c89cea2-2887-4307-be2d-91f6c5b76d05"
       }
     },
     "owner": "gabrielr12"
-   
   }
 }
