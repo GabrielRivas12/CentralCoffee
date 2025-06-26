@@ -7,9 +7,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
 
 import * as FileSystem from 'expo-file-system'
-import { decode } from 'base64-arraybuffer';
 
 import OfertaFormulario from '../../Containers/OfertaFormulario';
+
+import { decode as atob } from 'base-64';
 
 
 
@@ -83,31 +84,41 @@ export default function CrearOferta({ navigation }) {
     }
   };
 
-  const subirImagenASupabase = async (uri) => {
-    try {
-      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
-      const fileExt = uri.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
+ const subirImagenASupabase = async (uri) => {
+  try {
+    const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
 
-      const { error } = await supabase.storage
-        .from('file')
-        .upload(fileName, decode(base64), {
-          contentType: `image/${fileExt}`,
-          upsert: false,
-        });
+    // Convertir base64 string → Uint8Array (binario)
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
 
-      if (error) {
-        console.log('Error subiendo imagen:', error);
-        return null;
-      }
+    const fileExt = uri.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
 
-      const { data: urlData } = supabase.storage.from('file').getPublicUrl(fileName);
-      return urlData?.publicUrl || null;
-    } catch (e) {
-      console.log('Error en subirImagenASupabase:', e);
+    const { error } = await supabase.storage
+      .from('file')
+      .upload(fileName, bytes, {
+        contentType: `image/${fileExt}`,
+        upsert: false,
+      });
+
+    if (error) {
+      console.log('Error subiendo imagen:', error);
       return null;
     }
-  };
+
+    const { data: urlData } = supabase.storage.from('file').getPublicUrl(fileName);
+    return urlData?.publicUrl || null;
+
+  } catch (e) {
+    console.log('Error en subirImagenASupabase:', e);
+    return null;
+  }
+};
 
   const guardar = async () => {
     if (!Titulo || !TipoCafe || !Variedad || !EstadoGrano || !Clima || !Altura || !ProcesoCorte || !FechaCosecha || !CantidadProduccion || !OfertaLibra || !imagen.trim()) {
