@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function ComboBox(props) {
   return (
     <View style={styles.container}>
-      
+      <SafeAreaView edges={[ 'left']} style={{ backgroundColor: '#fff',  }}>  
         <Text style={styles.label}>{props.NombrePicker}</Text>
         <View style={styles.picker}>
        <Picker
@@ -21,6 +21,7 @@ export default function ComboBox(props) {
 
           </Picker>
           </View>
+          </SafeAreaView>
     </View>
   );
 }

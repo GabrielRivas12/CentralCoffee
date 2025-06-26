@@ -23,10 +23,10 @@ const db = getFirestore(appFirebase);
 export default function Ofertas({ navigation }) {
 
   useFocusEffect(
-  React.useCallback(() => {
-    LeerDatos();
-  }, [])
-);
+    React.useCallback(() => {
+      LeerDatos();
+    }, [])
+  );
 
   const [Ofertass, setOfertass] = useState([]);
 
@@ -42,56 +42,56 @@ export default function Ofertas({ navigation }) {
     setOfertass(d);
   }
 
-  
+
 
 
   return (
     <View style={styles.container}>
-      
+      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390, alignItems: 'center' }}>
 
-      <View style={styles.containerBusqueda}>
-      <InputText
 
-        Valor=''
-        onchangetext=''
-        placeholder='Buscar'
-        ancho='370'
-      />
-      </View>
+        <View style={styles.containerBusqueda}>
+          <InputText
 
-      <SafeAreaView edges={['left', 'right', 'bottom', ]} style={{ flex: 1 }}>
-      <ScrollView >
-        
-
-        {Ofertass.map((item, index) => (
-          <OfertasCard
-            key={index}
-            ImagenOferta={item.Nimagen}
-            oferta={item}
-            titulo={item.Ntitulo}
-            precio={`Precio: C$${item.NofertaLibra} por libra`}
-            navigation={navigation}
+            Valor=''
+            onchangetext=''
+            placeholder='Buscar'
+            ancho='370'
           />
-        ))}
+        </View>
+
+        <ScrollView >
+
+
+          {Ofertass.map((item, index) => (
+            <OfertasCard
+              key={index}
+              ImagenOferta={item.Nimagen}
+              oferta={item}
+              titulo={item.Ntitulo}
+              precio={`Precio: C$${item.NofertaLibra} por libra`}
+              navigation={navigation}
+            />
+          ))}
 
 
 
 
 
 
-      </ScrollView>
-      <View style={styles.botoncrear}>
-      <Boton
-        onPress={() => navigation.navigate('Crear')}
-        alto={60}
-        ancho={60}
-        borderRadius={40}
-        marginRight={0}
-        
-      />
-      <Octicons name="pencil" size={24} color="white" position='absolute' top={20} left={20} />
-      </View>
-</SafeAreaView>
+        </ScrollView>
+        <View style={styles.botoncrear}>
+          <Boton
+            onPress={() => navigation.navigate('Crear')}
+            alto={60}
+            ancho={60}
+            borderRadius={40}
+            marginRight={0}
+
+          />
+          <Octicons name="pencil" size={24} color="white" position='absolute' top={20} left={20} />
+        </View>
+      </SafeAreaView>
     </View>
 
 

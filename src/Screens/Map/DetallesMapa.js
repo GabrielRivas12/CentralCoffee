@@ -4,6 +4,7 @@ import Boton from '../../Components/Boton'
 import MapView, { Marker } from 'react-native-maps';
 import { Linking } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function DetallesMapa({ navigation, route }) {
@@ -21,49 +22,50 @@ export default function DetallesMapa({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView edges={[ 'bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
+        <View style={styles.mapContainer}>
+          {marker.coordinate && (
+            <MapView
+              style={styles.previewMap}
+              initialRegion={{
+                latitude: marker.coordinate.latitude,
+                longitude: marker.coordinate.longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+              }}
+              scrollEnabled={false}
+              zoomEnabled={false}
+              rotateEnabled={false}
+              pitchEnabled={false}
+            >
+              <Marker coordinate={marker.coordinate} />
+            </MapView>
+          )}
+        </View>
 
-<View style={styles.mapContainer}>
-      {marker.coordinate && (
-        <MapView
-          style={styles.previewMap}
-          initialRegion={{
-            latitude: marker.coordinate.latitude,
-            longitude: marker.coordinate.longitude,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005,
-          }}
-          scrollEnabled={false}
-          zoomEnabled={false}
-          rotateEnabled={false}
-          pitchEnabled={false}
-        >
-          <Marker coordinate={marker.coordinate} />
-        </MapView>
-      )}
-      </View>
+        <View style={styles.containerDescripcion}>
+          <Text style={styles.DescripcionText}>Descripción:</Text>
+          <Text>{marker.descripcion}</Text>
+        </View>
 
-      <View style={styles.containerDescripcion}>
-        <Text style={styles.DescripcionText}>Descripción:</Text>
-        <Text>{marker.descripcion}</Text>
-      </View>
+        <View style={styles.bottomPanel}>
+          <View style={styles.Icono}>
+            <Feather name="map-pin" size={24} color="black" />
+          </View>
 
-       <View style={styles.bottomPanel}>
-            <View style={styles.Icono}>
-              <Feather name="map-pin" size={24} color="black" />
-            </View>
-
-            <Text style={styles.infoTitle}>{marker.nombre}</Text>
-            <Text style={styles.infoText}>Horario: {marker.horario}</Text>
-            </View>
+          <Text style={styles.infoTitle}>{marker.nombre}</Text>
+          <Text style={styles.infoText}>Horario: {marker.horario}</Text>
+        </View>
 
 
-        <View style={styles.botonllegar}>  
-      <Boton
-        nombreB="Cómo llegar"
-        onPress={handleGoToMaps}
-        backgroundColor="#ddd"
-      />
-      </View>
+        <View style={styles.botonllegar}>
+          <Boton
+            nombreB="Cómo llegar"
+            onPress={handleGoToMaps}
+            backgroundColor="#ddd"
+          />
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -73,18 +75,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   previewMap: {
-flex: 1
+    flex: 1
   },
   mapContainer: {
-  width: 355,
-  height: 200,
-  marginBottom: 15,
-  marginLeft: 20,
-  top: 10,
-  borderRadius: 10,
-  borderColor: '#000', // o el color que desees
-  overflow: 'hidden',  // 🔑 Esto hace que borderRadius funcione correctamente
-},
+    width: 355,
+    height: 200,
+    marginBottom: 15,
+    marginLeft: 20,
+    top: 10,
+    borderRadius: 10,
+    borderColor: '#000', // o el color que desees
+    overflow: 'hidden',  // 🔑 Esto hace que borderRadius funcione correctamente
+  },
   containerDescripcion: {
     marginLeft: 20,
     top: 120
@@ -100,7 +102,7 @@ flex: 1
     height: 70
 
   },
-   Icono: {
+  Icono: {
     width: 50,
     height: 50,
     backgroundColor: '#ddd',
@@ -109,7 +111,7 @@ flex: 1
     justifyContent: 'center',
     alignItems: 'center',
   },
-    infoTitle: {
+  infoTitle: {
     marginLeft: 60,
     position: 'absolute',
     top: 15,

@@ -1,10 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function Boton(props) {
   return (
     <View style={styles.container}>
+      <SafeAreaView edges={[ 'left']} style={{   }}>
       <TouchableOpacity
         onPress={props.onPress}
         style={[styles.boton,
@@ -33,6 +35,7 @@ export default function Boton(props) {
 
         </Text>
       </TouchableOpacity>
+      </SafeAreaView>
     </View>
   );
 }

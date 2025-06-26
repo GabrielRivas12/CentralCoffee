@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Boton from '../../Components/Boton'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function QRLista({navigation}){
-    return (
-       <View style={styles.container}>
+export default function QRLista({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
+        <Text> Lista de QR </Text>
 
-            <Text> Lista de QR </Text>
-            
-
-       </View>
-    );
-  }
+      </SafeAreaView>
+    </View>
+  );
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,

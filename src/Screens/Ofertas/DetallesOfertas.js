@@ -40,9 +40,7 @@ export default function DetallesOferta({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-
- <SafeAreaView edges={[ 'left', 'right', 'bottom']} style={{ flex: 1 }}>
-
+      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390,  }}>
 
       <View style={styles.containerListaImagen}>
         <Image
@@ -53,7 +51,7 @@ export default function DetallesOferta({ navigation, route }) {
         />
       </View>
 
-     
+
       <Text style={styles.Titulo}>{oferta.Ntitulo}</Text>
 
       <View style={styles.containerInformacion}>
@@ -87,7 +85,7 @@ export default function DetallesOferta({ navigation, route }) {
         <Text style={styles.TextoDato}>
           <Text style={styles.TextoInfo}>Proceso de corte: </Text>
           {oferta.NprocesoCorte
-}
+          }
         </Text>
 
         <Text style={styles.TextoDato}>
@@ -108,7 +106,7 @@ export default function DetallesOferta({ navigation, route }) {
 
 
       </View>
-      
+
       <View style={styles.BotonesContacto}>
         <Boton
           nombreB='Correo'
@@ -125,8 +123,8 @@ export default function DetallesOferta({ navigation, route }) {
         />
 
       </View>
- </SafeAreaView>
-    </View>
+    </SafeAreaView>
+    </View >
 
   );
 }

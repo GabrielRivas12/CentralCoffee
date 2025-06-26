@@ -6,6 +6,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../Services/BasedeDatos/Firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -14,12 +15,12 @@ export default function Login({ navigation }) {
   const [Correo, setCorreo] = useState('');
   const [Contraseña, setContraseña] = useState('');
 
-   const [request, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '415622256017-mlc54lffng7td5qehgt2irkf7045c9en.apps.googleusercontent.com',
     androidClientId: '169700359408-rk56fjne3kae2d8ji84pfuim66c837fv.apps.googleusercontent.com',
   });
 
-   useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       const { id_token } = response.authentication || {};
       if (!id_token) {
@@ -38,70 +39,64 @@ export default function Login({ navigation }) {
     }
   }, [response]);
 
-
-
-
-
-
-
-
   return (
     <View style={styles.container}>
+      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390, alignItems: 'center' }}>
 
-      <View style={styles.containerBanner}>
-
-      </View>
-
-      <View style={styles.containerCuerpo}>
-        <Text style={styles.Titulo}>Login</Text>
-      
-         <TouchableOpacity style={styles.button}  disabled={!request}
-  onPress={() => promptAsync()}>
-      <Image
-        source={{
-          uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png?20230822192911',
-        }}
-        style={styles.logo}
-      />
-       <Text style={styles.text}>Sign in with Google</Text>
-      <Text style={styles.text}></Text>
-    </TouchableOpacity>
-
-        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 30, alignSelf: 'flex-start', marginLeft: 25, }} />
-        <Text style={{ position: 'absolute', marginVertical: 164 }}> O </Text>
-        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 174, alignSelf: 'flex-end', position: 'absolute', marginRight: 20, }} />
-
-
-        <View style={styles.containerInput}>
-          <InputText
-            NombreLabel='Correo'
-            Valor={Correo}
-            onchangetext={setCorreo}
-            placeholder='Ingrese el correo'
-          />
-          <InputText
-            NombreLabel='Contraseña'
-            Valor={Contraseña}
-            onchangetext={setContraseña}
-            placeholder='Ingrese su contraseña'
-          />
-          <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>
-
-          <View style={styles.vboton}>
-            <Boton
-              nombreB='Iniciar'
-              onPress={() => navigation.navigate('DrawerNavigate')}
-            />
-          </View>
-          <Boton
-            nombreB='Registrarse'
-            onPress={() => navigation.navigate('Registro')}
-          />
-
+        <View style={styles.containerBanner}>
 
         </View>
-      </View>
 
+        <View style={styles.containerCuerpo}>
+          <Text style={styles.Titulo}>Login</Text>
+
+          <TouchableOpacity style={styles.button} disabled={!request}
+            onPress={() => promptAsync()}>
+            <Image
+              source={{
+                uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png?20230822192911',
+              }}
+              style={styles.logo}
+            />
+            <Text style={styles.text}>Sign in with Google</Text>
+            <Text style={styles.text}></Text>
+          </TouchableOpacity>
+
+          <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 30, alignSelf: 'flex-start', marginLeft: 25, }} />
+          <Text style={{ position: 'absolute', marginVertical: 164 }}> O </Text>
+          <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 174, alignSelf: 'flex-end', position: 'absolute', marginRight: 20, }} />
+
+
+          <View style={styles.containerInput}>
+            <InputText
+              NombreLabel='Correo'
+              Valor={Correo}
+              onchangetext={setCorreo}
+              placeholder='Ingrese el correo'
+            />
+            <InputText
+              NombreLabel='Contraseña'
+              Valor={Contraseña}
+              onchangetext={setContraseña}
+              placeholder='Ingrese su contraseña'
+            />
+            <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>
+
+            <View style={styles.vboton}>
+              <Boton
+                nombreB='Iniciar'
+                onPress={() => navigation.navigate('DrawerNavigate')}
+              />
+            </View>
+            <Boton
+              nombreB='Registrarse'
+              onPress={() => navigation.navigate('Registro')}
+            />
+
+
+          </View>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -144,7 +139,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-   button: {
+  button: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 5,
@@ -153,13 +148,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 200,
     height: 50,
-     shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.39,
-        shadowRadius: 5.30,
-        elevation: 5,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.39,
+    shadowRadius: 5.30,
+    elevation: 5,
   },
 
 });

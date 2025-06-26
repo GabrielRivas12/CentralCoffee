@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
 
 import * as ImagePicker from 'expo-image-picker';
@@ -141,34 +142,34 @@ export default function CrearOferta({ navigation }) {
 
   return (
     <View style={styles.container}>
-      
+      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
 
-      <OfertaFormulario
-        imagen={imagen}
-        onPickImage={handlePickImagen}
-        Titulo={Titulo} setTitulo={setTitulo}
-        TipoCafe={TipoCafe} setTipoCafe={setTipoCafe}
-        Variedad={Variedad} setVariedad={setVariedad}
-        EstadoGrano={EstadoGrano} setEstadoGrano={setEstadoGrano}
-        Clima={Clima} setClima={setClima}
-        Altura={Altura} setAltura={setAltura}
-        ProcesoCorte={ProcesoCorte} setProcesoCorte={setProcesoCorte}
-        FechaCosecha={FechaCosecha} setFechaCosecha={setFechaCosecha}
-        CantidadProduccion={CantidadProduccion} setCantidadProduccion={setCantidadProduccion}
-        OfertaLibra={OfertaLibra} setOfertaLibra={setOfertaLibra}
-        onSubmit={guardar}
+        <OfertaFormulario
+          imagen={imagen}
+          onPickImage={handlePickImagen}
+          Titulo={Titulo} setTitulo={setTitulo}
+          TipoCafe={TipoCafe} setTipoCafe={setTipoCafe}
+          Variedad={Variedad} setVariedad={setVariedad}
+          EstadoGrano={EstadoGrano} setEstadoGrano={setEstadoGrano}
+          Clima={Clima} setClima={setClima}
+          Altura={Altura} setAltura={setAltura}
+          ProcesoCorte={ProcesoCorte} setProcesoCorte={setProcesoCorte}
+          FechaCosecha={FechaCosecha} setFechaCosecha={setFechaCosecha}
+          CantidadProduccion={CantidadProduccion} setCantidadProduccion={setCantidadProduccion}
+          OfertaLibra={OfertaLibra} setOfertaLibra={setOfertaLibra}
+          onSubmit={guardar}
 
-         date={date}
+          date={date}
           show={show}
           mode={mode}
           text={text}
           verMode={verMode}
           onChange={onChange}
 
-        
-      />
 
-    
+        />
+
+      </SafeAreaView>
     </View>
 
   );

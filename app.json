@@ -17,12 +17,13 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.centralcoffee.app",
+      "googleServicesFile": "./src/Services/google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": false,
+       "package": "com.gabrielr12.centralcoffee"
     },
     "web": {
       "favicon": "./assets/favicon.png"

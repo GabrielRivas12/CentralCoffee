@@ -104,7 +104,7 @@ export default function Mapa({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1 }}>
+      <SafeAreaView  edges={[ 'bottom']} style={{ flex: 1, backgroundColor: '#fff' }}>
 
 
         <MapView

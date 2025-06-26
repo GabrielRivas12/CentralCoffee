@@ -23,10 +23,7 @@ export default function OfertaFormulario({
 }) {
   return (
     <View style={styles.container}>
-
-
-
-      <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1 }}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
         <ScrollView style={styles.scrol}>
 
           <View style={styles.containerImagen}>

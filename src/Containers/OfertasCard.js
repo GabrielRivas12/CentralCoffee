@@ -1,8 +1,9 @@
 import { View, Text, StyleSheet, StatusBar, Image } from 'react-native';
 import Boton from '../Components/Boton'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
-export default function OfertasCard({ navigation , titulo,precio, oferta, ImagenOferta}) {
+export default function OfertasCard({ navigation, titulo, precio, oferta, ImagenOferta }) {
   return (
     <View style={styles.container}>
 
@@ -11,14 +12,14 @@ export default function OfertasCard({ navigation , titulo,precio, oferta, Imagen
 
         <View style={styles.containerListaImagen}>
           <Image
-          
-            source={{uri: ImagenOferta}}
-             style={{ width: '100%', height: '100%', borderRadius: 10 }}
-              resizeMode="cover"
+
+            source={{ uri: ImagenOferta }}
+            style={{ width: '100%', height: '100%', borderRadius: 10 }}
+            resizeMode="cover"
           />
 
 
-          
+
 
         </View>
 
@@ -26,7 +27,7 @@ export default function OfertasCard({ navigation , titulo,precio, oferta, Imagen
           <Text style={styles.Titulo}>{titulo}</Text>
         </View>
 
-         <View style={styles.precioContainer}>
+        <View style={styles.precioContainer}>
           <Text style={styles.precio}>{precio}</Text>
         </View>
 
@@ -37,7 +38,7 @@ export default function OfertasCard({ navigation , titulo,precio, oferta, Imagen
             nombreB='Ver Info'
             ancho={80}
             alto={30}
-          onPress={() => navigation.navigate('Informacion', { oferta })}
+            onPress={() => navigation.navigate('Informacion', { oferta })}
 
           />
 
@@ -45,9 +46,9 @@ export default function OfertasCard({ navigation , titulo,precio, oferta, Imagen
 
 
       </View>
-      
 
 
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}></SafeAreaView>
     </View>
 
   );
@@ -69,12 +70,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#EBEBEB',
     marginTop: 10,
-
   },
   containerListaB: {
     marginLeft: 250,
     marginTop: 180,
-    position: 'absolute'
+    position: 'absolute',
   },
   containerListaImagen: {
     width: 330,
@@ -92,18 +92,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   tituloContainer: {
-  width: '90%',
-  alignItems: 'flex-start',
-  marginTop: 5
-},
-precio:{
-  fontSize: 12
-},
-precioContainer: {
-   alignItems: 'flex-start',
-   width: '90%',
-   marginTop: 10
+    width: '90%',
+    alignItems: 'flex-start',
+    marginTop: 5
+  },
+  precio: {
+    fontSize: 12
+  },
+  precioContainer: {
+    alignItems: 'flex-start',
+    width: '90%',
+    marginTop: 10
 
-}
+  }
 
 });
