@@ -5,10 +5,12 @@ import { useState, useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '../../Services/BasedeDatos/Firebase';
+import  auth  from '../../Services/BasedeDatos/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as AuthSession from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
+const redirectUri = "https://auth.expo.io/@gabrielr12/centralcoffee";
 
 export default function Login({ navigation }) {
 
@@ -16,28 +18,31 @@ export default function Login({ navigation }) {
   const [Contraseña, setContraseña] = useState('');
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '415622256017-mlc54lffng7td5qehgt2irkf7045c9en.apps.googleusercontent.com',
-    androidClientId: '169700359408-rk56fjne3kae2d8ji84pfuim66c837fv.apps.googleusercontent.com',
-  });
+  expoClientId: '373897650374-v6bbka0uhdodss1itvm3re6bj2hs1lmt.apps.googleusercontent.com',
+  androidClientId: '373897650374-3jtsm00ovu83o7l25gkjl2q5hpkpfek2.apps.googleusercontent.com',
+  webClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',
+  redirectUri,
+  useProxy: true,
+});
 
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.authentication || {};
-      if (!id_token) {
-        console.error('No se recibió id_token');
-        return;
-      }
-      const credential = GoogleAuthProvider.credential(id_token);
+ useEffect(() => {
+  console.log(AuthSession.makeRedirectUri({ useProxy: true }));
 
-      signInWithCredential(auth, credential)
-        .then(() => {
-          navigation.navigate('DrawerNavigate');
-        })
-        .catch((error) => {
-          console.error('Error al autenticar con Firebase:', error);
-        });
-    }
-  }, [response]);
+  if (response?.type === 'success') {
+    const { id_token } = response.params;
+
+    const credential = GoogleAuthProvider.credential(id_token);
+    signInWithCredential(auth, credential)
+      .then(userCredential => {
+        console.log('Autenticado con:', userCredential.user.email);
+        navigation.navigate('DrawerNavigate');
+      })
+      .catch(err => {
+        console.error('Error en Firexbase:', err);
+      });
+  }
+}, [response]);
+
 
   return (
     <View style={styles.container}>

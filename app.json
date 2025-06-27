@@ -3,6 +3,7 @@
     "name": "CentralCoffee",
     "slug": "centralcoffee",
     "scheme": "centralcoffee",
+    "owner": "gabrielr12",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -41,7 +42,7 @@
       "eas": {
         "projectId": "4c89cea2-2887-4307-be2d-91f6c5b76d05"
       }
-    },
-    "owner": "gabrielr12"
+    }
+   
   }
 }
