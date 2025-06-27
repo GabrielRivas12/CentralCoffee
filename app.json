@@ -18,8 +18,13 @@
       "supportsTablet": true
     },
     "android": {
+      "config": {
+       "googleMaps": {
+        "apiKey": "AIzaSyDLHMLnJVzvuMiVoLrVPhIGiX1Y7Zul8FA"
+      }
+    },
       "googleServicesFile": "./src/Services/google-services.json",
-       "permissions": [
+      "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "READ_MEDIA_IMAGES"
@@ -43,6 +48,5 @@
         "projectId": "4c89cea2-2887-4307-be2d-91f6c5b76d05"
       }
     }
-   
   }
 }

@@ -101,12 +101,9 @@ export default function Mapa({ navigation }) {
     setSelectedMarker(marker);
   };
 
-
   return (
     <View style={styles.container}>
       <SafeAreaView  edges={[ 'bottom']} style={{ flex: 1, backgroundColor: '#fff' }}>
-
-
         <MapView
           style={styles.map}
           region={region}
