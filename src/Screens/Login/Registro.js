@@ -53,7 +53,6 @@ export default function Registro() {
                             onchangetext=''
                             placeholder='Confirme'
                         />
-
                         <ComboBox
                             NombrePicker="Seleccione su rol"
                             value={valorSeleccionado}

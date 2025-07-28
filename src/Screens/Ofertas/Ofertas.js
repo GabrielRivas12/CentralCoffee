@@ -7,6 +7,7 @@ import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Octicons from '@expo/vector-icons/Octicons';
+import Feather from '@expo/vector-icons/Feather';
 
 
 import {
@@ -47,7 +48,7 @@ export default function Ofertas({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390, alignItems: 'center' }}>
+      <SafeAreaView edges={['bottom']}  style={{ backgroundColor: '#fff', flex: 1, width: 390, alignItems: 'center' }}>
 
 
         <View style={styles.containerBusqueda}>
@@ -74,11 +75,6 @@ export default function Ofertas({ navigation }) {
             />
           ))}
 
-
-
-
-
-
         </ScrollView>
         <View style={styles.botoncrear}>
           <Boton
@@ -86,13 +82,15 @@ export default function Ofertas({ navigation }) {
             alto={60}
             ancho={60}
             borderRadius={40}
-            marginRight={0}
-
-          />
+            marginRight={0} />
           <Octicons name="pencil" size={24} color="white" position='absolute' top={20} left={20} />
         </View>
+
+       
       </SafeAreaView>
     </View>
+
+
 
 
 
@@ -148,6 +146,14 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     position: 'absolute',
     bottom: 20,
+    right: 10,
+    borderRadius: 50,
+    backgroundColor: 'transparent',
+  },
+  botoneditar: {
+    marginBottom: 50,
+    position: 'absolute',
+    bottom: 60,
     right: 10,
     borderRadius: 50,
     backgroundColor: 'transparent',

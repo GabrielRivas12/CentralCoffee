@@ -40,7 +40,7 @@ export default function DetallesOferta({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390,  }}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390,  }}>
 
       <View style={styles.containerListaImagen}>
         <Image

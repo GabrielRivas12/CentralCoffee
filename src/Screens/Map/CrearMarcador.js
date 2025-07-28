@@ -60,7 +60,7 @@ export default function CrearMarcador({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
         <Text style={styles.previewTitle}>Vista previa de la ubicación</Text>
 
         {coord && (

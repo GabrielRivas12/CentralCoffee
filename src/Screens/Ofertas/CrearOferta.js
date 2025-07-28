@@ -2,6 +2,8 @@ import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-nativ
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
+import { useRoute } from '@react-navigation/native';
+import { useEffect } from 'react';
 
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
@@ -11,7 +13,6 @@ import * as FileSystem from 'expo-file-system'
 import OfertaFormulario from '../../Containers/OfertaFormulario';
 
 import { decode as atob } from 'base-64';
-
 
 
 
@@ -29,6 +30,9 @@ import ComboboxPickerDate from '../../Components/PickerDate';
 
 
 export default function CrearOferta({ navigation }) {
+
+const route = useRoute();
+const ofertaEditar = route.params?.oferta || null;
 
   const db = getFirestore(appFirebase);
 
@@ -126,11 +130,15 @@ export default function CrearOferta({ navigation }) {
       return;
     }
 
-    const urlImagen = await subirImagenASupabase(imagen);
-    if (!urlImagen) {
+      let urlImagen = imagen;
+   if (!imagen.startsWith('http')) {
+    const subida = await subirImagenASupabase(imagen);
+    if (!subida) {
       Alert.alert("Error", "No se pudo subir la imagen.");
       return;
     }
+    urlImagen = subida;
+  }
 
     const nuevaOferta = {
       Ntitulo: Titulo,
@@ -146,14 +154,37 @@ export default function CrearOferta({ navigation }) {
       Nimagen: urlImagen
     };
 
+     if (ofertaEditar?.id) {
+    // 🔁 Editar
+    await setDoc(doc(db, 'oferta', ofertaEditar.id), nuevaOferta);
+    Alert.alert('Actualizado', 'La oferta fue actualizada correctamente', [{ text: 'Aceptar', onPress: () => navigation.goBack() }]);
+  } else {
+    // 🆕 Crear
     await addDoc(collection(db, 'oferta'), nuevaOferta);
     Alert.alert('Éxito', 'Oferta guardada correctamente', [{ text: 'Aceptar', onPress: () => navigation.goBack() }]);
+  }
   };
+
+  useEffect(() => {
+  if (ofertaEditar) {
+    setTitulo(ofertaEditar.Ntitulo || '');
+    setTipoCafe(ofertaEditar.NtipoCafe || '');
+    setVariedad(ofertaEditar.Nvariedad || '');
+    setEstadoGrano(ofertaEditar.NestadoGrano || '');
+    setClima(ofertaEditar.Nclima || '');
+    setAltura(ofertaEditar.Naltura || '');
+    setProcesoCorte(ofertaEditar.NprocesoCorte || '');
+    setFechaCosecha(ofertaEditar.NfechaCosecha || '');
+    setCantidadProduccion(ofertaEditar.NcantidadProduccion || '');
+    setOfertaLibra(ofertaEditar.NofertaLibra || '');
+    SetImagen(ofertaEditar.Nimagen || '');
+  }
+}, []);
 
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
+      <SafeAreaView edges={['bottom, top']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
 
         <OfertaFormulario
           imagen={imagen}

@@ -24,7 +24,7 @@ import EditarPerfil from './src/Screens/Perfil/EditarPerfil';
 function Navegacion() {
     return (
         <NavigationContainer>
-              <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
+            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Registro" component={Registro} />
                 <Stack.Screen name="DrawerNavigate" component={DrawerNavigate} />
@@ -35,6 +35,7 @@ function Navegacion() {
 import Login from './src/Screens/Login/InicioSesion';
 import Registro from './src/Screens/Login/Registro';
 import CrearMarcador from './src/Screens/Map/CrearMarcador';
+import EditarOfertas from './src/Screens/Ofertas/EditarOfertas';
 
 const Stack = createStackNavigator();
 
@@ -54,6 +55,7 @@ function DrawerNavigate() {
 
                 const showHeader =
                     (route.name === 'Ofertas' && (routeName === 'ScreenOfertas' || routeName === '')) ||
+                    (route.name === 'Editar' && (routeName === 'ScreenEditar' || routeName === '')) ||
                     (route.name === 'IA' && (routeName === 'Asistente' || routeName === '')) ||
                     (route.name === 'Mapa' && (routeName === 'ScreenMapa' || routeName === '')) ||
                     (route.name === 'PerfilUsuario' && (routeName === 'ScreenUsuario' || routeName === '')) ||
@@ -78,12 +80,15 @@ function DrawerNavigate() {
                 options={{
                     drawerIcon: ({ color, size }) =>
                         <Feather name="tag" size={15} color={color} />,
-
-
-
                 }}
 
             />
+            <Drawer.Screen name="Editar" component={StackEditar}
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <Feather name="edit" size={15} color={color} />
+                    )
+                }} />
             <Drawer.Screen name="IA" component={Asistente}
                 options={{
                     drawerIcon: ({ color, size }) => (
@@ -110,7 +115,9 @@ function DrawerNavigate() {
                     )
                 }} />
 
-              
+
+
+
 
         </Drawer.Navigator>
     )
@@ -144,7 +151,28 @@ function StackOfertas() {
             <Stack.Screen name='ScreenOfertas' component={Ofertas} />
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
-            
+
+
+        </Stack.Navigator>
+    )
+}
+
+function StackEditar() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenEditar'
+
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenEditar',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A', // color header
+                },
+            })}
+
+        >
+            <Stack.Screen name='ScreenEditar' component={EditarOfertas} />
+            <Stack.Screen name='Crear' component={CrearOferta} />
+            <Stack.Screen name='Informacion' component={DetallesOferta} />
+
 
         </Stack.Navigator>
     )

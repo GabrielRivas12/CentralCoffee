@@ -48,7 +48,6 @@ export default function OfertasCard({ navigation, titulo, precio, oferta, Imagen
       </View>
 
 
-      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}></SafeAreaView>
     </View>
 
   );
