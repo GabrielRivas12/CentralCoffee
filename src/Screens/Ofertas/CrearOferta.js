@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Platform, StatusBar } from 'react-native';
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
@@ -184,6 +184,7 @@ export default function CrearOferta({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
       <SafeAreaView edges={['bottom, top']} style={{ flex: 1 }}>
         <OfertaFormulario
           imagen={imagen}

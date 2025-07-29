@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import { useState, useEffect } from 'react';
@@ -46,6 +46,7 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
       <SafeAreaView style={{ backgroundColor: '#ED6D4A', flex: 1, alignItems: 'center' }}>
 
         <View style={styles.containerBanner}>

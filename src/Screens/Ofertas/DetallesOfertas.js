@@ -40,6 +40,7 @@ export default function DetallesOferta({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
       <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1  }}>
 
       <View style={styles.containerListaImagen}>

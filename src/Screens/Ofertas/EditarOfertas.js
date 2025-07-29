@@ -60,6 +60,7 @@ export default function EditarOfertas({ navigation }) {
     }
     return (
         <View style={styles.container}>
+            <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
             <SafeAreaView edges={['bottom']} style={{  flex: 1, alignItems: 'center' }}>
 
 
