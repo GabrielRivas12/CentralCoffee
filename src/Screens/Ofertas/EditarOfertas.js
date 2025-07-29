@@ -5,6 +5,7 @@ import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 import OfertasCard from '../../Containers/OfertasCard';
 import Feather from '@expo/vector-icons/Feather';
+import Octicons from '@expo/vector-icons/Octicons';
 
 import {
     collection,
@@ -61,13 +62,13 @@ export default function EditarOfertas({ navigation }) {
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
-            <SafeAreaView edges={['bottom']} style={{  flex: 1, alignItems: 'center' }}>
+            <SafeAreaView edges={['bottom']} style={{ flex: 1, alignItems: 'center' }}>
 
+                <Text style={styles.Titulo}> Mis ofertas </Text>
 
-
-                <ScrollView   showsVerticalScrollIndicator={false} >
+                <ScrollView style={styles.containerCard} showsVerticalScrollIndicator={false} >
                     {Ofertass.map((item, index) => (
-                        <View key={index}>
+                        <View key={index} >
                             <OfertasCard
                                 ImagenOferta={item.Nimagen}
                                 oferta={item}
@@ -76,7 +77,12 @@ export default function EditarOfertas({ navigation }) {
                                 navigation={navigation}
                             />
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('Crear',  { oferta: item })} 
+                                onPress={() => navigation.navigate('Crear', { oferta: item })}
+                                style={styles.botonverificar}      >
+                                <Octicons name="check-circle-fill" size={24} color="green" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('Crear', { oferta: item })}
                                 style={styles.botoneditar}      >
                                 <Feather name="edit" size={24} color="blue" />
                             </TouchableOpacity>
@@ -109,7 +115,7 @@ const styles = StyleSheet.create({
         height: 40,
         position: 'absolute',
         marginTop: 202,
-        marginLeft: 170,
+        marginLeft: 175,
         backgroundColor: 'transparent'
     },
     botonborrar: {
@@ -123,4 +129,18 @@ const styles = StyleSheet.create({
         marginLeft: 210,
         backgroundColor: 'transparent'
     },
+    botonverificar: {
+        position: 'absolute',
+        top: 202,
+        left: 155
+    },
+    Titulo: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        right: 130,
+        top: 10
+    },
+    containerCard: {
+        top: 10
+    }
 });

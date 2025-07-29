@@ -57,7 +57,7 @@ export default function Ofertas({ navigation }) {
       const ofertaEncontrado = doc.data();
 
       if (
-        ofertaEncontrado.Ntitulo && 
+        ofertaEncontrado.Ntitulo &&
         ofertaEncontrado.Ntitulo.toLowerCase().includes(textoBuscado)
 
       ) {
@@ -66,7 +66,7 @@ export default function Ofertas({ navigation }) {
     });
 
     setOfertass(resultados);
-   
+
   };
 
 
@@ -120,6 +120,18 @@ export default function Ofertas({ navigation }) {
           <Octicons name="pencil" size={24} color="white" position='absolute' top={20} left={20} />
         </View>
 
+        <View style={styles.botonbuscar}>
+          <Boton
+            onPress={buscarOferta}
+            ColorBoton='transparent'
+            borderColor= 'transparent'
+            alto={50}
+            ancho={50}
+            borderRadius={5}
+            marginRight={0} />
+          <Octicons name="search" size={24} color="#666" position='absolute' top={16} left={15} />
+        </View>
+
 
       </SafeAreaView>
     </View>
@@ -137,17 +149,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   botoncrear: {
+    flex: 1,
     marginBottom: 50,
     position: 'absolute',
     bottom: 20,
     right: 10,
-    borderRadius: 50,
     backgroundColor: 'transparent',
   },
   containerBusqueda: {
     alignItems: 'center',
     bottom: 10,
     height: 70
+  },
+  botonbuscar: {
+    marginBottom: 50,
+    position: 'absolute',
+    top: 9,
+    right: 12,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 
 });

@@ -55,20 +55,19 @@ function DrawerNavigate() {
 
                 const showHeader =
                     (route.name === 'Ofertas' && (routeName === 'ScreenOfertas' || routeName === '')) ||
-                    (route.name === 'Editar' && (routeName === 'ScreenEditar' || routeName === '')) ||
+                    (route.name === 'Gestionar Ofertas' && (routeName === 'ScreenEditar' || routeName === '')) ||
                     (route.name === 'IA' && (routeName === 'Asistente' || routeName === '')) ||
                     (route.name === 'Mapa' && (routeName === 'ScreenMapa' || routeName === '')) ||
-                    (route.name === 'PerfilUsuario' && (routeName === 'ScreenUsuario' || routeName === '')) ||
+                    (route.name === 'Perfil' && (routeName === 'ScreenUsuario' || routeName === '')) ||
                     (route.name === 'QR' && (routeName === 'ScreenQR' || routeName === ''));
-
                 return {
                     headerShown: showHeader,
                     headerStyle: {
                         backgroundColor: '#ED6D4A',
                     },
-                    drawerActiveTintColor: 'gray',
-                    drawerInactiveTintColor: 'gray',
-                    drawerActiveBackgroundColor: '#F1A89B',
+                    drawerActiveTintColor: '#666',
+                    drawerInactiveTintColor: '#666',
+                    drawerActiveBackgroundColor: '#ffdfd7ff',
                     drawerLabelStyle: {
                         fontSize: 16,
                     },
@@ -81,9 +80,8 @@ function DrawerNavigate() {
                     drawerIcon: ({ color, size }) =>
                         <Feather name="tag" size={15} color={color} />,
                 }}
-
             />
-            <Drawer.Screen name="Editar" component={StackEditar}
+            <Drawer.Screen name="Gestionar Ofertas" component={StackEditar}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="edit" size={15} color={color} />
@@ -108,17 +106,12 @@ function DrawerNavigate() {
                         <Feather name="layers" size={15} color={color} />
                     )
                 }} />
-            <Drawer.Screen name="PerfilUsuario" component={StackUsuario}
+            <Drawer.Screen name="Perfil" component={StackUsuario}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="user" size={15} color={color} />
                     )
                 }} />
-
-
-
-
-
         </Drawer.Navigator>
     )
 }
@@ -191,7 +184,7 @@ function StackMapa() {
 
         >
             <Stack.Screen name='ScreenMapa' component={Mapa} />
-            <Stack.Screen name='Informacion' component={DetallesMapa} />
+            <Stack.Screen name='Más Información' component={DetallesMapa} />
             <Stack.Screen name='Crear Marcador' component={CrearMarcador} />
 
         </Stack.Navigator>

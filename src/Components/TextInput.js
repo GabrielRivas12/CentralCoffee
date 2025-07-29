@@ -16,6 +16,7 @@ export default function InputText(props) {
           value={props.Valor}
           onChangeText={props.onchangetext}
           placeholder={props.placeholder || 'Texto'}
+          placeholderTextColor="#666"
           maxLength={props.maxCaracteres || 100}
         ></TextInput>
       </SafeAreaView>

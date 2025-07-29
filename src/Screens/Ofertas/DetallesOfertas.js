@@ -41,90 +41,112 @@ export default function DetallesOferta({ navigation, route }) {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
-      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1  }}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1 }}>
 
-      <View style={styles.containerListaImagen}>
-        <Image
+        <View style={styles.containerListaImagen}>
+          <Image
 
-          source={{ uri: oferta.Nimagen }}
-          style={{ width: '100%', height: '100%', borderRadius: 10 }}
-          resizeMode="cover"
-        />
-      </View>
-
-
-      <Text style={styles.Titulo}>{oferta.Ntitulo}</Text>
-
-      <View style={styles.containerInformacion}>
-        <Text style={styles.TextoInfo}>Características</Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Tipo de café: </Text>
-          {oferta.NtipoCafe}
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Variedad: </Text>
-          {oferta.Nvariedad}
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Estado del grano: </Text>
-          {oferta.NestadoGrano}
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Clima: </Text>
-          {oferta.Nclima}
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Altura: </Text>
-          {oferta.Naltura}
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Proceso de corte: </Text>
-          {oferta.NprocesoCorte
-          }
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Fecha de cosecha: </Text>
-          {oferta.NfechaCosecha}
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Cantidad de producción: </Text>
-          {oferta.NcantidadProduccion}
-        </Text>
-
-        <Text style={styles.TextoDato}>
-          <Text style={styles.TextoInfo}>Oferta por libra: </Text>
-          {oferta.NofertaLibra}
-
-        </Text>
+            source={{ uri: oferta.Nimagen }}
+            style={{ width: '100%', height: '100%', borderRadius: 10 }}
+            resizeMode="cover"
+          />
+        </View>
 
 
-      </View>
+        <Text style={styles.Titulo}>{oferta.Ntitulo}</Text>
 
-      <View style={styles.BotonesContacto}>
-        <Boton
-          nombreB='Correo'
-          ancho='180'
-          iconName="mail"
-        />
-        <Boton
-          nombreB='Whatsapp'
-          ancho='180'
-          ColorBoton="#F8DBD7"
-          borderColor="#F8DBD7"
-          ColorTexto='#ED6D4A'
+        <View style={styles.containerInformacion}>
+          <Text style={styles.TextoInfo}>Características</Text>
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Tipo de café: </Text>
+                {oferta.NtipoCafe}
+              </Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Variedad: </Text>
+                {oferta.Nvariedad}
+              </Text>
+            </View>
+          </View>
 
-        />
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Estado del grano: </Text>
+                {oferta.NestadoGrano}
+              </Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Clima: </Text>
+                {oferta.Nclima}
+              </Text>
+            </View>
+          </View>
 
-      </View>
-    </SafeAreaView>
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Altura: </Text>
+                {oferta.Naltura}
+              </Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Proceso de corte: </Text>
+                {oferta.NprocesoCorte}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Fecha de cosecha: </Text>
+                {oferta.NfechaCosecha}
+              </Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Cantidad de producción: </Text>
+                {oferta.NcantidadProduccion}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <Text style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Oferta por libra: </Text>
+                {oferta.NofertaLibra}
+              </Text>
+            </View>
+          </View>
+
+
+
+        </View>
+
+        <View style={styles.BotonesContacto}>
+          <Boton
+            nombreB='Correo'
+            ancho='180'
+            iconName="mail"
+          />
+          <Boton
+            nombreB='Whatsapp'
+            ancho='180'
+            ColorBoton="#F8DBD7"
+            borderColor="#F8DBD7"
+            ColorTexto='#ED6D4A'
+
+          />
+
+        </View>
+      </SafeAreaView>
     </View >
 
   );
@@ -138,7 +160,7 @@ const styles = StyleSheet.create({
   containerInformacion: {
     backgroundColor: '#EBEBEB',
     width: 373,
-    height: 300,
+    height: 250,
     borderRadius: 10,
     marginLeft: 10
 
@@ -147,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 13,
     fontWeight: 'bold',
-    marginLeft: 10
+    marginLeft: 20
   },
   containerListaImagen: {
     width: 370,
@@ -178,6 +200,15 @@ const styles = StyleSheet.create({
   TextoDato: {
     marginLeft: 10,
     marginTop: 10,
-  }
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 10
+  },
+  col: {
+    flex: 1,
+    paddingRight: 10,
+  },
 
 });

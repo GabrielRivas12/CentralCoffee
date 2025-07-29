@@ -5,9 +5,10 @@ import MapView, { Marker } from 'react-native-maps';
 import { Linking } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 
-export default function DetallesMapa({ navigation, route }) {
+export default function DetallesMapa({ route }) {
   const { marker } = route.params;
 
   const handleGoToMaps = () => {
@@ -22,8 +23,8 @@ export default function DetallesMapa({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={[ 'bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
-        <View style={styles.mapContainer}>
+      <SafeAreaView edges={[ 'bottom']} style={{ backgroundColor: '#fff', flex: 1 }}>
+        <View style={styles.mapaContainer}>
           {marker.coordinate && (
             <MapView
               style={styles.previewMap}
@@ -43,27 +44,31 @@ export default function DetallesMapa({ navigation, route }) {
           )}
         </View>
 
-        <View style={styles.containerDescripcion}>
-          <Text style={styles.DescripcionText}>Descripción:</Text>
-          <Text>{marker.descripcion}</Text>
-        </View>
 
-        <View style={styles.bottomPanel}>
+
+        <View style={styles.PanelUbicacion}>
           <View style={styles.Icono}>
             <Feather name="map-pin" size={24} color="black" />
           </View>
 
-          <Text style={styles.infoTitle}>{marker.nombre}</Text>
-          <Text style={styles.infoText}>Horario: {marker.horario}</Text>
+            <Text style={styles.infoNombre}>{marker.nombre}</Text>
+            <Text style={styles.infoHorario}>Horario: {marker.horario}</Text>
+        </View>
+
+          <View style={styles.containerDescripcion}>
+          <Text style={styles.DescripcionText}>Descripción:</Text>
+          <Text>{marker.descripcion}</Text>
         </View>
 
 
-        <View style={styles.botonllegar}>
+        <View>
           <Boton
             nombreB="Cómo llegar"
             onPress={handleGoToMaps}
             backgroundColor="#ddd"
+            ancho='375'
           />
+          <MaterialCommunityIcons name="directions" size={30} color="white" position='absolute' left='230' top='13' />
         </View>
       </SafeAreaView>
     </View>
@@ -73,34 +78,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    alignItems: 'center'
   },
   previewMap: {
     flex: 1
   },
-  mapContainer: {
-    width: 355,
+  mapaContainer: {
+    width: 375,
     height: 200,
     marginBottom: 15,
-    marginLeft: 20,
     top: 10,
     borderRadius: 10,
-    borderColor: '#000', // o el color que desees
-    overflow: 'hidden',  // 🔑 Esto hace que borderRadius funcione correctamente
+    borderColor: '#000', 
+    overflow: 'hidden',  
   },
   containerDescripcion: {
-    marginLeft: 20,
-    top: 120
+    width: 375,
+    height: 200
   },
-  bottomPanel: {
-    position: 'absolute',
-    top: 250,
-    left: 20,
-    right: 20,
+  PanelUbicacion: {
     backgroundColor: 'rgba(255,255,255,0.8)',
-    padding: 10,
     borderRadius: 10,
-    height: 70
-
+    height: 70,
+    bottom: 50,
+    top: 0
   },
   Icono: {
     width: 50,
@@ -111,20 +112,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  infoTitle: {
-    marginLeft: 60,
+  infoNombre: {
     position: 'absolute',
-    top: 15,
-    left: 10,
+    top: 5,
+    left: 60
   },
-  infoText: {
-    marginLeft: 60,
+  infoHorario: {
     position: 'absolute',
-    top: 35,
-    left: 10,
-  },
-  botonllegar: {
-    top: 300
+    top: 25,
+    left: 60,
   },
   DescripcionText: {
     fontWeight: 'bold',

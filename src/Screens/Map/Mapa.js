@@ -153,7 +153,7 @@ export default function Mapa({ navigation }) {
             <View style={styles.BotonInfo}>
               <Boton
                 nombreB="Ir a Info"
-                 onPress={() => navigation.navigate('Informacion', { marker: selectedMarker })}
+                onPress={() => navigation.navigate('Más Información', { marker: selectedMarker })}
                 backgroundColor="#fff"
                 ancho="90"
                 alto="40"
@@ -217,9 +217,9 @@ const styles = StyleSheet.create({
 
   zoomControls: {
     position: 'absolute',
-    backgroundColor: 'Transparent', // fondo para que se vean bien
+    backgroundColor: 'Transparent',
     borderRadius: 8,
-    top: 450,
+    bottom: 150,
     right: 10,
   },
 
