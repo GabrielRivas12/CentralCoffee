@@ -31,8 +31,8 @@ import ComboboxPickerDate from '../../Components/PickerDate';
 
 export default function CrearOferta({ navigation }) {
 
-const route = useRoute();
-const ofertaEditar = route.params?.oferta || null;
+  const route = useRoute();
+  const ofertaEditar = route.params?.oferta || null;
 
   const db = getFirestore(appFirebase);
 
@@ -88,41 +88,41 @@ const ofertaEditar = route.params?.oferta || null;
     }
   };
 
- const subirImagenASupabase = async (uri) => {
-  try {
-    const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+  const subirImagenASupabase = async (uri) => {
+    try {
+      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
 
-    // Convertir base64 string → Uint8Array (binario)
-    const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
+      // Convertir base64 string → Uint8Array (binario)
+      const binaryString = atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
 
-    const fileExt = uri.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
+      const fileExt = uri.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
 
-    const { error } = await supabase.storage
-      .from('file')
-      .upload(fileName, bytes, {
-        contentType: `image/${fileExt}`,
-        upsert: false,
-      });
+      const { error } = await supabase.storage
+        .from('file')
+        .upload(fileName, bytes, {
+          contentType: `image/${fileExt}`,
+          upsert: false,
+        });
 
-    if (error) {
-      console.log('Error subiendo imagen:', error);
+      if (error) {
+        console.log('Error subiendo imagen:', error);
+        return null;
+      }
+
+      const { data: urlData } = supabase.storage.from('file').getPublicUrl(fileName);
+      return urlData?.publicUrl || null;
+
+    } catch (e) {
+      console.log('Error en subirImagenASupabase:', e);
       return null;
     }
-
-    const { data: urlData } = supabase.storage.from('file').getPublicUrl(fileName);
-    return urlData?.publicUrl || null;
-
-  } catch (e) {
-    console.log('Error en subirImagenASupabase:', e);
-    return null;
-  }
-};
+  };
 
   const guardar = async () => {
     if (!Titulo || !TipoCafe || !Variedad || !EstadoGrano || !Clima || !Altura || !ProcesoCorte || !FechaCosecha || !CantidadProduccion || !OfertaLibra || !imagen.trim()) {
@@ -130,15 +130,15 @@ const ofertaEditar = route.params?.oferta || null;
       return;
     }
 
-      let urlImagen = imagen;
-   if (!imagen.startsWith('http')) {
-    const subida = await subirImagenASupabase(imagen);
-    if (!subida) {
-      Alert.alert("Error", "No se pudo subir la imagen.");
-      return;
+    let urlImagen = imagen;
+    if (!imagen.startsWith('http')) {
+      const subida = await subirImagenASupabase(imagen);
+      if (!subida) {
+        Alert.alert("Error", "No se pudo subir la imagen.");
+        return;
+      }
+      urlImagen = subida;
     }
-    urlImagen = subida;
-  }
 
     const nuevaOferta = {
       Ntitulo: Titulo,
@@ -154,38 +154,37 @@ const ofertaEditar = route.params?.oferta || null;
       Nimagen: urlImagen
     };
 
-     if (ofertaEditar?.id) {
-    // 🔁 Editar
-    await setDoc(doc(db, 'oferta', ofertaEditar.id), nuevaOferta);
-    Alert.alert('Actualizado', 'La oferta fue actualizada correctamente', [{ text: 'Aceptar', onPress: () => navigation.goBack() }]);
-  } else {
-    // 🆕 Crear
-    await addDoc(collection(db, 'oferta'), nuevaOferta);
-    Alert.alert('Éxito', 'Oferta guardada correctamente', [{ text: 'Aceptar', onPress: () => navigation.goBack() }]);
-  }
+    if (ofertaEditar?.id) {
+      // Actualizar
+      await setDoc(doc(db, 'oferta', ofertaEditar.id), nuevaOferta);
+      Alert.alert('Actualizado', 'La oferta fue actualizada correctamente', [{ text: 'Aceptar', onPress: () => navigation.goBack() }]);
+    } else {
+      // Crear
+      await addDoc(collection(db, 'oferta'), nuevaOferta);
+      Alert.alert('Éxito', 'Oferta guardada correctamente', [{ text: 'Aceptar', onPress: () => navigation.goBack() }]);
+    }
   };
 
   useEffect(() => {
-  if (ofertaEditar) {
-    setTitulo(ofertaEditar.Ntitulo || '');
-    setTipoCafe(ofertaEditar.NtipoCafe || '');
-    setVariedad(ofertaEditar.Nvariedad || '');
-    setEstadoGrano(ofertaEditar.NestadoGrano || '');
-    setClima(ofertaEditar.Nclima || '');
-    setAltura(ofertaEditar.Naltura || '');
-    setProcesoCorte(ofertaEditar.NprocesoCorte || '');
-    setFechaCosecha(ofertaEditar.NfechaCosecha || '');
-    setCantidadProduccion(ofertaEditar.NcantidadProduccion || '');
-    setOfertaLibra(ofertaEditar.NofertaLibra || '');
-    SetImagen(ofertaEditar.Nimagen || '');
-  }
-}, []);
+    if (ofertaEditar) {
+      setTitulo(ofertaEditar.Ntitulo || '');
+      setTipoCafe(ofertaEditar.NtipoCafe || '');
+      setVariedad(ofertaEditar.Nvariedad || '');
+      setEstadoGrano(ofertaEditar.NestadoGrano || '');
+      setClima(ofertaEditar.Nclima || '');
+      setAltura(ofertaEditar.Naltura || '');
+      setProcesoCorte(ofertaEditar.NprocesoCorte || '');
+      setFechaCosecha(ofertaEditar.NfechaCosecha || '');
+      setCantidadProduccion(ofertaEditar.NcantidadProduccion || '');
+      setOfertaLibra(ofertaEditar.NofertaLibra || '');
+      SetImagen(ofertaEditar.Nimagen || '');
+    }
+  }, []);
 
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['bottom, top']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
-
+      <SafeAreaView edges={['bottom, top']} style={{ flex: 1 }}>
         <OfertaFormulario
           imagen={imagen}
           onPickImage={handlePickImagen}
@@ -200,52 +199,20 @@ const ofertaEditar = route.params?.oferta || null;
           CantidadProduccion={CantidadProduccion} setCantidadProduccion={setCantidadProduccion}
           OfertaLibra={OfertaLibra} setOfertaLibra={setOfertaLibra}
           onSubmit={guardar}
-
           date={date}
           show={show}
           mode={mode}
           text={text}
           verMode={verMode}
           onChange={onChange}
-
-
         />
-
       </SafeAreaView>
     </View>
-
   );
-
 }
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
-  containerImagen: {
-    width: 350,
-    height: 150,
-    backgroundColor: '#999',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginTop: 20,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#999'
-
-  },
-  formContainer: {
-    alignItems: 'center',
-    width: '100%',
-    paddingVertical: 20,
-  },
-  scrol: {
-  },
-  containerbb: {
-  }
-
-
 });

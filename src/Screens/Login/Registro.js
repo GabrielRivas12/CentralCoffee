@@ -18,10 +18,11 @@ export default function Registro() {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ backgroundColor: '#fff', flex: 1, width: 390, alignItems: 'center' }}>
+            <SafeAreaView style={{ backgroundColor: '#ED6D4A', flex: 1, alignItems: 'center' }}>
                 <View style={styles.containerBanner}>
 
                 </View>
+                 </SafeAreaView>
 
                 <View style={styles.containerCuerpo}>
                     <Text style={styles.Titulo}>Crea tu cuenta</Text>
@@ -67,7 +68,7 @@ export default function Registro() {
                         </View>
                     </View>
                 </View>
-            </SafeAreaView>
+           
         </View>
     );
 }
@@ -79,11 +80,8 @@ const styles = StyleSheet.create({
     },
     containerBanner: {
         flex: 1,
-        backgroundColor: '#ED6D4A',
         justifyContent: 'center',
         alignItems: 'center',
-
-
     },
     containerCuerpo: {
         flex: 2.5,

@@ -40,7 +40,7 @@ export default function DetallesOferta({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390,  }}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1  }}>
 
       <View style={styles.containerListaImagen}>
         <Image
@@ -110,12 +110,12 @@ export default function DetallesOferta({ navigation, route }) {
       <View style={styles.BotonesContacto}>
         <Boton
           nombreB='Correo'
-          ancho='190'
+          ancho='180'
           iconName="mail"
         />
         <Boton
           nombreB='Whatsapp'
-          ancho='190'
+          ancho='180'
           ColorBoton="#F8DBD7"
           borderColor="#F8DBD7"
           ColorTexto='#ED6D4A'

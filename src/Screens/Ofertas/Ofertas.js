@@ -48,7 +48,7 @@ export default function Ofertas({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['bottom']}  style={{ backgroundColor: '#fff', flex: 1, width: 390, alignItems: 'center' }}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, alignItems: 'center' }}>
 
 
         <View style={styles.containerBusqueda}>
@@ -61,7 +61,7 @@ export default function Ofertas({ navigation }) {
           />
         </View>
 
-        <ScrollView >
+        <ScrollView    showsVerticalScrollIndicator={false}  >
 
 
           {Ofertass.map((item, index) => (
@@ -86,7 +86,7 @@ export default function Ofertas({ navigation }) {
           <Octicons name="pencil" size={24} color="white" position='absolute' top={20} left={20} />
         </View>
 
-       
+
       </SafeAreaView>
     </View>
 
@@ -102,58 +102,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  containerLista: {
-    width: 350,
-    height: 230,
-    backgroundColor: '#EBEBEB',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#EBEBEB'
-
-  },
-  containerListaB: {
-    marginLeft: 250,
-    marginTop: 180,
-    position: 'absolute'
-  },
-  containerListaImagen: {
-    width: 330,
-    height: 140,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#999',
-    marginBottom: 1
-  },
-  Titulo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  tituloContainer: {
-    width: '90%',
-    alignItems: 'flex-start',
-    marginTop: 5
-  },
-  precio: {
-    fontSize: 12
-  },
-
   botoncrear: {
     marginBottom: 50,
     position: 'absolute',
     bottom: 20,
-    right: 10,
-    borderRadius: 50,
-    backgroundColor: 'transparent',
-  },
-  botoneditar: {
-    marginBottom: 50,
-    position: 'absolute',
-    bottom: 60,
     right: 10,
     borderRadius: 50,
     backgroundColor: 'transparent',

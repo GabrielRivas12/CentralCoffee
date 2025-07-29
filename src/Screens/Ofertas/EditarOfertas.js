@@ -14,8 +14,6 @@ import {
     deleteDoc
 } from 'firebase/firestore';
 
-
-
 const db = getFirestore(appFirebase);
 
 export default function EditarOfertas({ navigation }) {
@@ -27,7 +25,6 @@ export default function EditarOfertas({ navigation }) {
     );
 
     const [Ofertass, setOfertass] = useState([]);
-
 
     const LeerDatos = async () => {
         const q = query(collection(db, "oferta"));
@@ -42,8 +39,8 @@ export default function EditarOfertas({ navigation }) {
 
     const eliminarOferta = (id) => {
         Alert.alert(
-            'Confirmar aliminacion',
-            'Estas seguro de que deseas elimanar el registro?',
+            'Confirmar eliminacion',
+            '¿Estas seguro de que deseas eliminar el registro?',
             [
                 {
                     text: 'Cancelar',
@@ -61,17 +58,13 @@ export default function EditarOfertas({ navigation }) {
             { cancelable: true }
         );
     }
-
-
-
-
     return (
         <View style={styles.container}>
-            <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390, alignItems: 'center' }}>
+            <SafeAreaView edges={['bottom']} style={{  flex: 1, alignItems: 'center' }}>
 
 
 
-                <ScrollView>
+                <ScrollView   showsVerticalScrollIndicator={false} >
                     {Ofertass.map((item, index) => (
                         <View key={index}>
                             <OfertasCard
@@ -81,31 +74,19 @@ export default function EditarOfertas({ navigation }) {
                                 precio={`Precio: C$${item.NofertaLibra} por libra`}
                                 navigation={navigation}
                             />
-
                             <TouchableOpacity
                                 onPress={() => navigation.navigate('Crear',  { oferta: item })} 
                                 style={styles.botoneditar}      >
-                                <Feather name="edit" size={24} color="black" />
+                                <Feather name="edit" size={24} color="blue" />
                             </TouchableOpacity>
-
                             <TouchableOpacity
                                 onPress={() => eliminarOferta(item.id)}
                                 style={styles.botonborrar}      >
-                                <Feather name="trash-2" size={24} color="black" />
+                                <Feather name="trash-2" size={24} color="red" />
                             </TouchableOpacity>
                         </View>
                     ))}
                 </ScrollView>
-
-
-
-
-
-
-
-
-
-
             </SafeAreaView>
         </View>
 
@@ -113,7 +94,6 @@ export default function EditarOfertas({ navigation }) {
 
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -127,8 +107,9 @@ const styles = StyleSheet.create({
         width: 60,
         height: 40,
         position: 'absolute',
-        marginTop: 190,
-        marginLeft: 30
+        marginTop: 202,
+        marginLeft: 170,
+        backgroundColor: 'transparent'
     },
     botonborrar: {
         backgroundColor: 'green',
@@ -137,62 +118,8 @@ const styles = StyleSheet.create({
         width: 60,
         height: 40,
         position: 'absolute',
-        marginTop: 190,
-        marginLeft: 100
+        marginTop: 202,
+        marginLeft: 210,
+        backgroundColor: 'transparent'
     },
-    containerLista: {
-        width: 350,
-        height: 230,
-        backgroundColor: '#EBEBEB',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#EBEBEB'
-
-    },
-    containerListaB: {
-        marginLeft: 250,
-        marginTop: 180,
-        position: 'absolute'
-    },
-    containerListaImagen: {
-        width: 330,
-        height: 140,
-        backgroundColor: 'black',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#999',
-        marginBottom: 1
-    },
-    Titulo: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    tituloContainer: {
-        width: '90%',
-        alignItems: 'flex-start',
-        marginTop: 5
-    },
-    precio: {
-        fontSize: 12
-    },
-
-    botoncrear: {
-        marginBottom: 50,
-        position: 'absolute',
-        bottom: 20,
-        right: 10,
-        borderRadius: 50,
-        backgroundColor: 'transparent',
-    },
-
-    containerBusqueda: {
-        alignItems: 'center',
-        bottom: 10,
-        height: 70
-    }
-
 });

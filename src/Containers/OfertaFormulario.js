@@ -23,8 +23,8 @@ export default function OfertaFormulario({
 }) {
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
-        <ScrollView style={styles.scrol}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1 }}>
+        <ScrollView showsVerticalScrollIndicator={false} >
 
           <View style={styles.containerImagen}>
             <TouchableOpacity onPress={onPickImage} style={{ width: '100%', height: '100%' }}>
@@ -136,6 +136,8 @@ export default function OfertaFormulario({
                 placeholder='Ingrese la cantidad'
               />
             </View>
+
+            <View style={styles.formOfertalibra}> 
             <InputText
               ancho='170'
               NombreLabel='Oferta por libra'
@@ -144,16 +146,13 @@ export default function OfertaFormulario({
               placeholder='Ingrese la oferta por libra'
             />
 
-          </View>
-
-
-
-
-          <Boton
+             </View>
+ <Boton
             nombreB='Publicar'
             onPress={onSubmit}
           />
-
+          </View>
+         
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -170,7 +169,6 @@ const styles = StyleSheet.create({
     height: 150,
     backgroundColor: '#999',
     justifyContent: 'center',
-    alignItems: 'center',
     marginLeft: 20,
     marginTop: 20,
     borderRadius: 5,
@@ -183,13 +181,15 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 20,
   },
-  scrol: {
-  },
   containerbb: {
   },
   formContainerInputTipo: {
     flexDirection: 'row',
 
+  },
+  formOfertalibra: {
+    alignSelf: 'flex-start',
+    marginLeft: 20,
   },
   encabezado: {
     left: 20,
