@@ -7,6 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 
+import { PROVIDER_GOOGLE } from 'react-native-maps';
+
 import {
   collection,
   getFirestore,
@@ -105,6 +107,7 @@ export default function Mapa({ navigation }) {
     <View style={styles.container}>
       <SafeAreaView  edges={[ 'bottom']} style={{ flex: 1, backgroundColor: '#fff' }}>
         <MapView
+         provider={PROVIDER_GOOGLE}
           style={styles.map}
           region={region}
           onRegionChangeComplete={setRegion}
