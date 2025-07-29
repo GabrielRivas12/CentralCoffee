@@ -30,6 +30,7 @@ export default function Ofertas({ navigation }) {
   );
 
   const [Ofertass, setOfertass] = useState([]);
+  const [valorBusqueda, setValorBusqueda] = useState('');
 
 
   const LeerDatos = async () => {
@@ -43,6 +44,30 @@ export default function Ofertas({ navigation }) {
     setOfertass(d);
   }
 
+  const buscarOferta = async (valorbuscado) => {
+    if (!valorbuscado || valorbuscado.trim() === '') return;
+
+    const q = query(collection(db, "oferta"));
+    const querySnapshot = await getDocs(q);
+    const resultados = [];
+
+    const textoBuscado = valorbuscado.toLowerCase();
+
+    querySnapshot.forEach((doc) => {
+      const ofertaEncontrado = doc.data();
+
+      if (
+        ofertaEncontrado.Ntitulo && 
+        ofertaEncontrado.Ntitulo.toLowerCase().includes(textoBuscado)
+
+      ) {
+        resultados.push(ofertaEncontrado);
+      }
+    });
+
+    setOfertass(resultados);
+   
+  };
 
 
 
@@ -54,14 +79,22 @@ export default function Ofertas({ navigation }) {
         <View style={styles.containerBusqueda}>
           <InputText
 
-            Valor=''
-            onchangetext=''
+            Valor={valorBusqueda}
+            onchangetext={async (texto) => {
+              setValorBusqueda(texto);
+              if (texto.trim() !== '') {
+                await buscarOferta(texto);
+
+              } else {
+                LeerDatos();
+              }
+            }}
             placeholder='Buscar'
             ancho='370'
           />
         </View>
 
-        <ScrollView    showsVerticalScrollIndicator={false}  >
+        <ScrollView showsVerticalScrollIndicator={false}  >
 
 
           {Ofertass.map((item, index) => (
