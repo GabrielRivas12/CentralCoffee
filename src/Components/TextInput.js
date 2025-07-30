@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    marginLeft: 5,
+    marginLeft: 10,
     alignContent: 'left',
     fontWeight: 'bold',
     fontSize: 16,
@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
     width: 350,
     height: 50,
     borderColor: '#999',
-    paddingLeft: 5
+    paddingLeft: 10
   },
 });

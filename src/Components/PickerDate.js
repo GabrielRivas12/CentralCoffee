@@ -3,22 +3,24 @@ import { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
 export default function ComboboxPickerDate(props) {
-
-
-
   return (
-    <View style={styles.container}>
-      <SafeAreaView edges={['left']} style={{ backgroundColor: '#fff', }}>
-        <View style={styles.containerdate}>
+    <View>
+      <SafeAreaView style={{ backgroundColor: '#fff', }}>
+        <View>
           <Text style={styles.label}>Fecha de cosecha </Text>
           <TouchableOpacity style={styles.date} onPress={() => props.verMode('date')}>
-            <Text style={styles.textodate}>{props.text}</Text>
-
+            <Text
+              style={[
+                styles.textodate,
+                { color: props.text === 'Ingrese la fecha' ? '#666' : '#000' }
+              ]}
+            >
+              {props.text === '' ? 'Seleccione una fecha' : props.text}
+            </Text>
           </TouchableOpacity>
         </View>
-
+        
         {props.show && (
           <DateTimePicker
             testID='dateTimePicker'
@@ -29,26 +31,14 @@ export default function ComboboxPickerDate(props) {
             onChange={props.onChange}
           />
         )}
-
       </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-  },
-  picker: {
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#999',
-    width: 350,
-    borderColor: '#999',
-    height: 52,
-  },
   label: {
-    marginLeft: 5,
+    marginLeft: 10,
     alignContent: 'left',
     fontWeight: 'bold',
     fontSize: 16,
@@ -64,8 +54,7 @@ const styles = StyleSheet.create({
   textodate: {
     top: 15,
     left: 5,
-    color: '#999'
+    marginLeft: 5
   },
-  containerdate: {
-  }
+
 });

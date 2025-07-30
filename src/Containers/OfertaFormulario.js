@@ -47,7 +47,7 @@ export default function OfertaFormulario({
               placeholder='Ingrese el título de la oferta'
               maxCaracteres={50}
             />
-            <Text>Características</Text>
+            <Text style={styles.Titulo}>Características</Text>
 
           </View>
 
@@ -170,11 +170,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#999',
     justifyContent: 'center',
     marginLeft: 20,
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#999'
-
   },
   formContainer: {
     alignItems: 'center',
@@ -194,6 +193,11 @@ const styles = StyleSheet.create({
   encabezado: {
     left: 20,
     top: 8
+  },
+  Titulo: {
+    left: 10,
+    fontWeight: 'bold',
+    fontSize: 18
   }
 
 

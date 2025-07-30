@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
   },
   botoncrear: {
     flex: 1,
-    marginBottom: 50,
     position: 'absolute',
     bottom: 20,
     right: 10,

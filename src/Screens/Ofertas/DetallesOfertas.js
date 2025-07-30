@@ -18,9 +18,7 @@ const db = getFirestore(appFirebase);
 export default function DetallesOferta({ navigation, route }) {
 
   const { oferta } = route.params;
-
   const [Ofertass, setOfertass] = useState([]);
-
 
   const LeerDatos = async () => {
     const q = query(collection(db, "oferta"));
@@ -37,7 +35,6 @@ export default function DetallesOferta({ navigation, route }) {
     LeerDatos();
   }, []);
 
-
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
@@ -45,18 +42,16 @@ export default function DetallesOferta({ navigation, route }) {
 
         <View style={styles.containerListaImagen}>
           <Image
-
             source={{ uri: oferta.Nimagen }}
             style={{ width: '100%', height: '100%', borderRadius: 10 }}
             resizeMode="cover"
           />
         </View>
 
-
         <Text style={styles.Titulo}>{oferta.Ntitulo}</Text>
 
         <View style={styles.containerInformacion}>
-          <Text style={styles.TextoInfo}>Características</Text>
+          <Text style={styles.TextoTitulo}>Características</Text>
           <View style={styles.row}>
             <View style={styles.col}>
               <Text style={styles.TextoDato}>
@@ -125,9 +120,6 @@ export default function DetallesOferta({ navigation, route }) {
               </Text>
             </View>
           </View>
-
-
-
         </View>
 
         <View style={styles.BotonesContacto}>
@@ -142,28 +134,25 @@ export default function DetallesOferta({ navigation, route }) {
             ColorBoton="#F8DBD7"
             borderColor="#F8DBD7"
             ColorTexto='#ED6D4A'
-
           />
 
         </View>
       </SafeAreaView>
     </View >
-
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    backgroundColor: '#fff'
   },
   containerInformacion: {
     backgroundColor: '#EBEBEB',
     width: 373,
     height: 250,
     borderRadius: 10,
-    marginLeft: 10
-
   },
   TextoInfo: {
     marginTop: 10,
@@ -172,7 +161,7 @@ const styles = StyleSheet.create({
     marginLeft: 20
   },
   containerListaImagen: {
-    width: 370,
+    width: 373,
     height: 140,
     backgroundColor: '#999',
     justifyContent: 'center',
@@ -181,7 +170,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#999',
     marginBottom: 10,
-    marginLeft: 10,
     marginTop: 10
   },
   BotonesContacto: {
@@ -198,8 +186,14 @@ const styles = StyleSheet.create({
 
   },
   TextoDato: {
-    marginLeft: 10,
+    marginLeft: 5,
     marginTop: 10,
+  },
+  TextoTitulo: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    top: 5,
+    left: 15
   },
   row: {
     flexDirection: 'row',
@@ -210,5 +204,4 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 10,
   },
-
 });

@@ -60,7 +60,7 @@ export default function CrearOferta({ navigation }) {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'android'); // corregí Platform.android a Platform.OS y que oculte bien
+    setShow(Platform.OS === 'android');
     setShow(false);
     setDate(currentDate);
 
@@ -68,13 +68,7 @@ export default function CrearOferta({ navigation }) {
     let fDate = temDate.getDate() + '/' + (temDate.getMonth() + 1) + '/' + temDate.getFullYear();
     setText(fDate)
     setFechaCosecha(fDate)
-
-
   }
-
-
-
-
 
   const handlePickImagen = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -175,6 +169,7 @@ export default function CrearOferta({ navigation }) {
       setAltura(ofertaEditar.Naltura || '');
       setProcesoCorte(ofertaEditar.NprocesoCorte || '');
       setFechaCosecha(ofertaEditar.NfechaCosecha || '');
+      setText(ofertaEditar.NfechaCosecha || 'Ingrese la fecha');
       setCantidadProduccion(ofertaEditar.NcantidadProduccion || '');
       setOfertaLibra(ofertaEditar.NofertaLibra || '');
       SetImagen(ofertaEditar.Nimagen || '');
