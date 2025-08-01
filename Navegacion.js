@@ -7,6 +7,7 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import 'react-native-gesture-handler';
 import Feather from '@expo/vector-icons/Feather';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 
 import Ofertas from './src/Screens/Ofertas/Ofertas';
@@ -19,7 +20,10 @@ import CrearOferta from './src/Screens/Ofertas/CrearOferta';
 import DetallesMapa from './src/Screens/Map/DetallesMapa';
 import Perfil from './src/Screens/Perfil/Perfil';
 import EditarPerfil from './src/Screens/Perfil/EditarPerfil';
-
+import Login from './src/Screens/Login/InicioSesion';
+import Registro from './src/Screens/Login/Registro';
+import CrearMarcador from './src/Screens/Map/CrearMarcador';
+import EditarOfertas from './src/Screens/Ofertas/EditarOfertas';
 
 function Navegacion() {
     return (
@@ -32,10 +36,7 @@ function Navegacion() {
         </NavigationContainer>
     );
 }
-import Login from './src/Screens/Login/InicioSesion';
-import Registro from './src/Screens/Login/Registro';
-import CrearMarcador from './src/Screens/Map/CrearMarcador';
-import EditarOfertas from './src/Screens/Ofertas/EditarOfertas';
+
 
 const Stack = createStackNavigator();
 
@@ -104,7 +105,18 @@ function DrawerNavigate() {
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="layers" size={15} color={color} />
-                    )
+                    ),
+
+                        headerRight: () => (
+                        <TouchableOpacity
+                            onPress={() => {
+                                console.log('Botón del header derecho');
+                            }}
+                            style={{ marginRight: 15 }}
+                        >
+                           <MaterialCommunityIcons name="qrcode-scan" size={24} color="black" />
+                        </TouchableOpacity>
+                    ),
                 }} />
             <Drawer.Screen name="Perfil" component={StackUsuario}
                 options={{
@@ -204,6 +216,7 @@ function StackQR() {
 
         >
             <Stack.Screen name='ScreenQR' component={QRLista} />
+             <Stack.Screen name='Informacion' component={DetallesOferta} />
 
         </Stack.Navigator>
     )

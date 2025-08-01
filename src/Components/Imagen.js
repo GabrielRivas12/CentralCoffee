@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -7,7 +7,7 @@ export default function Imagen(props) {
     <View style={styles.container}>
       <SafeAreaView style={{ backgroundColor: '#fff', }}>
         <Image
-          source={props.imagen}
+          source={{uri: props.imagen }}
           style={styles.imagen}
         />
       </SafeAreaView>
