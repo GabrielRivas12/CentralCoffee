@@ -24,6 +24,7 @@ import Login from './src/Screens/Login/InicioSesion';
 import Registro from './src/Screens/Login/Registro';
 import CrearMarcador from './src/Screens/Map/CrearMarcador';
 import EditarOfertas from './src/Screens/Ofertas/EditarOfertas';
+import ScannerQR from './src/Screens/QR/ScannerQR';
 
 function Navegacion() {
     return (
@@ -46,7 +47,7 @@ const Stack = createStackNavigator();
 
 const Drawer = createDrawerNavigator();
 
-function DrawerNavigate() {
+function DrawerNavigate({ navigation }) {
     return (
         <Drawer.Navigator
             initialRouteName='Ofertas'
@@ -101,23 +102,24 @@ function DrawerNavigate() {
                     )
                 }} />
 
-            <Drawer.Screen name="QR" component={StackQR}
-                options={{
+            <Drawer.Screen
+                name="QR"
+                component={StackQR}
+                options={({ navigation }) => ({  // aquí recibimos navigation
                     drawerIcon: ({ color, size }) => (
                         <Feather name="layers" size={15} color={color} />
                     ),
-
-                        headerRight: () => (
+                    headerRight: () => (
                         <TouchableOpacity
-                            onPress={() => {
-                                console.log('Botón del header derecho');
-                            }}
+                            onPress={() => navigation.navigate('QR', { screen: 'ScannerQR' })}
                             style={{ marginRight: 15 }}
                         >
-                           <MaterialCommunityIcons name="qrcode-scan" size={24} color="black" />
+                            <MaterialCommunityIcons name="qrcode-scan" size={24} color="black" />
                         </TouchableOpacity>
                     ),
-                }} />
+                })}
+            />
+
             <Drawer.Screen name="Perfil" component={StackUsuario}
                 options={{
                     drawerIcon: ({ color, size }) => (
@@ -216,7 +218,8 @@ function StackQR() {
 
         >
             <Stack.Screen name='ScreenQR' component={QRLista} />
-             <Stack.Screen name='Informacion' component={DetallesOferta} />
+            <Stack.Screen name='Informacion' component={DetallesOferta} />
+            <Stack.Screen name='ScannerQR' component={ScannerQR} />
 
         </Stack.Navigator>
     )

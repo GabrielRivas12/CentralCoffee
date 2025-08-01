@@ -137,22 +137,22 @@ export default function OfertaFormulario({
               />
             </View>
 
-            <View style={styles.formOfertalibra}> 
-            <InputText
-              ancho='170'
-              NombreLabel='Oferta por libra'
-              Valor={OfertaLibra}
-              onchangetext={setOfertaLibra}
-              placeholder='Ingrese la oferta por libra'
-            />
+            <View style={styles.formOfertalibra}>
+              <InputText
+                ancho='170'
+                NombreLabel='Oferta por libra'
+                Valor={OfertaLibra}
+                onchangetext={setOfertaLibra}
+                placeholder='Ingrese la oferta por libra'
+              />
 
-             </View>
- <Boton
-            nombreB='Publicar'
-            onPress={onSubmit}
-          />
+            </View>
+            <Boton
+              nombreB='Publicar'
+              onPress={onSubmit}
+            />
           </View>
-         
+
         </ScrollView>
       </SafeAreaView>
     </View>
