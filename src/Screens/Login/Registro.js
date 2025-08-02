@@ -1,9 +1,13 @@
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Alert } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import { useState } from 'react';
 import ComboBox from '../../Components/Picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {auth} from '../../Services/BasedeDatos/Firebase';
+
+
 
 export default function Registro() {
 
@@ -13,9 +17,30 @@ export default function Registro() {
     ];
 
     const [nombre, setNombre] = useState('');
+    const [correo, setCorreo] = useState('');
+    const [contrasena, setContrasena] = useState('');
+    const [confirmarContrasena, setConfirmarContrasena] = useState('');
     const [valorSeleccionado, setValorSeleccionado] = useState('');
 
+     const handleRegistro = async () => {
+        if (!correo || !contrasena || !confirmarContrasena || !nombre) {
+            Alert.alert('Campos incompletos', 'Por favor llena todos los campos');
+            return;
+        }
 
+        if (contrasena !== confirmarContrasena) {
+            Alert.alert('Error', 'Las contraseñas no coinciden');
+            return;
+        }
+
+        try {
+            await createUserWithEmailAndPassword(auth, correo, contrasena);
+            Alert.alert('Registro exitoso', 'Usuario creado correctamente');
+            // Aquí puedes redirigir al usuario o limpiar el formulario
+        } catch (error) {
+            Alert.alert('Error al registrar', error.message);
+        }
+    };
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
@@ -26,50 +51,50 @@ export default function Registro() {
                  </SafeAreaView>
 
                 <View style={styles.containerCuerpo}>
-                    <Text style={styles.Titulo}>Crea tu cuenta</Text>
+                <Text style={styles.Titulo}>Crea tu cuenta</Text>
 
-                    <View style={styles.containerInput}>
-                        <InputText
-                            NombreLabel='Nombre de usuario'
-                            Valor={nombre}
-                            onchangetext={setNombre}
-                            placeholder='nombre'
+                <View style={styles.containerInput}>
+                    <InputText
+                        NombreLabel='Nombre de usuario'
+                        Valor={nombre}
+                        onchangetext={setNombre}
+                        placeholder='nombre'
+                    />
+                    <InputText
+                        NombreLabel='Correo'
+                        Valor={correo}
+                        onchangetext={setCorreo}
+                        placeholder='Correo'
+                    />
+                    <InputText
+                        NombreLabel='Contraseña'
+                        Valor={contrasena}
+                        onchangetext={setContrasena}
+                        placeholder='Contraseña'
+                        secureTextEntry
+                    />
+                    <InputText
+                        NombreLabel='Confirme la contraseña'
+                        Valor={confirmarContrasena}
+                        onchangetext={setConfirmarContrasena}
+                        placeholder='Confirme contraseña'
+                        secureTextEntry
+                    />
+                    <ComboBox
+                        NombrePicker="Seleccione su rol"
+                        value={valorSeleccionado}
+                        onValuechange={(itemValue) => setValorSeleccionado(itemValue)}
+                        items={opciones}
+                    />
+                    <View style={{ width: '100%', paddingLeft: 250 }}>
+                        <Boton
+                            nombreB="Crear"
+                            ancho="100"
+                            onPress={handleRegistro}
                         />
-                        <InputText
-                            NombreLabel='Correo'
-                            Valor=''
-                            onchangetext=''
-                            placeholder='Correo'
-                        />
-
-                        <InputText
-                            NombreLabel='Contraseña'
-                            Valor=''
-                            onchangetext=''
-                            placeholder='consr'
-                        />
-
-                        <InputText
-                            NombreLabel='Confirme la contraseña'
-                            Valor=''
-                            onchangetext=''
-                            placeholder='Confirme'
-                        />
-                        <ComboBox
-                            NombrePicker="Seleccione su rol"
-                            value={valorSeleccionado}
-                            onValuechange={(itemValue) => setValorSeleccionado(itemValue)}
-                            items={opciones}
-                        />
-                        <View style={{ width: '100%', paddingLeft: 250 }}>
-                            <Boton
-                                nombreB="Crear"
-                                ancho="100"
-                            />
-                        </View>
                     </View>
                 </View>
-           
+           </View>
         </View>
     );
 }

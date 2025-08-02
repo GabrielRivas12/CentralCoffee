@@ -5,43 +5,35 @@ import { useState, useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import auth from '../../Services/BasedeDatos/Firebase';
+import { auth } from '../../Services/BasedeDatos/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as AuthSession from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
-const redirectUri = "https://auth.expo.io/@gabrielr12/centralcoffee";
 
 export default function Login({ navigation }) {
 
   const [Correo, setCorreo] = useState('');
   const [Contraseña, setContraseña] = useState('');
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '373897650374-v6bbka0uhdodss1itvm3re6bj2hs1lmt.apps.googleusercontent.com',
-    androidClientId: '373897650374-3jtsm00ovu83o7l25gkjl2q5hpkpfek2.apps.googleusercontent.com',
-    webClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',
-    redirectUri,
-    useProxy: true,
+   const [request, response, promptAsync] = Google.useAuthRequest({
+    expoClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',       // solo este es necesario
+    androidClientId: '373897650374-3jtsm00ovu83o7l25gkjl2q5hpkpfek2.apps.googleusercontent.com'
   });
 
-  useEffect(() => {
-    console.log(AuthSession.makeRedirectUri({ useProxy: true }));
+ useEffect(() => {
+  if (response?.type === 'success' && response.authentication) {
+    const { idToken, accessToken } = response.authentication;
+    const credential = GoogleAuthProvider.credential(idToken, accessToken);
+    signInWithCredential(auth, credential)
+      .then(() => navigation.navigate('DrawerNavigate'))
+      .catch(err => {
+        console.error('Firebase signIn error:', err);
+        // Aquí puedes mostrar un alert o mensaje de error al usuario
+      });
+  }
+}, [response]);
 
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
 
-      const credential = GoogleAuthProvider.credential(id_token);
-      signInWithCredential(auth, credential)
-        .then(userCredential => {
-          console.log('Autenticado con:', userCredential.user.email);
-          navigation.navigate('DrawerNavigate');
-        })
-        .catch(err => {
-          console.error('Error en Firexbase:', err);
-        });
-    }
-  }, [response]);
 
 
   return (
@@ -60,7 +52,7 @@ export default function Login({ navigation }) {
         <Text style={styles.Titulo}>Login</Text>
 
         <TouchableOpacity style={styles.button} disabled={!request}
-          onPress={() => promptAsync()}>
+         onPress={() => promptAsync()}>
           <Image
             source={{
               uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png?20230822192911',
