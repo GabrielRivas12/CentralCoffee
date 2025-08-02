@@ -57,7 +57,7 @@ function DrawerNavigate({ navigation }) {
 
                 const showHeader =
                     (route.name === 'Ofertas' && (routeName === 'ScreenOfertas' || routeName === '')) ||
-                    (route.name === 'Gestionar Ofertas' && (routeName === 'ScreenEditar' || routeName === '')) ||
+                    (route.name === 'Gestionar ofertas' && (routeName === 'ScreenEditar' || routeName === '')) ||
                     (route.name === 'IA' && (routeName === 'Asistente' || routeName === '')) ||
                     (route.name === 'Mapa' && (routeName === 'ScreenMapa' || routeName === '')) ||
                     (route.name === 'Perfil' && (routeName === 'ScreenUsuario' || routeName === '')) ||
@@ -83,22 +83,10 @@ function DrawerNavigate({ navigation }) {
                         <Feather name="tag" size={15} color={color} />,
                 }}
             />
-            <Drawer.Screen name="Gestionar Ofertas" component={StackEditar}
+            <Drawer.Screen name="Gestionar ofertas" component={StackEditar}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="edit" size={15} color={color} />
-                    )
-                }} />
-            <Drawer.Screen name="IA" component={Asistente}
-                options={{
-                    drawerIcon: ({ color, size }) => (
-                        <Feather name="cpu" size={15} color={color} />
-                    )
-                }} />
-            <Drawer.Screen name="Mapa" component={StackMapa}
-                options={{
-                    drawerIcon: ({ color, size }) => (
-                        <Feather name="map" size={15} color={color} />
                     )
                 }} />
 
@@ -119,6 +107,18 @@ function DrawerNavigate({ navigation }) {
                     ),
                 })}
             />
+            <Drawer.Screen name="Mapa" component={StackMapa}
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <Feather name="map" size={15} color={color} />
+                    )
+                }} />
+            <Drawer.Screen name="IA" component={Asistente}
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <Feather name="cpu" size={15} color={color} />
+                    )
+                }} />
 
             <Drawer.Screen name="Perfil" component={StackUsuario}
                 options={{
