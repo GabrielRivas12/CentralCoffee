@@ -47,6 +47,7 @@ export default function CrearOferta({ navigation }) {
   const [FechaCosecha, setFechaCosecha] = useState('');
   const [CantidadProduccion, setCantidadProduccion] = useState('');
   const [OfertaLibra, setOfertaLibra] = useState('');
+  const [Estado, setEstado] = useState('Activo');
 
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -145,7 +146,8 @@ export default function CrearOferta({ navigation }) {
       NfechaCosecha: FechaCosecha,
       NcantidadProduccion: CantidadProduccion,
       NofertaLibra: OfertaLibra,
-      Nimagen: urlImagen
+      Nimagen: urlImagen,
+      estado: Estado
     };
 
     if (ofertaEditar?.id) {

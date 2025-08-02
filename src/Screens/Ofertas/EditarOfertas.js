@@ -5,14 +5,15 @@ import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 import OfertasCard from '../../Containers/OfertasCard';
 import Feather from '@expo/vector-icons/Feather';
-import Octicons from '@expo/vector-icons/Octicons';
+import { supabase } from '../../Services/BasedeDatos/SupaBase';
+
 
 import {
     collection,
     getFirestore,
     query, doc,
     setDoc, getDocs, getDoc,
-    deleteDoc
+    deleteDoc, updateDoc
 } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
@@ -38,27 +39,111 @@ export default function EditarOfertas({ navigation }) {
         setOfertass(d);
     }
 
-    const eliminarOferta = (id) => {
+    const eliminarOferta = async (id) => {
+    Alert.alert(
+        'Confirmar eliminación',
+        '¿Estás seguro de que deseas eliminar el registro?',
+        [
+            {
+                text: 'Cancelar',
+                style: 'cancel',
+            },
+            {
+                text: 'Eliminar',
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                        // 1. Obtener datos del documento para acceder a la URL de la imagen
+                        const docRef = doc(db, "oferta", id);
+                        const ofertaSnap = await getDoc(docRef);
+                        const ofertaData = ofertaSnap.data();
+
+                        if (ofertaData?.Nimagen) {
+                            const imageUrl = ofertaData.Nimagen;
+
+                            // Suponiendo que es una URL pública tipo:
+                            // https://<tu-proyecto>.supabase.co/storage/v1/object/public/file/nombre.jpg
+
+                            // 2. Extraer ruta relativa al bucket
+                            const pathStart = imageUrl.indexOf('/file/') + 6; // 6 para saltar "/file/"
+                            const filePath = imageUrl.substring(pathStart).split('?')[0]; // Elimina query params
+
+                            // 3. Eliminar del bucket "file"
+                            const { error } = await supabase
+                                .storage
+                                .from('file')
+                                .remove([filePath]);
+
+                            if (error) {
+                                console.error('Error al eliminar imagen de Supabase:', error.message);
+                            }
+                        }
+
+                        // 4. Eliminar el documento en Firestore
+                        await deleteDoc(docRef);
+                        await LeerDatos();
+                    } catch (error) {
+                        console.error('Error al eliminar la oferta:', error.message);
+                        Alert.alert('Error', 'No se pudo eliminar la oferta correctamente.');
+                    }
+                }
+            },
+        ],
+        { cancelable: true }
+    );
+};
+
+    const verificarOferta = (oferta) => {
+        if (!oferta?.id) {
+            Alert.alert('Error', 'No se encontró la oferta para verificar.');
+            return;
+        }
+
         Alert.alert(
-            'Confirmar eliminacion',
-            '¿Estas seguro de que deseas eliminar el registro?',
+            'Cambiar estado',
+            `El estado actual es "${oferta.estado}". ¿Qué quieres hacer?`,
             [
+                {
+                    text: 'Marcar como activo',
+                    onPress: async () => {
+                        try {
+                            await updateDoc(doc(db, 'oferta', oferta.id), {
+                                estado: 'Activo',
+                            });
+                            Alert.alert('Estado actualizado', 'La oferta ahora está "activo".');
+                            await LeerDatos();
+                        } catch (error) {
+                            console.error('Error actualizando estado a activo:', error);
+                            Alert.alert('Error', 'No se pudo actualizar el estado.');
+                        }
+                    },
+                },
+                {
+                    text: 'Marcar como desactivado',
+                    onPress: async () => {
+                        try {
+                            await updateDoc(doc(db, 'oferta', oferta.id), {
+                                estado: 'Desactivado',
+                            });
+                            Alert.alert('Estado actualizado', 'La oferta ahora está "desactivado".');
+                            await LeerDatos();
+                        } catch (error) {
+                            console.error('Error actualizando estado a desactivado:', error);
+                            Alert.alert('Error', 'No se pudo actualizar el estado.');
+                        }
+                    },
+                },
                 {
                     text: 'Cancelar',
                     style: 'cancel',
                 },
-                {
-                    text: 'Eliminar',
-                    style: 'destructive',
-                    onPress: async () => {
-                        await deleteDoc(doc(db, "oferta", id));
-                        await LeerDatos();
-                    }
-                },
             ],
             { cancelable: true }
         );
-    }
+    };
+
+
+
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
@@ -77,9 +162,13 @@ export default function EditarOfertas({ navigation }) {
                                 navigation={navigation}
                             />
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('Crear', { oferta: item })}
+                                onPress={() => verificarOferta(item)}
                                 style={styles.botonverificar}      >
-                                <Octicons name="check-circle-fill" size={24} color="green" />
+                                {item.estado === 'Activo' ? (
+                                    <Feather name="check-circle" size={24} color="green" />
+                                ) : (
+                                    <Feather name="x-circle" size={24} color="gray" />
+                                )}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => navigation.navigate('Crear', { oferta: item })}

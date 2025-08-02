@@ -49,34 +49,45 @@ export default function QRLista({ navigation }) {
   }
 
   // Verificar si ya existe en Supabase
-  const generarYSubirQR = async (oferta) => {
-    const nombreQR = `${oferta.id}.png`;
+ const generarYSubirQR = async (oferta) => {
+  const nombreQR = `${oferta.id}.png`;
 
-    const { data: existingFile } = await supabase
-      .storage
-      .from('qr')
-      .list('', { search: nombreQR });
+  // Verificar si ya existe el QR en Supabase
+  const { data: existingFile } = await supabase
+    .storage
+    .from('qr')
+    .list('', { search: nombreQR });
 
-    if (existingFile?.length > 0) {
-  const { data: urlData } = supabase.storage.from('qr').getPublicUrl(nombreQR);
-  
-  setQrImageUrl(urlData.publicUrl);  // ✅ Mostrar el QR existente
-  setModalVisible(true);             // ✅ Abrir el modal con el QR
-  return;
-}
+  if (existingFile?.length > 0) {
+    const { data: urlData } = supabase.storage.from('qr').getPublicUrl(nombreQR);
+    setQrImageUrl(urlData.publicUrl);
+    setModalVisible(true);
+    return;
+  }
 
-
-    setQrData({
-      oferta,
-      nombreQR,
-      json: JSON.stringify({
-        id: oferta.id,
-        titulo: oferta.Ntitulo,
-        precio: oferta.NofertaLibra,
-        imagen: oferta.Nimagen,
-      })
-    });
+  // ✅ Incluye todos los campos que necesitas codificar
+  const fullQRData = {
+    id: oferta.id,
+    titulo: oferta.Ntitulo,
+    tipoCafe: oferta.NtipoCafe,
+    variedad: oferta.Nvariedad,
+    estadoGrano: oferta.NestadoGrano,
+    clima: oferta.Nclima,
+    altura: oferta.Naltura,
+    procesoCorte: oferta.NprocesoCorte,
+    fechaCosecha: oferta.NfechaCosecha,
+    cantidadProduccion: oferta.NcantidadProduccion,
+    ofertaLibra: oferta.NofertaLibra,
+    imagen: oferta.Nimagen,
   };
+
+  setQrData({
+    oferta,
+    nombreQR,
+    json: JSON.stringify(fullQRData), // ✅ Aquí va toda la info codificada en el QR
+  });
+};
+
 
   useEffect(() => {
     const capturarYSubir = async () => {
@@ -149,7 +160,18 @@ export default function QRLista({ navigation }) {
           ))}
 
         </ScrollView>
-
+{qrData && (
+  <View
+    ref={qrRef}
+    collapsable={false}
+    style={{ position: 'absolute', top: -9999, left: -9999 }} // Oculto fuera de pantalla
+  >
+    <QRCode
+      value={qrData.json}
+      size={200}
+    />
+  </View>
+)}
           <Modal
   visible={modalVisible}
   transparent={true}

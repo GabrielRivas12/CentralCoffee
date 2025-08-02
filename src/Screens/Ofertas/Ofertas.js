@@ -7,7 +7,6 @@ import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Octicons from '@expo/vector-icons/Octicons';
-import Feather from '@expo/vector-icons/Feather';
 
 
 import {
@@ -33,16 +32,18 @@ export default function Ofertas({ navigation }) {
   const [valorBusqueda, setValorBusqueda] = useState('');
 
 
-  const LeerDatos = async () => {
-    const q = query(collection(db, "oferta"));
-    const querySnapshot = await getDocs(q);
-    const d = [];
-    querySnapshot.forEach((doc) => {
-      const datosBD = doc.data();
+ const LeerDatos = async () => {
+  const q = query(collection(db, "oferta"));
+  const querySnapshot = await getDocs(q);
+  const d = [];
+  querySnapshot.forEach((doc) => {
+    const datosBD = doc.data();
+    if (datosBD.estado === 'Activo') {
       d.push(datosBD);
-    });
-    setOfertass(d);
-  }
+    }
+  });
+  setOfertass(d);
+}
 
   const buscarOferta = async (valorbuscado) => {
     if (!valorbuscado || valorbuscado.trim() === '') return;
