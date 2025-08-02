@@ -44,7 +44,7 @@ const handleLogin = async () => {
 
   try {
     await signInWithEmailAndPassword(auth, Correo, Contraseña);
-    // No navegues aquí, solo espera que onAuthStateChanged cambie el estado
+    // Espera que onAuthStateChanged cambie el estado
   } catch (error) {
     Alert.alert('Error', 'Correo o contraseña incorrectos');
   }

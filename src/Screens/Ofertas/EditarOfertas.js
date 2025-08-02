@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, StatusBar, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
@@ -6,11 +6,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import OfertasCard from '../../Containers/OfertasCard';
 import Feather from '@expo/vector-icons/Feather';
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
+import { onAuthStateChanged } from 'firebase/auth';
 
-import { getAuth } from 'firebase/auth';
 
-const auth = getAuth(appFirebase);
-const user = auth.currentUser;
+import { auth } from '../../Services/BasedeDatos/Firebase';
 import {
     collection,
     getFirestore,
@@ -23,14 +22,30 @@ const db = getFirestore(appFirebase);
 
 export default function EditarOfertas({ navigation }) {
 
-    useFocusEffect(
-        React.useCallback(() => {
-            LeerDatos();
-        }, [])
-    );
+   useFocusEffect(
+  React.useCallback(() => {
+    if (user) {
+      LeerDatos();
+    }
+  }, [user])
+);
+
 
     const [Ofertass, setOfertass] = useState([]);
+const [user, setUser] = useState(null);
 
+
+  useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
+            if (usuarioFirebase) {
+                setUser(usuarioFirebase);
+            } else {
+                setUser(null);
+            }
+        });
+
+        return () => unsubscribe(); // limpiar listener al desmontar
+    }, []);
     const LeerDatos = async () => {
   if (!user) {
     // No hay usuario logueado, puedes manejarlo como quieras
