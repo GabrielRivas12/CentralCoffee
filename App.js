@@ -1,18 +1,41 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import Navegacion from './Navegacion';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './src/Services/BasedeDatos/Firebase';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-enableScreens(); 
+enableScreens();
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setCheckingAuth(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  if (checkingAuth) {
+    return (
+      <SafeAreaProvider>
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#ED6D4A" />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <SafeAreaProvider>
-      <Navegacion />
+      <Navegacion user={user} />
     </SafeAreaProvider>
   );
-
 }
 
 const styles = StyleSheet.create({

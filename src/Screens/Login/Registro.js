@@ -5,11 +5,20 @@ import { useState } from 'react';
 import ComboBox from '../../Components/Picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import {auth} from '../../Services/BasedeDatos/Firebase';
+import { auth } from '../../Services/BasedeDatos/Firebase';
+import appFirebase from '../../Services/BasedeDatos/Firebase';
 
+import {
+    collection,
+    getFirestore,
+    query, doc,
+    setDoc, getDocs, getDoc,
+    deleteDoc, addDoc
+} from 'firebase/firestore';
 
+const db = getFirestore(appFirebase);
 
-export default function Registro() {
+export default function Registro({ navigation}) {
 
     const opciones = [
         { label: 'Comerciante', value: '1' },
@@ -22,9 +31,18 @@ export default function Registro() {
     const [confirmarContrasena, setConfirmarContrasena] = useState('');
     const [valorSeleccionado, setValorSeleccionado] = useState('');
 
-     const handleRegistro = async () => {
-        if (!correo || !contrasena || !confirmarContrasena || !nombre) {
-            Alert.alert('Campos incompletos', 'Por favor llena todos los campos');
+    const limpiarFormulario = () => {
+        setNombre('');
+        setCorreo('');
+        setContrasena('');
+        setConfirmarContrasena('');
+        setValorSeleccionado('');
+    };
+
+
+    const handleRegistro = async () => {
+        if (!correo || !contrasena || !confirmarContrasena || !nombre || !valorSeleccionado) {
+            Alert.alert('Campos incompletos', 'Por favor llena todos los campos y selecciona tu rol');
             return;
         }
 
@@ -34,9 +52,22 @@ export default function Registro() {
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, correo, contrasena);
+            const userCredential = await createUserWithEmailAndPassword(auth, correo, contrasena);
+            const user = userCredential.user;
+
+            await setDoc(doc(db, "usuarios", user.uid), {
+                nombre: nombre,
+                correo: correo,
+                rol: valorSeleccionado === '1' ? 'Comerciante' : 'Comprador',
+                uid: user.uid
+            });
+
             Alert.alert('Registro exitoso', 'Usuario creado correctamente');
-            // Aquí puedes redirigir al usuario o limpiar el formulario
+            limpiarFormulario();
+            navigation.goBack();
+            // Si usas navegación:
+            // navigation.navigate('Login');
+
         } catch (error) {
             Alert.alert('Error al registrar', error.message);
         }
@@ -48,9 +79,9 @@ export default function Registro() {
                 <View style={styles.containerBanner}>
 
                 </View>
-                 </SafeAreaView>
+            </SafeAreaView>
 
-                <View style={styles.containerCuerpo}>
+            <View style={styles.containerCuerpo}>
                 <Text style={styles.Titulo}>Crea tu cuenta</Text>
 
                 <View style={styles.containerInput}>
@@ -94,7 +125,7 @@ export default function Registro() {
                         />
                     </View>
                 </View>
-           </View>
+            </View>
         </View>
     );
 }

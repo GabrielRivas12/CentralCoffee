@@ -7,15 +7,9 @@ import { useEffect } from 'react';
 
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
-
 import * as FileSystem from 'expo-file-system'
-
 import OfertaFormulario from '../../Containers/OfertaFormulario';
-
 import { decode as atob } from 'base-64';
-
-
-
 
 
 import {

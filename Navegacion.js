@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, route } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -26,14 +26,21 @@ import CrearMarcador from './src/Screens/Map/CrearMarcador';
 import EditarOfertas from './src/Screens/Ofertas/EditarOfertas';
 import ScannerQR from './src/Screens/QR/ScannerQR';
 
-function Navegacion() {
+function Navegacion({ user }) {
     return (
         <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Registro" component={Registro} />
-                <Stack.Screen name="DrawerNavigate" component={DrawerNavigate} />
-            </Stack.Navigator>
+            {user ? (
+                // Usuario autenticado: muestra Drawer con app
+                <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="DrawerNavigate">
+                    <Stack.Screen name="DrawerNavigate" component={DrawerNavigate} />
+                </Stack.Navigator>
+            ) : (
+                // Usuario no autenticado: muestra Login y Registro
+                <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
+                    <Stack.Screen name="Login" component={Login} />
+                    <Stack.Screen name="Registro" component={Registro} />
+                </Stack.Navigator>
+            )}
         </NavigationContainer>
     );
 }

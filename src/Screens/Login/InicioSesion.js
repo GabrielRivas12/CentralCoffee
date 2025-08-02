@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar, Alert } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import { useState, useEffect } from 'react';
@@ -7,6 +7,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../Services/BasedeDatos/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -33,6 +35,20 @@ export default function Login({ navigation }) {
   }
 }, [response]);
 
+
+const handleLogin = async () => {
+  if (!Correo || !Contraseña) {
+    Alert.alert('Campos incompletos', 'Por favor ingresa tu correo y contraseña');
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, Correo, Contraseña);
+    // No navegues aquí, solo espera que onAuthStateChanged cambie el estado
+  } catch (error) {
+    Alert.alert('Error', 'Correo o contraseña incorrectos');
+  }
+};
 
 
 
@@ -85,9 +101,10 @@ export default function Login({ navigation }) {
 
           <View style={styles.vboton}>
             <Boton
-              nombreB='Iniciar'
-              onPress={() => navigation.navigate('DrawerNavigate')}
-            />
+  nombreB='Iniciar'
+  onPress={handleLogin}
+/>
+
           </View>
           <Boton
             nombreB='Registrarse'
