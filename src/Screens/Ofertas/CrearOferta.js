@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useRoute } from '@react-navigation/native';
 import { useEffect } from 'react';
+import { getAuth } from 'firebase/auth';
 
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
@@ -11,7 +12,7 @@ import * as FileSystem from 'expo-file-system'
 import OfertaFormulario from '../../Containers/OfertaFormulario';
 import { decode as atob } from 'base-64';
 
-
+const auth = getAuth(appFirebase);
 import {
   collection,
   getFirestore,
@@ -129,6 +130,9 @@ export default function CrearOferta({ navigation }) {
       urlImagen = subida;
     }
 
+    const user = auth.currentUser;  // Obtiene el usuario actual
+  const userId = user ? user.uid : null; // Extrae el uid o null si no hay usuario
+
     const nuevaOferta = {
       Ntitulo: Titulo,
       NtipoCafe: TipoCafe,
@@ -141,7 +145,8 @@ export default function CrearOferta({ navigation }) {
       NcantidadProduccion: CantidadProduccion,
       NofertaLibra: OfertaLibra,
       Nimagen: urlImagen,
-      estado: Estado
+      estado: Estado,
+       userId: userId,
     };
 
     if (ofertaEditar?.id) {

@@ -7,13 +7,16 @@ import OfertasCard from '../../Containers/OfertasCard';
 import Feather from '@expo/vector-icons/Feather';
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
 
+import { getAuth } from 'firebase/auth';
 
+const auth = getAuth(appFirebase);
+const user = auth.currentUser;
 import {
     collection,
     getFirestore,
     query, doc,
     setDoc, getDocs, getDoc,
-    deleteDoc, updateDoc
+    deleteDoc, updateDoc, where
 } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
@@ -29,15 +32,25 @@ export default function EditarOfertas({ navigation }) {
     const [Ofertass, setOfertass] = useState([]);
 
     const LeerDatos = async () => {
-        const q = query(collection(db, "oferta"));
-        const querySnapshot = await getDocs(q);
-        const d = [];
-        querySnapshot.forEach((doc) => {
-            const datosBD = doc.data();
-            d.push({ id: doc.id, ...datosBD });
-        });
-        setOfertass(d);
-    }
+  if (!user) {
+    // No hay usuario logueado, puedes manejarlo como quieras
+    setOfertass([]);
+    return;
+  }
+
+  const q = query(
+    collection(db, "oferta"),
+    where("userId", "==", user.uid)  // Solo las ofertas del usuario actual
+  );
+
+  const querySnapshot = await getDocs(q);
+  const d = [];
+  querySnapshot.forEach((doc) => {
+    const datosBD = doc.data();
+    d.push({ id: doc.id, ...datosBD });
+  });
+  setOfertass(d);
+};
 
     const eliminarOferta = async (id) => {
     Alert.alert(

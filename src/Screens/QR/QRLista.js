@@ -12,12 +12,14 @@ import * as FileSystem from 'expo-file-system';
 
 
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
+import { getAuth } from 'firebase/auth';
+const auth = getAuth(appFirebase);
 import {
   collection,
   getFirestore,
   query, doc,
   setDoc, getDocs, getDoc,
-  deleteDoc
+  deleteDoc, where
 } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
@@ -38,15 +40,25 @@ export default function QRLista({ navigation }) {
 
 
   const LeerDatos = async () => {
-    const q = query(collection(db, "oferta"));
-    const querySnapshot = await getDocs(q);
-    const d = [];
-    querySnapshot.forEach((doc) => {
-      const datosBD = doc.data();
-      d.push({ id: doc.id, ...datosBD });
-    });
-    setOfertass(d);
+  const user = auth.currentUser;
+  if (!user) {
+    setOfertass([]);
+    return;
   }
+
+  const q = query(
+    collection(db, "oferta"),
+    where("userId", "==", user.uid) // 🔍 Solo las ofertas del usuario actual
+  );
+
+  const querySnapshot = await getDocs(q);
+  const d = [];
+  querySnapshot.forEach((doc) => {
+    const datosBD = doc.data();
+    d.push({ id: doc.id, ...datosBD });
+  });
+  setOfertass(d);
+};
 
   // Verificar si ya existe en Supabase
  const generarYSubirQR = async (oferta) => {
