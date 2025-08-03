@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
@@ -54,7 +55,7 @@ const Stack = createStackNavigator();
 
 const Drawer = createDrawerNavigator();
 
-function DrawerNavigate({ navigation }) {
+function DrawerNavigate() {
     return (
         <Drawer.Navigator
             initialRouteName='Ofertas'
@@ -156,6 +157,8 @@ function StackOfertas() {
 
             screenOptions={({ route }) => ({
                 headerShown: route.name !== 'ScreenOfertas',
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                gestureDirection: 'horizontal',
                 headerStyle: {
                     backgroundColor: '#ED6D4A', // color header
                 },
@@ -247,25 +250,6 @@ function StackUsuario() {
             <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
             <Stack.Screen name='Editar Informacion' component={EditarPerfil} />
             <Stack.Screen name='Mi Perfil' component={Perfil} />
-
-        </Stack.Navigator>
-    )
-}
-
-
-function Stacklogin() {
-    return (
-        <Stack.Navigator initialRouteName='ScreenLogin'
-
-            screenOptions={({ route }) => ({
-                headerShown: route.name !== 'ScreenLogin',
-                headerStyle: {
-                    backgroundColor: '#ED6D4A', // color header
-                },
-            })}
-
-        >
-            <Stack.Screen name='ScreenLogin' component={Login} />
 
         </Stack.Navigator>
     )

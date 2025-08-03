@@ -1,5 +1,5 @@
 import React, { Component, useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal, Image, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OfertasCard from '../../Containers/OfertasCard';
 import { useFocusEffect } from '@react-navigation/native';
@@ -9,6 +9,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
+import { decode as atob } from 'base-64';
+
 
 
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
@@ -64,6 +66,7 @@ export default function QRLista({ navigation }) {
  const generarYSubirQR = async (oferta) => {
   const nombreQR = `${oferta.id}.png`;
 
+
   // Verificar si ya existe el QR en Supabase
   const { data: existingFile } = await supabase
     .storage
@@ -106,7 +109,7 @@ export default function QRLista({ navigation }) {
       if (!qrData || !qrRef.current) return;
 
       try {
-        const uri = await captureRef(qrRef, {
+        const uri = await captureRef(qrRef.current, {
           format: 'png',
           quality: 1,
         });
@@ -132,8 +135,8 @@ export default function QRLista({ navigation }) {
         }
 
         const { data: urlData } = supabase.storage.from('qr').getPublicUrl(qrData.nombreQR);
-        setQrImageUrl(urlData.publicUrl); // ✅ Guarda la URL para mostrar el QR
-        setModalVisible(true); // ✅ Mostrar el modal
+        setQrImageUrl(urlData.publicUrl); 
+        setModalVisible(true); 
       } catch (err) {
         console.log('Error al capturar y subir QR:', err);
       } finally {
@@ -164,7 +167,7 @@ export default function QRLista({ navigation }) {
                 navigation={navigation}
               />
               <TouchableOpacity
-                onPress={() => generarYSubirQR(item)}
+                onPress={() => generarYSubirQR(item) }
                 style={styles.botonCrearQR}>
                 <Ionicons name="qr-code-outline" size={24} color="black" />
               </TouchableOpacity>
@@ -187,7 +190,7 @@ export default function QRLista({ navigation }) {
           <Modal
   visible={modalVisible}
   transparent={true}
-  animationType="slide"
+  animationType="fade"
   onRequestClose={() => setModalVisible(false)}
 >
   <View style={styles.modalOverlay}>
@@ -201,7 +204,8 @@ export default function QRLista({ navigation }) {
         />
       )}
       <TouchableOpacity
-        onPress={() => setModalVisible(false)}
+         onPress={() => {
+    setModalVisible(false);}}
         style={styles.modalButton}
       >
         <Text style={styles.modalButtonText}>Cerrar</Text>

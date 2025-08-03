@@ -14,17 +14,14 @@ export default function PerfilUsuario({ navigation }) {
   const [darkMode, setDarkMode] = useState(false);
   const toggleTheme = () => setDarkMode(prev => !prev);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }], // Cambia esto si tu pantalla de login tiene otro nombre
-      });
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-    }
-  };
+ const handleLogout = async () => {
+  try {
+    await signOut(auth); // Esto ya dispara onAuthStateChanged
+    // navigation.reset(...) ❌ ya no lo necesitas
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+  }
+};
 
 
   return (
