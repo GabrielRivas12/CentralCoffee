@@ -1,9 +1,9 @@
-import React, { Component, useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal, Image, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Image, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OfertasCard from '../../Containers/OfertasCard';
 import { useFocusEffect } from '@react-navigation/native';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
+
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import QRCode from 'react-native-qrcode-svg';
@@ -11,9 +11,8 @@ import { captureRef } from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
 import { decode as atob } from 'base-64';
 
-
-
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
+import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { getAuth } from 'firebase/auth';
 const auth = getAuth(appFirebase);
 import {
@@ -29,10 +28,10 @@ const db = getFirestore(appFirebase);
 export default function QRLista({ navigation }) {
 
   const [Ofertass, setOfertass] = useState([]);
-  const qrRef = useRef();
-  const [qrData, setQrData] = useState(null);
   const [qrImageUrl, setQrImageUrl] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [qrRender, setQrRender] = useState(null);
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -42,78 +41,69 @@ export default function QRLista({ navigation }) {
 
 
   const LeerDatos = async () => {
-  const user = auth.currentUser;
-  if (!user) {
-    setOfertass([]);
-    return;
-  }
+    const user = auth.currentUser;
+    if (!user) {
+      setOfertass([]);
+      return;
+    }
 
-  const q = query(
-    collection(db, "oferta"),
-    where("userId", "==", user.uid) // 🔍 Solo las ofertas del usuario actual
-  );
+    const q = query(
+      collection(db, "oferta"),
+      where("userId", "==", user.uid) // 🔍 Solo las ofertas del usuario actual
+    );
 
-  const querySnapshot = await getDocs(q);
-  const d = [];
-  querySnapshot.forEach((doc) => {
-    const datosBD = doc.data();
-    d.push({ id: doc.id, ...datosBD });
-  });
-  setOfertass(d);
-};
-
-  // Verificar si ya existe en Supabase
- const generarYSubirQR = async (oferta) => {
-  const nombreQR = `${oferta.id}.png`;
-
-
-  // Verificar si ya existe el QR en Supabase
-  const { data: existingFile } = await supabase
-    .storage
-    .from('qr')
-    .list('', { search: nombreQR });
-
-  if (existingFile?.length > 0) {
-    const { data: urlData } = supabase.storage.from('qr').getPublicUrl(nombreQR);
-    setQrImageUrl(urlData.publicUrl);
-    setModalVisible(true);
-    return;
-  }
-
-  // ✅ Incluye todos los campos que necesitas codificar
-  const fullQRData = {
-    id: oferta.id,
-    titulo: oferta.Ntitulo,
-    tipoCafe: oferta.NtipoCafe,
-    variedad: oferta.Nvariedad,
-    estadoGrano: oferta.NestadoGrano,
-    clima: oferta.Nclima,
-    altura: oferta.Naltura,
-    procesoCorte: oferta.NprocesoCorte,
-    fechaCosecha: oferta.NfechaCosecha,
-    cantidadProduccion: oferta.NcantidadProduccion,
-    ofertaLibra: oferta.NofertaLibra,
-    imagen: oferta.Nimagen,
+    const querySnapshot = await getDocs(q);
+    const d = [];
+    querySnapshot.forEach((doc) => {
+      const datosBD = doc.data();
+      d.push({ id: doc.id, ...datosBD });
+    });
+    setOfertass(d);
   };
 
-  setQrData({
-    oferta,
-    nombreQR,
-    json: JSON.stringify(fullQRData), // ✅ Aquí va toda la info codificada en el QR
-  });
-};
+  // Verificar si ya existe en Supabase
+  const generarYSubirQR = async (oferta) => {
+    const nombreQR = `${oferta.id}.png`;
 
+    // Verificar si ya existe el QR en Supabase
+    const { data: existingFile } = await supabase
+      .storage
+      .from('qr')
+      .list('', { search: nombreQR });
 
-  useEffect(() => {
-    const capturarYSubir = async () => {
-      if (!qrData || !qrRef.current) return;
+    if (existingFile?.length > 0) {
+      const { data: urlData } = supabase.storage.from('qr').getPublicUrl(nombreQR);
+      setQrImageUrl(urlData.publicUrl);
+      setModalVisible(true);
+      return;
+    }
 
+    // --- Crear QR invisible en un contenedor temporal ---
+    const fullQRData = {
+      id: oferta.id,
+      titulo: oferta.Ntitulo,
+      tipoCafe: oferta.NtipoCafe,
+      variedad: oferta.Nvariedad,
+      estadoGrano: oferta.NestadoGrano,
+      clima: oferta.Nclima,
+      altura: oferta.Naltura,
+      procesoCorte: oferta.NprocesoCorte,
+      fechaCosecha: oferta.NfechaCosecha,
+      cantidadProduccion: oferta.NcantidadProduccion,
+      ofertaLibra: oferta.NofertaLibra,
+      imagen: oferta.Nimagen,
+    };
+
+    const qrJson = JSON.stringify(fullQRData);
+    const tempRef = React.createRef();
+
+    // Crear una promesa para esperar la renderización
+    const onRendered = async () => {
       try {
-        const uri = await captureRef(qrRef.current, {
+        const uri = await captureRef(tempRef.current, {
           format: 'png',
           quality: 1,
         });
-
         const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
         const binaryString = atob(base64);
         const len = binaryString.length;
@@ -124,7 +114,7 @@ export default function QRLista({ navigation }) {
 
         const { error: uploadError } = await supabase.storage
           .from('qr')
-          .upload(qrData.nombreQR, bytes, {
+          .upload(nombreQR, bytes, {
             contentType: 'image/png',
             upsert: false,
           });
@@ -134,18 +124,33 @@ export default function QRLista({ navigation }) {
           return;
         }
 
-        const { data: urlData } = supabase.storage.from('qr').getPublicUrl(qrData.nombreQR);
-        setQrImageUrl(urlData.publicUrl); 
-        setModalVisible(true); 
+        const { data: urlData } = supabase.storage.from('qr').getPublicUrl(nombreQR);
+        setQrImageUrl(urlData.publicUrl);
+        setModalVisible(true);
+        setQrRender(null); // Limpia el render temporal una vez hecho
+
       } catch (err) {
         console.log('Error al capturar y subir QR:', err);
-      } finally {
-        setQrData(null); // Limpiar para evitar recapturas
       }
     };
 
-    capturarYSubir();
-  }, [qrData]);
+
+    // Render temporalmente fuera del árbol principal
+    const TempQRRenderer = () => {
+      useEffect(() => {
+        onRendered(); // Ejecuta captura y subida una vez montado
+      }, []);
+
+      return (
+        <View ref={tempRef} collapsable={false} style={{ position: 'absolute', top: -1000, left: -1000 }}>
+          <QRCode value={qrJson} size={200} />
+        </View>
+      );
+    };
+
+    // Forzar renderizado temporal del QR dentro del componente principal
+    setQrRender(<TempQRRenderer />);
+  };
 
 
 
@@ -167,7 +172,7 @@ export default function QRLista({ navigation }) {
                 navigation={navigation}
               />
               <TouchableOpacity
-                onPress={() => generarYSubirQR(item) }
+                onPress={() => generarYSubirQR(item)}
                 style={styles.botonCrearQR}>
                 <Ionicons name="qr-code-outline" size={24} color="black" />
               </TouchableOpacity>
@@ -175,44 +180,35 @@ export default function QRLista({ navigation }) {
           ))}
 
         </ScrollView>
-{qrData && (
-  <View
-    ref={qrRef}
-    collapsable={false}
-    style={{ position: 'absolute', top: -9999, left: -9999 }} // Oculto fuera de pantalla
-  >
-    <QRCode
-      value={qrData.json}
-      size={200}
-    />
-  </View>
-)}
-          <Modal
-  visible={modalVisible}
-  transparent={true}
-  animationType="fade"
-  onRequestClose={() => setModalVisible(false)}
->
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Código QR generado</Text>
-      {qrImageUrl && (
-        <Image
-          source={{ uri: qrImageUrl }}
-          style={{ width: 200, height: 200 }}
-          resizeMode="contain"
-        />
-      )}
-      <TouchableOpacity
-         onPress={() => {
-    setModalVisible(false);}}
-        style={styles.modalButton}
-      >
-        <Text style={styles.modalButtonText}>Cerrar</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+        {qrRender}
+
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Código QR generado</Text>
+              {qrImageUrl && (
+                <Image
+                  source={{ uri: qrImageUrl }}
+                  style={{ width: 200, height: 200 }}
+                  resizeMode="contain"
+                />
+              )}
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                }}
+                style={styles.modalButton}
+              >
+                <Text style={styles.modalButtonText}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
       </SafeAreaView>
     </View>
@@ -232,30 +228,30 @@ const styles = StyleSheet.create({
   },
 
   modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0,0,0,0.5)',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-modalContent: {
-  backgroundColor: 'white',
-  borderRadius: 10,
-  padding: 20,
-  alignItems: 'center',
-},
-modalTitle: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  marginBottom: 10,
-},
-modalButton: {
-  marginTop: 15,
-  padding: 10,
-  backgroundColor: '#007AFF',
-  borderRadius: 5,
-},
-modalButtonText: {
-  color: 'white',
-  fontWeight: 'bold',
-},
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalButton: {
+    marginTop: 15,
+    padding: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
