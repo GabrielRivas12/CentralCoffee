@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar, Alert, Modal, TextInput } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../Services/BasedeDatos/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 
 WebBrowser.maybeCompleteAuthSession();
@@ -17,43 +18,66 @@ export default function Login({ navigation }) {
   const [Correo, setCorreo] = useState('');
   const [Contraseña, setContraseña] = useState('');
 
-   const [request, response, promptAsync] = Google.useAuthRequest({
+  const [modalVisible, setModalVisible] = useState(false);
+  const [correoReset, setCorreoReset] = useState('');
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',       // solo este es necesario
     androidClientId: '373897650374-3jtsm00ovu83o7l25gkjl2q5hpkpfek2.apps.googleusercontent.com'
   });
 
- useEffect(() => {
-  if (response?.type === 'success' && response.authentication) {
-    const { idToken, accessToken } = response.authentication;
-    const credential = GoogleAuthProvider.credential(idToken, accessToken);
-    signInWithCredential(auth, credential)
-      .then(() => navigation.navigate('DrawerNavigate'))
-      .catch(err => {
-        console.error('Firebase signIn error:', err);
-        // Aquí puedes mostrar un alert o mensaje de error al usuario
-      });
-  }
-}, [response]);
+  useEffect(() => {
+    if (response?.type === 'success' && response.authentication) {
+      const { idToken, accessToken } = response.authentication;
+      const credential = GoogleAuthProvider.credential(idToken, accessToken);
+      signInWithCredential(auth, credential)
+        .then(() => navigation.navigate('DrawerNavigate'))
+        .catch(err => {
+          console.error('Firebase signIn error:', err);
+          // Aquí puedes mostrar un alert o mensaje de error al usuario
+        });
+    }
+  }, [response]);
 
 
-const handleLogin = async () => {
-  if (!Correo || !Contraseña) {
-    Alert.alert('Campos incompletos', 'Por favor ingresa tu correo y contraseña');
+  const handleLogin = async () => {
+    if (!Correo || !Contraseña) {
+      Alert.alert('Campos incompletos', 'Por favor ingresa tu correo y contraseña');
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, Correo, Contraseña);
+      // Espera que onAuthStateChanged cambie el estado
+    } catch (error) {
+      Alert.alert('Error', 'Correo o contraseña incorrectos');
+    }
+  };
+
+  const enviarRecuperacion = async () => {
+  if (!correoReset) {
+    Alert.alert('Error', 'Por favor ingresa tu correo.');
     return;
   }
 
   try {
-    await signInWithEmailAndPassword(auth, Correo, Contraseña);
-    // Espera que onAuthStateChanged cambie el estado
+    await sendPasswordResetEmail(auth, correoReset);
+    Alert.alert('Revisa tu correo', 'Te enviamos un enlace para restablecer tu contraseña.');
+    setModalVisible(false);
+    setCorreoReset('');
   } catch (error) {
-    Alert.alert('Error', 'Correo o contraseña incorrectos');
+    console.error('Error enviando recuperación:', error);
+    Alert.alert('Error', 'No se pudo enviar el correo. Verifica que esté registrado.');
   }
 };
 
 
 
   return (
+    
     <View style={styles.container}>
+    
+
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
       <SafeAreaView style={{ backgroundColor: '#ED6D4A', flex: 1, alignItems: 'center' }}>
 
@@ -63,12 +87,12 @@ const handleLogin = async () => {
       </SafeAreaView>
 
 
-      
+
       <View style={styles.containerCuerpo}>
         <Text style={styles.Titulo}>Login</Text>
 
         <TouchableOpacity style={styles.button} disabled={!request}
-         onPress={() => promptAsync()}>
+          onPress={() => promptAsync()}>
           <Image
             source={{
               uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png?20230822192911',
@@ -97,13 +121,15 @@ const handleLogin = async () => {
             onchangetext={setContraseña}
             placeholder='Ingrese su contraseña'
           />
-          <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+  <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>
+</TouchableOpacity>
 
           <View style={styles.vboton}>
             <Boton
-  nombreB='Iniciar'
-  onPress={handleLogin}
-/>
+              nombreB='Iniciar'
+              onPress={handleLogin}
+            />
 
           </View>
           <Boton
@@ -115,7 +141,28 @@ const handleLogin = async () => {
         </View>
 
       </View>
-
+  <Modal
+  visible={modalVisible}
+  transparent
+  animationType='slide'
+  onRequestClose={() => setModalVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalTitle}>Recuperar contraseña</Text>
+      <TextInput
+        style={styles.modalInput}
+        placeholder="Ingresa tu correo"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        value={correoReset}
+        onChangeText={setCorreoReset}
+      />
+      <Boton nombreB='Enviar correo' onPress={enviarRecuperacion} ancho='270'/>
+      <Boton nombreB='Cancelar' onPress={() => setModalVisible(false)} backgroundColor="#ccc" ancho='270' />
+    </View>
+  </View>
+</Modal>
     </View>
   );
 }
@@ -175,5 +222,32 @@ const styles = StyleSheet.create({
     shadowRadius: 5.30,
     elevation: 5,
   },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalContainer: {
+  backgroundColor: 'white',
+  padding: 20,
+  borderRadius: 10,
+  width: '80%',
+  alignItems: 'center',
+},
+modalTitle: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  marginBottom: 10,
+},
+modalInput: {
+  width: '100%',
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 5,
+  padding: 10,
+  marginBottom: 15,
+},
+
 
 });

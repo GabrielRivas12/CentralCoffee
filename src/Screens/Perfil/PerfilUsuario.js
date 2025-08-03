@@ -3,6 +3,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import Boton from '../../Components/Boton'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { signOut } from 'firebase/auth';
+import { auth } from '../../Services/BasedeDatos/Firebase';
+
+
 export const themeContext = createContext();
 
 export default function PerfilUsuario({ navigation }) {
@@ -10,11 +14,22 @@ export default function PerfilUsuario({ navigation }) {
   const [darkMode, setDarkMode] = useState(false);
   const toggleTheme = () => setDarkMode(prev => !prev);
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }], // Cambia esto si tu pantalla de login tiene otro nombre
+      });
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
 
   return (
     <themeContext.Provider value={{ darkMode, toggleTheme }}>
-      <SafeAreaView edges={[ 'bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
+      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
         <View style={[styles.container, darkMode ? styles.darkContainer : styles.lightContainer]}>
 
 
@@ -40,6 +55,12 @@ export default function PerfilUsuario({ navigation }) {
             onPress={toggleTheme}
             backgroundColor={darkMode ? '#888' : '#ddd'}
             textColor={darkMode ? '#fff' : '#000'}
+          />
+          <Boton
+            nombreB="Cerrar sesión"
+            onPress={handleLogout}
+            backgroundColor="#f55"
+            textColor="#fff"
           />
 
 

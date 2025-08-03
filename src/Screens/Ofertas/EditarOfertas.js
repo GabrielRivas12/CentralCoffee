@@ -22,50 +22,48 @@ const db = getFirestore(appFirebase);
 
 export default function EditarOfertas({ navigation }) {
 
-   useFocusEffect(
-  React.useCallback(() => {
-    if (user) {
-      LeerDatos();
-    }
-  }, [user])
-);
-
 
     const [Ofertass, setOfertass] = useState([]);
 const [user, setUser] = useState(null);
 
+ useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
+      if (usuarioFirebase) {
+        setUser(usuarioFirebase);
+      } else {
+        setUser(null);
+        setOfertass([]);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
-  useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
-            if (usuarioFirebase) {
-                setUser(usuarioFirebase);
-            } else {
-                setUser(null);
-            }
-        });
-
-        return () => unsubscribe(); // limpiar listener al desmontar
-    }, []);
-    const LeerDatos = async () => {
-  if (!user) {
-    // No hay usuario logueado, puedes manejarlo como quieras
-    setOfertass([]);
-    return;
-  }
-
-  const q = query(
-    collection(db, "oferta"),
-    where("userId", "==", user.uid)  // Solo las ofertas del usuario actual
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        LeerDatos();
+      } else {
+        setOfertass([]);
+      }
+    }, [user])
   );
 
-  const querySnapshot = await getDocs(q);
-  const d = [];
-  querySnapshot.forEach((doc) => {
-    const datosBD = doc.data();
-    d.push({ id: doc.id, ...datosBD });
-  });
-  setOfertass(d);
-};
+  const LeerDatos = async () => {
+    const q = query(
+      collection(db, "oferta"),
+      where("userId", "==", user.uid)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const d = [];
+    querySnapshot.forEach((doc) => {
+      d.push({ id: doc.id, ...doc.data() });
+    });
+    setOfertass(d);
+  };
+
+
+ 
 
     const eliminarOferta = async (id) => {
     Alert.alert(
