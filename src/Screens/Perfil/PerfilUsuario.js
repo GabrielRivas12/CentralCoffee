@@ -1,11 +1,14 @@
 import React, { useState, createContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Modal, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Boton from '../../Components/Boton'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { signOut } from 'firebase/auth';
 import { auth } from '../../Services/BasedeDatos/Firebase';
+import appFirebase from '../../Services/BasedeDatos/Firebase';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
+const db = getFirestore(appFirebase);
 
 export const themeContext = createContext();
 
@@ -14,15 +17,13 @@ export default function PerfilUsuario({ navigation }) {
   const [darkMode, setDarkMode] = useState(false);
   const toggleTheme = () => setDarkMode(prev => !prev);
 
- const handleLogout = async () => {
-  try {
-    await signOut(auth); // Esto ya dispara onAuthStateChanged
-    // navigation.reset(...) ❌ ya no lo necesitas
-  } catch (error) {
-    console.error('Error al cerrar sesión:', error);
-  }
-};
-
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   return (
     <themeContext.Provider value={{ darkMode, toggleTheme }}>
@@ -38,15 +39,11 @@ export default function PerfilUsuario({ navigation }) {
             onPress={() => navigation.navigate('Editar Informacion')}
             backgroundColor='#fff'
           />
-
           <Boton
             nombreB='boton'
             onPress={() => navigation.navigate('Mi Perfil')}
             backgroundColor='#fff'
           />
-
-
-
           <Boton
             nombreB={darkMode ? 'Tema Claro' : 'Tema Oscuro'}
             onPress={toggleTheme}

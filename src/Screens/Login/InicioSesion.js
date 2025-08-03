@@ -1,15 +1,20 @@
+import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar, Alert, Modal, TextInput } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
-import { useState, useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '../../Services/BasedeDatos/Firebase';
+import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { auth, appFirebase } from '../../Services/BasedeDatos/Firebase'; // importa auth y appFirebase
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { sendPasswordResetEmail } from 'firebase/auth';
 
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from 'firebase/firestore';
+
+const db = getFirestore(appFirebase);
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -18,8 +23,13 @@ export default function Login({ navigation }) {
   const [Correo, setCorreo] = useState('');
   const [Contraseña, setContraseña] = useState('');
 
+  const [bloquearBoton, setBloquearBoton] = useState(false);
+  const [tiempoRestante, setTiempoRestante] = useState(0);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [correoReset, setCorreoReset] = useState('');
+
+
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',       // solo este es necesario
@@ -40,7 +50,7 @@ export default function Login({ navigation }) {
   }, [response]);
 
 
-  const handleLogin = async () => {
+const handleLogin = async () => {
     if (!Correo || !Contraseña) {
       Alert.alert('Campos incompletos', 'Por favor ingresa tu correo y contraseña');
       return;
@@ -54,30 +64,55 @@ export default function Login({ navigation }) {
     }
   };
 
-  const enviarRecuperacion = async () => {
-  if (!correoReset) {
-    Alert.alert('Error', 'Por favor ingresa tu correo.');
-    return;
-  }
 
-  try {
-    await sendPasswordResetEmail(auth, correoReset);
-    Alert.alert('Revisa tu correo', 'Te enviamos un enlace para restablecer tu contraseña.');
-    setModalVisible(false);
-    setCorreoReset('');
-  } catch (error) {
-    console.error('Error enviando recuperación:', error);
-    Alert.alert('Error', 'No se pudo enviar el correo. Verifica que esté registrado.');
-  }
-};
+ 
+
+
+  const enviarRecuperacion = async () => {
+    if (!correoReset) {
+      Alert.alert('Error', 'Por favor ingresa tu correo.');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, correoReset);
+      Alert.alert('Revisa tu correo', 'Te enviamos un enlace para restablecer tu contraseña.');
+
+      // Solo si el envío fue exitoso, bloquea y cuenta
+      setBloquearBoton(true);
+      iniciarTemporizador();
+
+      // Puedes cerrar el modal y limpiar el correo si quieres
+      setModalVisible(false);
+      setCorreoReset('');
+
+    } catch (error) {
+      console.error('Error enviando recuperación:', error);
+      Alert.alert('Error', 'No se pudo enviar el correo. Verifica que esté registrado.');
+    }
+  };
+
+
+  const iniciarTemporizador = () => {
+    setTiempoRestante(15);
+    const interval = setInterval(() => {
+      setTiempoRestante((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setBloquearBoton(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
 
 
   return (
-    
-    <View style={styles.container}>
-    
 
+    <View style={styles.container}>
+ 
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
       <SafeAreaView style={{ backgroundColor: '#ED6D4A', flex: 1, alignItems: 'center' }}>
 
@@ -122,8 +157,8 @@ export default function Login({ navigation }) {
             placeholder='Ingrese su contraseña'
           />
           <TouchableOpacity onPress={() => setModalVisible(true)}>
-  <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>
-</TouchableOpacity>
+            <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>
+          </TouchableOpacity>
 
           <View style={styles.vboton}>
             <Boton
@@ -136,33 +171,37 @@ export default function Login({ navigation }) {
             nombreB='Registrarse'
             onPress={() => navigation.navigate('Registro')}
           />
-
-
         </View>
 
       </View>
-  <Modal
-  visible={modalVisible}
-  transparent
-  animationType='fade'
-  onRequestClose={() => setModalVisible(false)}
->
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalTitle}>Recuperar contraseña</Text>
-      <TextInput
-        style={styles.modalInput}
-        placeholder="Ingresa tu correo"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={correoReset}
-        onChangeText={setCorreoReset}
-      />
-      <Boton nombreB='Enviar correo' onPress={enviarRecuperacion} ancho='270'/>
-      <Boton nombreB='Cancelar' onPress={() => setModalVisible(false)} backgroundColor="#ccc" ancho='270' />
-    </View>
-  </View>
-</Modal>
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType='fade'
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Recuperar contraseña</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Ingresa tu correo"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={correoReset}
+              onChangeText={setCorreoReset}
+            />
+            <Boton
+              nombreB={bloquearBoton ? `Espera ${tiempoRestante}s` : 'Enviar correo'}
+              onPress={enviarRecuperacion}
+              ancho='270'
+              deshabilitado={bloquearBoton}
+            />
+
+            <Boton nombreB='Cancelar' onPress={() => setModalVisible(false)} backgroundColor="#ccc" ancho='270' />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -223,31 +262,31 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-modalContainer: {
-  backgroundColor: 'white',
-  padding: 20,
-  borderRadius: 10,
-  width: '80%',
-  alignItems: 'center',
-},
-modalTitle: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  marginBottom: 10,
-},
-modalInput: {
-  width: '100%',
-  borderWidth: 1,
-  borderColor: '#ccc',
-  borderRadius: 5,
-  padding: 10,
-  marginBottom: 15,
-},
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalInput: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+  },
 
 
 });

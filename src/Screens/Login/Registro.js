@@ -21,6 +21,7 @@ const db = getFirestore(appFirebase);
 export default function Registro({ navigation}) {
 
     const opciones = [
+        
         { label: 'Comerciante', value: '1' },
         { label: 'Comprador', value: '2' },
     ];

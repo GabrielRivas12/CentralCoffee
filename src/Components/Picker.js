@@ -14,8 +14,15 @@ export default function ComboBox(props) {
             selectedValue={props.value}
             onValueChange={props.onValuechange}
           >
+             {/* Placeholder no seleccionable */}
+            <Picker.Item
+              label="Seleccione una opción:"
+              value=""
+              enabled={false}
+              color="#666"  // color gris para diferenciar placeholder
+            />
             {props.items.map((item, index) => (
-              <Picker.Item
+             <Picker.Item
                 key={index}
                 label={item.label}
                 value={item.value}

@@ -9,12 +9,15 @@ export default function Boton(props) {
       <SafeAreaView edges={[ 'left']} style={{   }}>
       <TouchableOpacity
         onPress={props.onPress}
+        disabled={props.deshabilitado}
         style={[styles.boton,
         { backgroundColor: props.ColorBoton || '#ED6D4A' },
         { width: props.ancho || 350 },
         { height: props.alto || 50 },
         { borderColor: props.borderColor || '#ED6D4A' },
-        {  borderRadius: props.borderRadius || 5}
+        {  borderRadius: props.borderRadius || 5},
+        
+
 
         ]}>
         {props.iconName && (
