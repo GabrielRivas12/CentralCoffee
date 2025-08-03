@@ -10,6 +10,7 @@ import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
 import { decode as atob } from 'base-64';
+import * as MediaLibrary from 'expo-media-library';
 
 import { supabase } from '../../Services/BasedeDatos/SupaBase';
 import appFirebase from '../../Services/BasedeDatos/Firebase';
@@ -152,7 +153,31 @@ export default function QRLista({ navigation }) {
     setQrRender(<TempQRRenderer />);
   };
 
+  // Función para descargar la imagen y guardarla en la galería del dispositivo
+  const descargarImagen = async () => {
+    if (!qrImageUrl) return;
 
+    try {
+      const permission = await MediaLibrary.requestPermissionsAsync();
+      if (permission.status !== 'granted') {
+        alert('Se necesita permiso para guardar imágenes en el dispositivo');
+        return;
+      }
+
+      // Descargar archivo a cache local
+      const fileUri = FileSystem.cacheDirectory + 'qr_code.png';
+      const downloadResult = await FileSystem.downloadAsync(qrImageUrl, fileUri);
+
+      // Guardar en galería
+      const asset = await MediaLibrary.createAssetAsync(downloadResult.uri);
+      await MediaLibrary.createAlbumAsync('QR Codes', asset, false);
+
+      alert('Imagen descargada y guardada en galería');
+    } catch (error) {
+      console.log('Error descargando imagen:', error);
+      alert('Error descargando la imagen');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -198,14 +223,21 @@ export default function QRLista({ navigation }) {
                   resizeMode="contain"
                 />
               )}
-              <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                }}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Cerrar</Text>
-              </TouchableOpacity>
+               <View style={{ flexDirection: 'row', marginTop: 15 }}>
+            <TouchableOpacity
+              onPress={descargarImagen}
+              style={[styles.modalButton, { marginRight: 10, backgroundColor: '#28a745' }]}
+            >
+              <Text style={styles.modalButtonText}>Descargar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.modalButton}
+            >
+              <Text style={styles.modalButtonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
             </View>
           </View>
         </Modal>
