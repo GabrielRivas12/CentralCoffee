@@ -3,7 +3,7 @@ import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import { useState } from 'react';
 import ComboBox from '../../Components/Picker';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
+import appFirebase from '../../Services/Firebase';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

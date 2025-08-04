@@ -4,24 +4,12 @@ import Boton from '../../Components/Boton';
 import { useState } from 'react';
 import ComboBox from '../../Components/Picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../Services/BasedeDatos/Firebase';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
 
-import {
-    collection,
-    getFirestore,
-    query, doc,
-    setDoc, getDocs, getDoc,
-    deleteDoc, addDoc
-} from 'firebase/firestore';
-
-const db = getFirestore(appFirebase);
-
-export default function Registro({ navigation}) {
+import { RegistroUsuario} from '../../Containers/RegistroUsuarios';
+export default function Registro({ navigation }) {
 
     const opciones = [
-        
+
         { label: 'Comerciante', value: '1' },
         { label: 'Comprador', value: '2' },
     ];
@@ -41,38 +29,6 @@ export default function Registro({ navigation}) {
     };
 
 
-    const handleRegistro = async () => {
-        if (!correo || !contrasena || !confirmarContrasena || !nombre || !valorSeleccionado) {
-            Alert.alert('Campos incompletos', 'Por favor llena todos los campos y selecciona tu rol');
-            return;
-        }
-
-        if (contrasena !== confirmarContrasena) {
-            Alert.alert('Error', 'Las contraseñas no coinciden');
-            return;
-        }
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, correo, contrasena);
-            const user = userCredential.user;
-
-            await setDoc(doc(db, "usuarios", user.uid), {
-                nombre: nombre,
-                correo: correo,
-                rol: valorSeleccionado === '1' ? 'Comerciante' : 'Comprador',
-                uid: user.uid
-            });
-
-            Alert.alert('Registro exitoso', 'Usuario creado correctamente');
-            limpiarFormulario();
-            navigation.goBack();
-            // Si usas navegación:
-            // navigation.navigate('Login');
-
-        } catch (error) {
-            Alert.alert('Error al registrar', error.message);
-        }
-    };
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
@@ -122,7 +78,14 @@ export default function Registro({ navigation}) {
                         <Boton
                             nombreB="Crear"
                             ancho="100"
-                            onPress={handleRegistro}
+                            onPress={() => RegistroUsuario({
+                                correo,
+                                contrasena,
+                                confirmarContrasena,
+                                nombre,
+                                valorSeleccionado,
+                                  limpiarFormulario 
+                            })}
                         />
                     </View>
                 </View>

@@ -4,7 +4,7 @@ import Navegacion from './Navegacion';
 import { enableScreens } from 'react-native-screens';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './src/Services/BasedeDatos/Firebase';
+import { auth } from './src/Services/Firebase';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 enableScreens();

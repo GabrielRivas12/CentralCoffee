@@ -1,94 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, StatusBar, ScrollView } from 'react-native';
-import Boton from '../../Components/Boton'
-import InputText from '../../Components/TextInput';
-import OfertasCard from '../../Containers/OfertasCard';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
+import { View, StyleSheet, StatusBar, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Octicons from '@expo/vector-icons/Octicons';
 
-
-import {
-  collection,
-  getFirestore,
-  query, doc,
-  setDoc, getDocs, getDoc,
-  deleteDoc
-} from 'firebase/firestore';
-
-const db = getFirestore(appFirebase);
-
+import OfertasCard from '../../Components/OfertasCard';
+import Boton from '../../Components/Boton'
+import InputText from '../../Components/TextInput';
+import { LeerDatos } from '../../Containers/ObtenerOfertas';
+import { BuscarOferta } from '../../Containers/BuscadorOferta';
 
 export default function Ofertas({ navigation }) {
-
-  useFocusEffect(
-    React.useCallback(() => {
-      LeerDatos();
-    }, [])
-  );
 
   const [Ofertass, setOfertass] = useState([]);
   const [valorBusqueda, setValorBusqueda] = useState('');
 
-
- const LeerDatos = async () => {
-  const q = query(collection(db, "oferta"));
-  const querySnapshot = await getDocs(q);
-  const d = [];
-  querySnapshot.forEach((doc) => {
-    const datosBD = doc.data();
-    if (datosBD.estado === 'Activo') {
-      d.push(datosBD);
-    }
-  });
-  setOfertass(d);
-}
-
-  const buscarOferta = async (valorbuscado) => {
-    if (!valorbuscado || valorbuscado.trim() === '') return;
-
-    const q = query(collection(db, "oferta"));
-    const querySnapshot = await getDocs(q);
-    const resultados = [];
-
-    const textoBuscado = valorbuscado.toLowerCase();
-
-    querySnapshot.forEach((doc) => {
-      const ofertaEncontrado = doc.data();
-
-      if (
-        ofertaEncontrado.Ntitulo &&
-        ofertaEncontrado.Ntitulo.toLowerCase().includes(textoBuscado)
-
-      ) {
-        resultados.push(ofertaEncontrado);
-      }
-    });
-
-    setOfertass(resultados);
-
-  };
-
-
+  useFocusEffect(
+    React.useCallback(() => {
+      const CargarOfertas = async () => {
+        const datos = await LeerDatos();
+        setOfertass(datos);
+      };
+      CargarOfertas();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
       <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, alignItems: 'center' }}>
-
-
         <View style={styles.containerBusqueda}>
           <InputText
-
             Valor={valorBusqueda}
             onchangetext={async (texto) => {
               setValorBusqueda(texto);
               if (texto.trim() !== '') {
-                await buscarOferta(texto);
-
+                const resultados = await BuscarOferta(texto);
+                setOfertass(resultados);
               } else {
-                LeerDatos();
+                const datos = await LeerDatos();
+                setOfertass(datos);
               }
             }}
             placeholder='Buscar'
@@ -97,7 +48,6 @@ export default function Ofertas({ navigation }) {
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false}  >
-
 
           {Ofertass.map((item, index) => (
             <OfertasCard
@@ -123,24 +73,17 @@ export default function Ofertas({ navigation }) {
 
         <View style={styles.botonbuscar}>
           <Boton
-            onPress={buscarOferta}
+            onPress={BuscarOferta}
             ColorBoton='transparent'
-            borderColor= 'transparent'
+            borderColor='transparent'
             alto={50}
             ancho={50}
             borderRadius={5}
             marginRight={0} />
           <Octicons name="search" size={24} color="#666" position='absolute' top={16} left={15} />
         </View>
-
-
       </SafeAreaView>
     </View>
-
-
-
-
-
   );
 }
 
@@ -170,5 +113,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   }
-
 });

@@ -4,8 +4,8 @@ import Boton from '../../Components/Boton'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { signOut } from 'firebase/auth';
-import { auth } from '../../Services/BasedeDatos/Firebase';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
+import { auth } from '../../Services/Firebase';
+import appFirebase from '../../Services/Firebase';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);

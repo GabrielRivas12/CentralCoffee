@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Image, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import OfertasCard from '../../Containers/OfertasCard';
+import OfertasCard from '../../Components/OfertasCard';
 import { useFocusEffect } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -12,8 +12,8 @@ import * as FileSystem from 'expo-file-system';
 import { decode as atob } from 'base-64';
 import * as MediaLibrary from 'expo-media-library';
 
-import { supabase } from '../../Services/BasedeDatos/SupaBase';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
+import { supabase } from '../../Services/SupaBase';
+import appFirebase from '../../Services/Firebase';
 import { getAuth } from 'firebase/auth';
 const auth = getAuth(appFirebase);
 import {

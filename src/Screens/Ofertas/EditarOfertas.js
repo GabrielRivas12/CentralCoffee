@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
-import OfertasCard from '../../Containers/OfertasCard';
 import Feather from '@expo/vector-icons/Feather';
-import { supabase } from '../../Services/BasedeDatos/SupaBase';
+
+import OfertasCard from '../../Components/OfertasCard';
+import { VerificarOferta } from '../../Containers/VerificarOferta';
+import { EliminarOferta } from '../../Containers/EliminarOferta';
+
+import appFirebase from '../../Services/Firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-
-
-import { auth } from '../../Services/BasedeDatos/Firebase';
+import { auth } from '../../Services/Firebase';
 import {
     collection,
     getFirestore,
@@ -22,153 +23,43 @@ const db = getFirestore(appFirebase);
 
 export default function EditarOfertas({ navigation }) {
 
-
     const [Ofertass, setOfertass] = useState([]);
-const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);
 
- useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
-      if (usuarioFirebase) {
-        setUser(usuarioFirebase);
-      } else {
-        setUser(null);
-        setOfertass([]);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (usuarioFirebase) => {
+            if (usuarioFirebase) {
+                setUser(usuarioFirebase);
+            } else {
+                setUser(null);
+                setOfertass([]);
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (user) {
-        LeerDatos();
-      } else {
-        setOfertass([]);
-      }
-    }, [user])
-  );
-
-  const LeerDatos = async () => {
-    const q = query(
-      collection(db, "oferta"),
-      where("userId", "==", user.uid)
+    useFocusEffect(
+        React.useCallback(() => {
+            if (user) {
+                LeerDatos();
+            } else {
+                setOfertass([]);
+            }
+        }, [user])
     );
 
-    const querySnapshot = await getDocs(q);
-    const d = [];
-    querySnapshot.forEach((doc) => {
-      d.push({ id: doc.id, ...doc.data() });
-    });
-    setOfertass(d);
-  };
-
-
- 
-
-    const eliminarOferta = async (id) => {
-    Alert.alert(
-        'Confirmar eliminación',
-        '¿Estás seguro de que deseas eliminar el registro?',
-        [
-            {
-                text: 'Cancelar',
-                style: 'cancel',
-            },
-            {
-                text: 'Eliminar',
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        // 1. Obtener datos del documento para acceder a la URL de la imagen
-                        const docRef = doc(db, "oferta", id);
-                        const ofertaSnap = await getDoc(docRef);
-                        const ofertaData = ofertaSnap.data();
-
-                        if (ofertaData?.Nimagen) {
-                            const imageUrl = ofertaData.Nimagen;
-
-                            // Suponiendo que es una URL pública tipo:
-                            // https://<tu-proyecto>.supabase.co/storage/v1/object/public/file/nombre.jpg
-
-                            // 2. Extraer ruta relativa al bucket
-                            const pathStart = imageUrl.indexOf('/file/') + 6; // 6 para saltar "/file/"
-                            const filePath = imageUrl.substring(pathStart).split('?')[0]; // Elimina query params
-
-                            // 3. Eliminar del bucket "file"
-                            const { error } = await supabase
-                                .storage
-                                .from('file')
-                                .remove([filePath]);
-
-                            if (error) {
-                                console.error('Error al eliminar imagen de Supabase:', error.message);
-                            }
-                        }
-
-                        // 4. Eliminar el documento en Firestore
-                        await deleteDoc(docRef);
-                        await LeerDatos();
-                    } catch (error) {
-                        console.error('Error al eliminar la oferta:', error.message);
-                        Alert.alert('Error', 'No se pudo eliminar la oferta correctamente.');
-                    }
-                }
-            },
-        ],
-        { cancelable: true }
-    );
-};
-
-    const verificarOferta = (oferta) => {
-        if (!oferta?.id) {
-            Alert.alert('Error', 'No se encontró la oferta para verificar.');
-            return;
-        }
-
-        Alert.alert(
-            'Cambiar estado',
-            `El estado actual es "${oferta.estado}". ¿Qué quieres hacer?`,
-            [
-                {
-                    text: 'Marcar como activo',
-                    onPress: async () => {
-                        try {
-                            await updateDoc(doc(db, 'oferta', oferta.id), {
-                                estado: 'Activo',
-                            });
-                            Alert.alert('Estado actualizado', 'La oferta ahora está "activo".');
-                            await LeerDatos();
-                        } catch (error) {
-                            console.error('Error actualizando estado a activo:', error);
-                            Alert.alert('Error', 'No se pudo actualizar el estado.');
-                        }
-                    },
-                },
-                {
-                    text: 'Marcar como desactivado',
-                    onPress: async () => {
-                        try {
-                            await updateDoc(doc(db, 'oferta', oferta.id), {
-                                estado: 'Desactivado',
-                            });
-                            Alert.alert('Estado actualizado', 'La oferta ahora está "desactivado".');
-                            await LeerDatos();
-                        } catch (error) {
-                            console.error('Error actualizando estado a desactivado:', error);
-                            Alert.alert('Error', 'No se pudo actualizar el estado.');
-                        }
-                    },
-                },
-                {
-                    text: 'Cancelar',
-                    style: 'cancel',
-                },
-            ],
-            { cancelable: true }
+    const LeerDatos = async () => {
+        const q = query(
+            collection(db, "oferta"),
+            where("userId", "==", user.uid)
         );
+        const querySnapshot = await getDocs(q);
+        const d = [];
+        querySnapshot.forEach((doc) => {
+            d.push({ id: doc.id, ...doc.data() });
+        });
+        setOfertass(d);
     };
-
-
 
     return (
         <View style={styles.container}>
@@ -188,7 +79,7 @@ const [user, setUser] = useState(null);
                                 navigation={navigation}
                             />
                             <TouchableOpacity
-                                onPress={() => verificarOferta(item)}
+                                onPress={() => VerificarOferta(item, LeerDatos)}
                                 style={styles.botonverificar}      >
                                 {item.estado === 'Activo' ? (
                                     <Feather name="check-circle" size={24} color="green" />
@@ -197,12 +88,28 @@ const [user, setUser] = useState(null);
                                 )}
                             </TouchableOpacity>
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('Crear', { oferta: item })}
+                                onPress={() => navigation.navigate('Crear', {
+                                    oferta: {
+                                        Titulo: item.Ntitulo,
+                                        Imagen: item.Nimagen,
+                                        OfertaLibra: item.NofertaLibra,
+                                        TipoCafe: item.NtipoCafe,
+                                        Variedad: item.Nvariedad,
+                                        EstadoGrano: item.NestadoGrano,
+                                        Clima: item.Nclima,
+                                        Altura: item.Naltura,
+                                        ProcesoCorte: item.NprocesoCorte,
+                                        FechaCosecha: item.NfechaCosecha,
+                                        CantidadProduccion: item.NcantidadProduccion,
+                                        Estado: item.estado,
+                                        id: item.id,
+                                    }
+                                })}
                                 style={styles.botoneditar}      >
                                 <Feather name="edit" size={24} color="blue" />
                             </TouchableOpacity>
                             <TouchableOpacity
-                                onPress={() => eliminarOferta(item.id)}
+                                onPress={() => EliminarOferta(item.id, LeerDatos)}
                                 style={styles.botonborrar}      >
                                 <Feather name="trash-2" size={24} color="red" />
                             </TouchableOpacity>
@@ -211,9 +118,6 @@ const [user, setUser] = useState(null);
                 </ScrollView>
             </SafeAreaView>
         </View>
-
-
-
     );
 }
 
@@ -241,7 +145,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         marginTop: 201,
         marginLeft: 240,
-
     },
     botonverificar: {
         width: 32,

@@ -4,7 +4,7 @@ import Boton from '../../Components/Boton'
 import MapView, { Marker } from 'react-native-maps';
 import Feather from '@expo/vector-icons/Feather';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import appFirebase from '../../Services/BasedeDatos/Firebase';
+import appFirebase from '../../Services/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { PROVIDER_GOOGLE } from 'react-native-maps';

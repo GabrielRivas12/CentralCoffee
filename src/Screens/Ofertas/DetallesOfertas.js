@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, StatusBar, Image } from 'react-native';
 import Boton from '../../Components/Boton'
-import appFirebase from '../../Services/BasedeDatos/Firebase';
+import appFirebase from '../../Services/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -15,7 +15,7 @@ import {
 const db = getFirestore(appFirebase);
 
 
-export default function DetallesOferta({ navigation, route }) {
+export default function DetallesOferta({ route }) {
 
   const { oferta } = route.params;
   const [Ofertass, setOfertass] = useState([]);
