@@ -7,6 +7,8 @@ import appFirebase from '../../Services/Firebase';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { GuardarMarcador } from '../../Containers/GuardarMarcador';
+
 import {
   collection,
   getFirestore,
@@ -20,43 +22,9 @@ const db = getFirestore(appFirebase);
 export default function CrearMarcador({ navigation, route }) {
   const coord = route.params?.coordinate;
 
-  const opciones = [
-    { label: 'Comerciante', value: '1' },
-    { label: 'Comprador', value: '2' },
-  ];
-
   const [nombrelugar, setNombrelugar] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [horario, setHorario] = useState('');
-
-  const handleCrear = async () => {
-    try {
-      const coord = route.params?.coordinate; // 👈 coordenadas del marcador
-
-      if (!coord) {
-        Alert.alert('Error', 'No se recibió la ubicación.');
-        return;
-      }
-
-      await addDoc(collection(db, 'lugares'), {
-        nombre: nombrelugar,
-        descripcion,
-        horario,
-        latitud: coord.latitude,
-        longitud: coord.longitude,
-        creadoEn: new Date(),
-      });
-
-      Alert.alert('Éxito', 'Lugar creado correctamente.');
-      navigation.goBack(); // Regresa al mapa
-
-    } catch (error) {
-      console.error('Error al crear documento: ', error);
-      Alert.alert('Error', 'No se pudo crear el lugar.');
-    }
-  };
-
-
 
   return (
     <View style={styles.container}>
@@ -81,10 +49,7 @@ export default function CrearMarcador({ navigation, route }) {
           </MapView>
         )}
 
-
-
         <View style={styles.containerCuerpo}>
-
           <View style={styles.containerInput}>
             <InputText
               NombreLabel='Nombre del lugar'
@@ -111,12 +76,9 @@ export default function CrearMarcador({ navigation, route }) {
               <Boton
                 nombreB="Crear"
                 ancho="100"
-                onPress={handleCrear}
+                onPress={() => GuardarMarcador (coord, nombrelugar, descripcion, horario, navigation)}
               />
             </View>
-
-
-
           </View>
         </View>
       </SafeAreaView>

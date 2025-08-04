@@ -7,19 +7,11 @@ import Feather from '@expo/vector-icons/Feather';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
+import { DirigirGoogleMaps } from '../../Containers/DirigirGoogleMaps';
+
 
 export default function DetallesMapa({ route }) {
   const { marker } = route.params;
-
-  const handleGoToMaps = () => {
-    if (!marker || !marker.coordinate) return;
-
-    const { latitude, longitude } = marker.coordinate;
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-    Linking.openURL(url);
-  };
-
-
 
   return (
     <View style={styles.container}>
@@ -64,7 +56,7 @@ export default function DetallesMapa({ route }) {
         <View>
           <Boton
             nombreB="Cómo llegar"
-            onPress={handleGoToMaps}
+            onPress={() => DirigirGoogleMaps (marker.coordinate)}
             backgroundColor="#ddd"
             ancho='375'
           />

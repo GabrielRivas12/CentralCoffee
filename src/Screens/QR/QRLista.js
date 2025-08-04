@@ -12,6 +12,9 @@ import * as FileSystem from 'expo-file-system';
 import { decode as atob } from 'base-64';
 import * as MediaLibrary from 'expo-media-library';
 
+import { generarYSubirQR } from '../../Containers/GenerarSubirQR';
+import { descargarImagen } from '../../Containers/DescargarQR';
+
 import { supabase } from '../../Services/SupaBase';
 import appFirebase from '../../Services/Firebase';
 import { getAuth } from 'firebase/auth';
@@ -62,122 +65,8 @@ export default function QRLista({ navigation }) {
     setOfertass(d);
   };
 
-  // Verificar si ya existe en Supabase
-  const generarYSubirQR = async (oferta) => {
-    const nombreQR = `${oferta.id}.png`;
-
-    // Verificar si ya existe el QR en Supabase
-    const { data: existingFile } = await supabase
-      .storage
-      .from('qr')
-      .list('', { search: nombreQR });
-
-    if (existingFile?.length > 0) {
-      const { data: urlData } = supabase.storage.from('qr').getPublicUrl(nombreQR);
-      setQrImageUrl(urlData.publicUrl);
-      setModalVisible(true);
-      return;
-    }
-
-    // --- Crear QR invisible en un contenedor temporal ---
-    const fullQRData = {
-      id: oferta.id,
-      titulo: oferta.Ntitulo,
-      tipoCafe: oferta.NtipoCafe,
-      variedad: oferta.Nvariedad,
-      estadoGrano: oferta.NestadoGrano,
-      clima: oferta.Nclima,
-      altura: oferta.Naltura,
-      procesoCorte: oferta.NprocesoCorte,
-      fechaCosecha: oferta.NfechaCosecha,
-      cantidadProduccion: oferta.NcantidadProduccion,
-      ofertaLibra: oferta.NofertaLibra,
-      imagen: oferta.Nimagen,
-    };
-
-    const qrJson = JSON.stringify(fullQRData);
-    const tempRef = React.createRef();
-
-    // Crear una promesa para esperar la renderización
-    const onRendered = async () => {
-      try {
-        const uri = await captureRef(tempRef.current, {
-          format: 'png',
-          quality: 1,
-        });
-        const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
-        const binaryString = atob(base64);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        const { error: uploadError } = await supabase.storage
-          .from('qr')
-          .upload(nombreQR, bytes, {
-            contentType: 'image/png',
-            upsert: false,
-          });
-
-        if (uploadError) {
-          console.log('Error subiendo imagen:', uploadError);
-          return;
-        }
-
-        const { data: urlData } = supabase.storage.from('qr').getPublicUrl(nombreQR);
-        setQrImageUrl(urlData.publicUrl);
-        setModalVisible(true);
-        setQrRender(null); // Limpia el render temporal una vez hecho
-
-      } catch (err) {
-        console.log('Error al capturar y subir QR:', err);
-      }
-    };
-
-
-    // Render temporalmente fuera del árbol principal
-    const TempQRRenderer = () => {
-      useEffect(() => {
-        onRendered(); // Ejecuta captura y subida una vez montado
-      }, []);
-
-      return (
-        <View ref={tempRef} collapsable={false} style={{ position: 'absolute', top: -1000, left: -1000 }}>
-          <QRCode value={qrJson} size={200} />
-        </View>
-      );
-    };
-
-    // Forzar renderizado temporal del QR dentro del componente principal
-    setQrRender(<TempQRRenderer />);
-  };
-
-  // Función para descargar la imagen y guardarla en la galería del dispositivo
-  const descargarImagen = async () => {
-    if (!qrImageUrl) return;
-
-    try {
-      const permission = await MediaLibrary.requestPermissionsAsync();
-      if (permission.status !== 'granted') {
-        alert('Se necesita permiso para guardar imágenes en el dispositivo');
-        return;
-      }
-
-      // Descargar archivo a cache local
-      const fileUri = FileSystem.cacheDirectory + 'qr_code.png';
-      const downloadResult = await FileSystem.downloadAsync(qrImageUrl, fileUri);
-
-      // Guardar en galería
-      const asset = await MediaLibrary.createAssetAsync(downloadResult.uri);
-      await MediaLibrary.createAlbumAsync('QR Codes', asset, false);
-
-      alert('Imagen descargada y guardada en galería');
-    } catch (error) {
-      console.log('Error descargando imagen:', error);
-      alert('Error descargando la imagen');
-    }
-  };
+  
+    
 
   return (
     <View style={styles.container}>
@@ -197,7 +86,7 @@ export default function QRLista({ navigation }) {
                 navigation={navigation}
               />
               <TouchableOpacity
-                onPress={() => generarYSubirQR(item)}
+                 onPress={() => generarYSubirQR(item, setQrRender, setQrImageUrl, setModalVisible)}
                 style={styles.botonCrearQR}>
                 <Ionicons name="qr-code-outline" size={24} color="black" />
               </TouchableOpacity>
@@ -225,7 +114,7 @@ export default function QRLista({ navigation }) {
               )}
                <View style={{ flexDirection: 'row', marginTop: 15 }}>
             <TouchableOpacity
-              onPress={descargarImagen}
+              onPress={() => descargarImagen(qrImageUrl)}
               style={[styles.modalButton, { marginRight: 10, backgroundColor: '#28a745' }]}
             >
               <Text style={styles.modalButtonText}>Descargar</Text>

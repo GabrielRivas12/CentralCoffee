@@ -7,6 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 
+import { ZoomIn } from 'react-native-reanimated';
+import { ZoomOut } from 'react-native-reanimated';
+import { handleMapPress, zoomIn, zoomOut, handleMarkerPress } from '../../Containers/AccionesMapa';
+
+
 import { PROVIDER_GOOGLE } from 'react-native-maps';
 
 import {
@@ -30,95 +35,51 @@ export default function Mapa({ navigation }) {
     longitudeDelta: 4.0,
   });
 
- useFocusEffect(
-  useCallback(() => {
-  const obtenerLugares = async () => {
-    try {
-      const lugaresRef = collection(db, 'lugares');
-      const snapshot = await getDocs(lugaresRef);
-      const lugaresData = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          nombre: data.nombre,
-          horario: data.horario,
-          descripcion: data.descripcion,
-          coordinate: {
-            latitude: data.latitud,
-            longitude: data.longitud
-          }
-        };
-      });
+  useFocusEffect(
+    useCallback(() => {
+      const obtenerLugares = async () => {
+        try {
+          const lugaresRef = collection(db, 'lugares');
+          const snapshot = await getDocs(lugaresRef);
+          const lugaresData = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              nombre: data.nombre,
+              horario: data.horario,
+              descripcion: data.descripcion,
+              coordinate: {
+                latitude: data.latitud,
+                longitude: data.longitud
+              }
+            };
+          });
 
-      setMarkers(lugaresData);
-    } catch (error) {
-      console.error('Error al obtener lugares: ', error);
-    }
-  };
+          setMarkers(lugaresData);
+        } catch (error) {
+          console.error('Error al obtener lugares: ', error);
+        }
+      };
 
-  obtenerLugares();
-}, []));
-
-
-
-  const zoomIn = () => {
-    setRegion(prev => ({
-      ...prev,
-      latitudeDelta: prev.latitudeDelta / 2,
-      longitudeDelta: prev.longitudeDelta / 2,
-    }));
-  };
-
-  const zoomOut = () => {
-    setRegion(prev => ({
-      ...prev,
-      latitudeDelta: prev.latitudeDelta * 2,
-      longitudeDelta: prev.longitudeDelta * 2,
-    }));
-  };
-
-  const handleMapPress = (event) => {
-   const { coordinate } = event.nativeEvent;
-
-  Alert.alert(
-    'Agregar lugar',
-    '¿Deseas registrar un nuevo lugar aquí?',
-    [
-      {
-        text: 'Cancelar',
-        style: 'cancel',
-      },
-      {
-        text: 'Sí',
-        onPress: () => {
-          navigation.navigate('Crear Marcador', { coordinate });
-        },
-      },
-    ],
-    { cancelable: true }
-  );
-  };
-
-  const handleMarkerPress = (marker) => {
-    setSelectedMarker(marker);
-  };
+      obtenerLugares();
+    }, []));
 
   return (
     <View style={styles.container}>
-      <SafeAreaView  edges={[ 'bottom']} style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: '#fff' }}>
         <MapView
-         provider={PROVIDER_GOOGLE}
+          provider={PROVIDER_GOOGLE}
           style={styles.map}
           region={region}
           onRegionChangeComplete={setRegion}
           onPress={() => setSelectedMarker(null)}
-          onLongPress={handleMapPress}
+          onLongPress={(event) => handleMapPress(event, navigation)}
         >
           {markers.map((marker, index) => (
             <Marker
               key={index}
               coordinate={marker.coordinate}
-              onPress={() => handleMarkerPress(marker)}
+              onPress={() => handleMarkerPress(marker, setSelectedMarker)}
             />
           ))}
         </MapView>
@@ -126,7 +87,7 @@ export default function Mapa({ navigation }) {
           <View style={{ marginHorizontal: 5 }}>
             <Boton
               nombreB="+"
-              onPress={zoomIn}
+              onPress={() => zoomIn(region, setRegion)}
               backgroundColor="#fff"
               ancho="40"
               alto="40"
@@ -134,7 +95,7 @@ export default function Mapa({ navigation }) {
           </View>
           <View style={{ marginHorizontal: 5 }}>
             <Boton nombreB="-"
-              onPress={zoomOut}
+              onPress={() => zoomOut(region, setRegion)}
               backgroundColor="#fff"
               ancho="40"
               alto="40" />
@@ -159,11 +120,7 @@ export default function Mapa({ navigation }) {
                 alto="40"
               />
             </View>
-
-
-
           </View>
-
         )}
       </SafeAreaView>
     </View>
