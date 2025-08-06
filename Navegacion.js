@@ -9,6 +9,7 @@ import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import 'react-native-gesture-handler';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 import Ofertas from './src/Screens/Ofertas/Ofertas';
@@ -26,6 +27,8 @@ import Registro from './src/Screens/Login/Registro';
 import CrearMarcador from './src/Screens/Map/CrearMarcador';
 import EditarOfertas from './src/Screens/Ofertas/EditarOfertas';
 import ScannerQR from './src/Screens/QR/ScannerQR';
+import Chat from './src/Screens/Chat/Chat';
+import ChatEntrantes from './src/Screens/Chat/ChatEntrantes';
 
 function Navegacion({ user }) {
     return (
@@ -66,10 +69,12 @@ function DrawerNavigate() {
                 const showHeader =
                     (route.name === 'Ofertas' && (routeName === 'ScreenOfertas' || routeName === '')) ||
                     (route.name === 'Gestionar ofertas' && (routeName === 'ScreenEditar' || routeName === '')) ||
+                    (route.name === 'Bandeja de entrada' && (routeName === 'ScreenChat' || routeName === '')) ||
                     (route.name === 'IA' && (routeName === 'Asistente' || routeName === '')) ||
                     (route.name === 'Mapa' && (routeName === 'ScreenMapa' || routeName === '')) ||
                     (route.name === 'Perfil' && (routeName === 'ScreenUsuario' || routeName === '')) ||
                     (route.name === 'QR' && (routeName === 'ScreenQR' || routeName === ''));
+                    
                 return {
                     headerShown: showHeader,
                     headerStyle: {
@@ -95,6 +100,13 @@ function DrawerNavigate() {
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="edit" size={15} color={color} />
+                    )
+                }} />
+
+                <Drawer.Screen name="Bandeja de entrada" component={StackChat}
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <MaterialIcons name="chat-bubble-outline" size={15} color="black" />
                     )
                 }} />
 
@@ -168,6 +180,7 @@ function StackOfertas() {
             <Stack.Screen name='ScreenOfertas' component={Ofertas} />
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
+            <Stack.Screen name= 'Chat' component={Chat} />
 
 
         </Stack.Navigator>
@@ -250,6 +263,25 @@ function StackUsuario() {
             <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
             <Stack.Screen name='Editar Informacion' component={EditarPerfil} />
             <Stack.Screen name='Mi Perfil' component={Perfil} />
+
+        </Stack.Navigator>
+    )
+}
+
+function StackChat() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenChat'
+
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenChat',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A', // color header
+                },
+            })}
+
+        >
+            <Stack.Screen name='ScreenChat' component={ChatEntrantes} />
+            <Stack.Screen name='Chat' component={Chat} />
 
         </Stack.Navigator>
     )

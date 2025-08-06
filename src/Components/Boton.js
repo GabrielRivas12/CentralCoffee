@@ -1,43 +1,74 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import Feather from '@expo/vector-icons/Feather';
+import Octicons from '@expo/vector-icons/Octicons';
 
 export default function Boton(props) {
+
+    const {
+    iconLibrary, 
+    iconName,
+    iconSize,
+    iconColor,
+    onPress,
+    deshabilitado,
+    ColorBoton,
+    ancho ,
+    alto,
+    borderColor,
+    borderRadius,
+    ColorTexto,
+    nombreB,
+    marginRight,
+  } = props;
+
+
+  const Icons = {
+    AntDesign,
+    Feather,
+    Octicons
+  }
+
+   const IconComponent = iconLibrary ? Icons[iconLibrary] : null;
+
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={[ 'left']} style={{   }}>
-      <TouchableOpacity
-        onPress={props.onPress}
-        disabled={props.deshabilitado}
-        style={[styles.boton,
-        { backgroundColor: props.ColorBoton || '#ED6D4A' },
-        { width: props.ancho || 350 },
-        { height: props.alto || 50 },
-        { borderColor: props.borderColor || '#ED6D4A' },
-        {  borderRadius: props.borderRadius || 5},
-        
+      <SafeAreaView edges={['left']} style={{}}>
+        <TouchableOpacity
+          onPress={props.onPress}
+          disabled={props.deshabilitado}
+          style={[styles.boton,
+          { backgroundColor: props.ColorBoton || '#ED6D4A' },
+          { width: props.ancho || 350 },
+          { height: props.alto || 50 },
+          { borderColor: props.borderColor || '#ED6D4A' },
+          { borderRadius: props.borderRadius || 5 },
 
 
-        ]}>
-        {props.iconName && (
-          <AntDesign
-            name={props.iconName}
-            size={props.iconSize || 24}
-            color={props.iconColor || 'white'}
-            style={{ marginRight: props.marginRight ?? 90, position: 'absolute', }}
-          />
-        )}
 
-        <Text style={[
-          styles.nombreb,
-          { color: props.ColorTexto || 'white' } 
-        ]}>
+          ]}>
+           {iconName && IconComponent && (
+            <IconComponent
+              name={iconName}
+              size={iconSize || 24}
+              color={iconColor || 'white'}
+              style={{
+                marginRight: marginRight ?? 90,
+                position: 'absolute',
+              }}
+            />
+          )}
 
-          {props.nombreB}
+          <Text style={[
+            styles.nombreb,
+            { color: props.ColorTexto || 'white' }
+          ]}>
 
-        </Text>
-      </TouchableOpacity>
+            {props.nombreB}
+
+          </Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </View>
   );
