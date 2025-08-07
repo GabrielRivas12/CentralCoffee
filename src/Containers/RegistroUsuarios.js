@@ -25,7 +25,8 @@ export const RegistroUsuario = async ({ correo, contrasena, confirmarContrasena,
             nombre: nombre,
             correo: correo,
             rol: valorSeleccionado === '1' ? 'Comerciante' : 'Comprador',
-            uid: user.uid
+            uid: user.uid,
+            descripcion: 'Este usuario no tiene una descripcion'
         });
 
         Alert.alert('Registro exitoso', 'Usuario creado correctamente');

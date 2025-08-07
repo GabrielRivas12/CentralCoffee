@@ -1,6 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text,  TouchableOpacity } from 'react-native';
 import React from 'react';
-import { Modal, TouchableWithoutFeedback } from 'react-native';
 
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -154,47 +153,8 @@ function DrawerNavigate() {
                 options={({ navigation }) => ({
                     drawerIcon: ({ color, size }) => (
                         <Feather name="user" size={15} color={color} />
-                    ),
-                    headerRight: () => {
-                        const [visible, setVisible] = React.useState(false);
-
-                        return (
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => setVisible(true)}
-                                    style={{ marginRight: 15 }}
-                                >
-                                    <Feather name="more-vertical" size={24} color="white" />
-                                </TouchableOpacity>
-
-                                {visible && (
-                                    <View
-                                        style={{
-                                            position: 'absolute',
-                                            top: 40,
-                                            right: 10,
-                                            backgroundColor: 'white',
-                                            borderRadius: 6,
-                                            padding: 10,
-                                            elevation: 5,
-                                            zIndex: 10,
-                                            height: 59,
-                                            width: 150
-                                        }}
-                                    >
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setVisible(false);
-                                                navigation.navigate('Perfil', { screen: 'Editar Informacion' });
-                                            }}
-                                        >
-                                            <Text style={{ paddingVertical: 10, fontSize: 16 }}>Editar Perfil</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-                        );
-                    },
+                    )
+                  
                 })}
             />
 
@@ -338,7 +298,9 @@ function StackUsuario() {
 
         >
             <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
+            <Stack.Screen name='Chat' component={Chat} />
             <Stack.Screen name='Editar Informacion' component={EditarPerfil} />
+            
 
         </Stack.Navigator>
     )

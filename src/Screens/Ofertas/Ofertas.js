@@ -10,10 +10,13 @@ import InputText from '../../Components/TextInput';
 import { LeerDatos } from '../../Containers/ObtenerOfertas';
 import { BuscarOferta } from '../../Containers/BuscadorOferta';
 
+import { usarTema } from '../../Containers/TemaApp';
+
 export default function Ofertas({ navigation }) {
 
   const [Ofertass, setOfertass] = useState([]);
   const [valorBusqueda, setValorBusqueda] = useState('');
+  const { modoOscuro, alternarTema } = usarTema();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -28,9 +31,17 @@ export default function Ofertas({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
-      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, alignItems: 'center' }}>
+      <SafeAreaView
+        edges={['bottom']}
+        style={[
+          { flex: 1, alignItems: 'center' },
+          modoOscuro ? styles.contenedorOscuro : styles.contenedorClaro
+        ]}
+      >
+
         <View style={styles.containerBusqueda}>
           <InputText
+           modoOscuro={modoOscuro}
             Valor={valorBusqueda}
             onchangetext={async (texto) => {
               setValorBusqueda(texto);
@@ -57,6 +68,7 @@ export default function Ofertas({ navigation }) {
               titulo={item.titulo}
               precio={`Precio: C$${item.ofertaLibra} por libra`}
               navigation={navigation}
+              modoOscuro={modoOscuro}
             />
           ))}
 
@@ -92,6 +104,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+    contenedorClaro: {
+    backgroundColor: '#fff',
+  },
+  contenedorOscuro: {
+    backgroundColor: '#000',
+  },
   botoncrear: {
     flex: 1,
     position: 'absolute',
@@ -101,7 +119,7 @@ const styles = StyleSheet.create({
   },
   containerBusqueda: {
     alignItems: 'center',
-    bottom: 10,
+    top: 10,
     height: 70
   },
   botonbuscar: {

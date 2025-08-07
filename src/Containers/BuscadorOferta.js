@@ -16,8 +16,8 @@ export const BuscarOferta = async (valorbuscado) => {
         const ofertaEncontrado = doc.data();
 
         if (
-            ofertaEncontrado.Ntitulo &&
-            ofertaEncontrado.Ntitulo.toLowerCase().includes(textoBuscado)
+            ofertaEncontrado.titulo &&
+            ofertaEncontrado.titulo.toLowerCase().includes(textoBuscado)
         ) {
             resultados.push(ofertaEncontrado);
         }

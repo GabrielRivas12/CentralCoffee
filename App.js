@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/Services/Firebase';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ProveedorTema } from './src/Containers/TemaApp';
 
 enableScreens();
 
@@ -21,20 +22,18 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  if (checkingAuth) {
-    return (
+ return (
+    <ProveedorTema> 
       <SafeAreaProvider>
-        <View style={styles.container}>
-          <ActivityIndicator size="large" color="#ED6D4A" />
-        </View>
+        {checkingAuth ? (
+          <View style={styles.container}>
+            <ActivityIndicator size="large" color="#ED6D4A" />
+          </View>
+        ) : (
+          <Navegacion user={user} />
+        )}
       </SafeAreaProvider>
-    );
-  }
-
-  return (
-    <SafeAreaProvider>
-      <Navegacion user={user} />
-    </SafeAreaProvider>
+    </ProveedorTema>
   );
 }
 
