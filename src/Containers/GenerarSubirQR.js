@@ -25,17 +25,17 @@ export const generarYSubirQR = async (oferta, setQrRender, setQrImageUrl, setMod
 
   const fullQRData = {
     id: oferta.id,
-    titulo: oferta.Ntitulo,
-    tipoCafe: oferta.NtipoCafe,
-    variedad: oferta.Nvariedad,
-    estadoGrano: oferta.NestadoGrano,
-    clima: oferta.Nclima,
-    altura: oferta.Naltura,
-    procesoCorte: oferta.NprocesoCorte,
-    fechaCosecha: oferta.NfechaCosecha,
-    cantidadProduccion: oferta.NcantidadProduccion,
-    ofertaLibra: oferta.NofertaLibra,
-    imagen: oferta.Nimagen,
+    titulo: oferta.titulo,
+    tipoCafe: oferta.tipoCafe,
+    variedad: oferta.variedad,
+    estadoGrano: oferta.estadoGrano,
+    clima: oferta.clima,
+    altura: oferta.altura,
+    procesoCorte: oferta.procesoCorte,
+    fechaCosecha: oferta.fechaCosecha,
+    cantidadProduccion: oferta.cantidadProduccion,
+    ofertaLibra: oferta.ofertaLibra,
+    imagen: oferta.imagen,
   };
 
   const qrJson = JSON.stringify(fullQRData);

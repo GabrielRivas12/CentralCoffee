@@ -44,6 +44,7 @@ export default function Boton(props) {
           { height: props.alto || 50 },
           { borderColor: props.borderColor || '#ED6D4A' },
           { borderRadius: props.borderRadius || 5 },
+          { position: props.position || 'relative'}
 
 
 
@@ -62,7 +63,8 @@ export default function Boton(props) {
 
           <Text style={[
             styles.nombreb,
-            { color: props.ColorTexto || 'white' }
+            { color: props.ColorTexto || 'white' },
+            { left: props.leftTexto || 0}
           ]}>
 
             {props.nombreB}

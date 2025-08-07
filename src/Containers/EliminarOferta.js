@@ -32,7 +32,7 @@ export const EliminarOferta = async (id, LeerDatos) => {
                         const ofertaData = ofertaSnap.data();
 
                         if (ofertaData?.Nimagen) {
-                            const imageUrl = ofertaData.Nimagen;
+                            const imageUrl = ofertaData.imagen;
 
 
                             // Extraer ruta relativa al bucket

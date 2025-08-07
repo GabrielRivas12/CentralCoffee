@@ -1,4 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { Modal, TouchableWithoutFeedback } from 'react-native';
+
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -20,7 +23,6 @@ import PerfilUsuario from './src/Screens/Perfil/PerfilUsuario';
 import DetallesOferta from './src/Screens/Ofertas/DetallesOfertas';
 import CrearOferta from './src/Screens/Ofertas/CrearOferta';
 import DetallesMapa from './src/Screens/Map/DetallesMapa';
-import Perfil from './src/Screens/Perfil/Perfil';
 import EditarPerfil from './src/Screens/Perfil/EditarPerfil';
 import Login from './src/Screens/Login/InicioSesion';
 import Registro from './src/Screens/Login/Registro';
@@ -29,6 +31,7 @@ import EditarOfertas from './src/Screens/Ofertas/EditarOfertas';
 import ScannerQR from './src/Screens/QR/ScannerQR';
 import Chat from './src/Screens/Chat/Chat';
 import ChatEntrantes from './src/Screens/Chat/ChatEntrantes';
+import Logout from './src/Containers/CerrarSesión';
 
 function Navegacion({ user }) {
     return (
@@ -46,6 +49,8 @@ function Navegacion({ user }) {
                 </Stack.Navigator>
             )}
         </NavigationContainer>
+
+
     );
 }
 
@@ -60,6 +65,9 @@ const Drawer = createDrawerNavigator();
 
 function DrawerNavigate() {
     return (
+
+
+
         <Drawer.Navigator
             initialRouteName='Ofertas'
             drawerContent={props => <CustomDrawerContent {...props} />}
@@ -74,7 +82,7 @@ function DrawerNavigate() {
                     (route.name === 'Mapa' && (routeName === 'ScreenMapa' || routeName === '')) ||
                     (route.name === 'Perfil' && (routeName === 'ScreenUsuario' || routeName === '')) ||
                     (route.name === 'QR' && (routeName === 'ScreenQR' || routeName === ''));
-                    
+
                 return {
                     headerShown: showHeader,
                     headerStyle: {
@@ -103,7 +111,7 @@ function DrawerNavigate() {
                     )
                 }} />
 
-                <Drawer.Screen name="Bandeja de entrada" component={StackChat}
+            <Drawer.Screen name="Bandeja de entrada" component={StackChat}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <MaterialIcons name="chat-bubble-outline" size={15} color="black" />
@@ -140,28 +148,96 @@ function DrawerNavigate() {
                     )
                 }} />
 
-            <Drawer.Screen name="Perfil" component={StackUsuario}
-                options={{
+            <Drawer.Screen
+                name="Perfil"
+                component={StackUsuario}
+                options={({ navigation }) => ({
                     drawerIcon: ({ color, size }) => (
                         <Feather name="user" size={15} color={color} />
-                    )
-                }} />
+                    ),
+                    headerRight: () => {
+                        const [visible, setVisible] = React.useState(false);
+
+                        return (
+                            <View>
+                                <TouchableOpacity
+                                    onPress={() => setVisible(true)}
+                                    style={{ marginRight: 15 }}
+                                >
+                                    <Feather name="more-vertical" size={24} color="white" />
+                                </TouchableOpacity>
+
+                                {visible && (
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            top: 40,
+                                            right: 10,
+                                            backgroundColor: 'white',
+                                            borderRadius: 6,
+                                            padding: 10,
+                                            elevation: 5,
+                                            zIndex: 10,
+                                            height: 59,
+                                            width: 150
+                                        }}
+                                    >
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setVisible(false);
+                                                navigation.navigate('Perfil', { screen: 'Editar Informacion' });
+                                            }}
+                                        >
+                                            <Text style={{ paddingVertical: 10, fontSize: 16 }}>Editar Perfil</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
+                        );
+                    },
+                })}
+            />
+
         </Drawer.Navigator>
     )
 }
 
+
 function CustomDrawerContent(props) {
     return (
-        <DrawerContentScrollView {...props}>
+        <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
             <View style={{ padding: 20 }}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>
                     Central Coffee
                 </Text>
             </View>
+
             <DrawerItemList {...props} />
+
+            <View style={{ flex: 1 }} />
+
+            <TouchableOpacity
+                onPress={() => {
+                    Logout(); // llamada a la función logout
+                }}
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingVertical: 15,
+                    paddingHorizontal: 20,
+                    borderTopWidth: 1,
+                    borderColor: '#ccc',
+                }}
+            >
+                <Feather name="log-out" size={18} color="#666" />
+                <Text style={{ fontSize: 16, color: '#666', marginLeft: 10 }}>
+                    Cerrar sesión
+                </Text>
+            </TouchableOpacity>
         </DrawerContentScrollView>
     );
 }
+
 
 function StackOfertas() {
     return (
@@ -180,7 +256,8 @@ function StackOfertas() {
             <Stack.Screen name='ScreenOfertas' component={Ofertas} />
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
-            <Stack.Screen name= 'Chat' component={Chat} />
+            <Stack.Screen name='Chat' component={Chat} />
+             <Stack.Screen name='Más Información' component={DetallesMapa} />
 
 
         </Stack.Navigator>
@@ -262,7 +339,6 @@ function StackUsuario() {
         >
             <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
             <Stack.Screen name='Editar Informacion' component={EditarPerfil} />
-            <Stack.Screen name='Mi Perfil' component={Perfil} />
 
         </Stack.Navigator>
     )

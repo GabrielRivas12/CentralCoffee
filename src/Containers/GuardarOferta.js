@@ -11,11 +11,11 @@ import {
 export const Guardar = async ({
   Titulo, TipoCafe, Variedad, EstadoGrano, Clima, Altura,
   ProcesoCorte, FechaCosecha, CantidadProduccion, OfertaLibra, imagen,
-  ofertaEditar, auth, db, navigation, SubirImagenASupabase, Estado, setEstado
+  ofertaEditar, auth, db, navigation, SubirImagenASupabase, Estado, setEstado, lugarSeleccionado 
 
 }) => {
 
-    if (!Titulo || !TipoCafe || !Variedad || !EstadoGrano || !Clima || !Altura || !ProcesoCorte || !FechaCosecha || !CantidadProduccion || !OfertaLibra || !imagen.trim()) {
+    if (!Titulo || !TipoCafe || !Variedad || !EstadoGrano || !Clima || !Altura || !ProcesoCorte || !FechaCosecha || !lugarSeleccionado || !CantidadProduccion || !OfertaLibra || !imagen.trim()) {
         Alert.alert("Error", "Todos los campos son obligatorios.");
         return;
     }
@@ -34,19 +34,20 @@ export const Guardar = async ({
     const userId = user ? user.uid : null; // Extrae el uid o null si no hay usuario
 
     const nuevaOferta = {
-        Ntitulo: Titulo,
-        NtipoCafe: TipoCafe,
-        Nvariedad: Variedad,
-        NestadoGrano: EstadoGrano,
-        Nclima: Clima,
-        Naltura: Altura,
-        NprocesoCorte: ProcesoCorte,
-        NfechaCosecha: FechaCosecha,
-        NcantidadProduccion: CantidadProduccion,
-        NofertaLibra: OfertaLibra,
-        Nimagen: urlImagen,
+        titulo: Titulo,
+        tipoCafe: TipoCafe,
+        variedad: Variedad,
+        estadoGrano: EstadoGrano,
+        clima: Clima,
+        altura: Altura,
+        procesoCorte: ProcesoCorte,
+        fechaCosecha: FechaCosecha,
+        cantidadProduccion: CantidadProduccion,
+        ofertaLibra: OfertaLibra,
+        imagen: urlImagen,
         estado: Estado,
         userId: userId,
+        lugarSeleccionado: lugarSeleccionado,
     };
 
     if (ofertaEditar?.id) {

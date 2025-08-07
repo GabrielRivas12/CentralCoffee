@@ -79,10 +79,10 @@ export default function QRLista({ navigation }) {
           {Ofertass.map((item, index) => (
             <View key={index} >
               <OfertasCard
-                ImagenOferta={item.Nimagen}
+                ImagenOferta={item.imagen}
                 oferta={item}
-                titulo={item.Ntitulo}
-                precio={`Precio: C$${item.NofertaLibra} por libra`}
+                titulo={item.titulo}
+                precio={`Precio: C$${item.ofertaLibra} por libra`}
                 navigation={navigation}
               />
               <TouchableOpacity

@@ -72,10 +72,10 @@ export default function EditarOfertas({ navigation }) {
                     {Ofertass.map((item, index) => (
                         <View key={index} >
                             <OfertasCard
-                                ImagenOferta={item.Nimagen}
+                                ImagenOferta={item.imagen}
                                 oferta={item}
-                                titulo={item.Ntitulo}
-                                precio={`Precio: C$${item.NofertaLibra} por libra`}
+                                titulo={item.titulo}
+                                precio={`Precio: C$${item.ofertaLibra} por libra`}
                                 navigation={navigation}
                             />
                             <TouchableOpacity
@@ -90,17 +90,17 @@ export default function EditarOfertas({ navigation }) {
                             <TouchableOpacity
                                 onPress={() => navigation.navigate('Crear', {
                                     oferta: {
-                                        Titulo: item.Ntitulo,
-                                        Imagen: item.Nimagen,
-                                        OfertaLibra: item.NofertaLibra,
-                                        TipoCafe: item.NtipoCafe,
-                                        Variedad: item.Nvariedad,
-                                        EstadoGrano: item.NestadoGrano,
-                                        Clima: item.Nclima,
-                                        Altura: item.Naltura,
-                                        ProcesoCorte: item.NprocesoCorte,
-                                        FechaCosecha: item.NfechaCosecha,
-                                        CantidadProduccion: item.NcantidadProduccion,
+                                        Titulo: item.titulo,
+                                        Imagen: item.imagen,
+                                        OfertaLibra: item.ofertaLibra,
+                                        TipoCafe: item.tipoCafe,
+                                        Variedad: item.variedad,
+                                        EstadoGrano: item.estadoGrano,
+                                        Clima: item.clima,
+                                        Altura: item.altura,
+                                        ProcesoCorte: item.procesoCorte,
+                                        FechaCosecha: item.fechaCosecha,
+                                        CantidadProduccion: item.cantidadProduccion,
                                         Estado: item.estado,
                                         id: item.id,
                                     }

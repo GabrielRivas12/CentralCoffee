@@ -12,7 +12,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 const db = getFirestore(appFirebase);
 const auth = getAuth(appFirebase);
 
-// 🔧 Esta función la defines al principio
+// Combina las ID para generar un ID de chat
 const generarChatId = (id1, id2) => {
     if (!id1 || !id2) return null;
     return id1 < id2 ? `${id1}_${id2}` : `${id2}_${id1}`;
@@ -33,7 +33,7 @@ export default function Chat({ navigation, route }) {
     const currentUser = auth.currentUser;
     const userId = currentUser ? currentUser.uid : null;
 
-    // ✅ Generar chatId solo cuando ambos IDs están listos
+    // ✅ Genera el chat ID si son validos
     useEffect(() => {
         if (userId && otroUsuarioId) {
             const id = generarChatId(userId, otroUsuarioId);
@@ -114,7 +114,7 @@ export default function Chat({ navigation, route }) {
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={95} // ajusta si tienes header/tab bar
+                keyboardVerticalOffset={95} 
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={{ flex: 1 }}>

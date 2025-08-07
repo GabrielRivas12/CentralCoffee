@@ -5,11 +5,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ComboboxPickerDate(props) {
   return (
-    <View>
-      <SafeAreaView style={{ backgroundColor: '#fff', }}>
-        <View>
+      <SafeAreaView style={{ backgroundColor: '#fff' }}>
           <Text style={styles.label}>Fecha de cosecha </Text>
-          <TouchableOpacity style={styles.date} onPress={() => props.verMode('date')}>
+          <TouchableOpacity style={[
+            styles.date,
+             { width: props.ancho || 350 },
+             { height: props.alto || 50 },
+          
+          ]
+          }
+            
+            
+            onPress={() => props.verMode('date')}>
             <Text
               style={[
                 styles.textodate,
@@ -19,7 +26,6 @@ export default function ComboboxPickerDate(props) {
               {props.text === '' ? 'Seleccione una fecha' : props.text}
             </Text>
           </TouchableOpacity>
-        </View>
         
         {props.show && (
           <DateTimePicker
@@ -32,7 +38,6 @@ export default function ComboboxPickerDate(props) {
           />
         )}
       </SafeAreaView>
-    </View>
   );
 }
 
@@ -44,8 +49,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   date: {
-    width: 170,
-    height: 50,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#999',

@@ -49,40 +49,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#EBEBEB',
+    borderColor: '#ddd',
     marginTop: 10,
   },
-  containerListaB: {
-    marginLeft: 275,
-    marginTop: 180,
-    position: 'absolute',
-  },
-  containerListaImagen: {
-    width: 355,
-    height: 140,
-    backgroundColor: '#999',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#999',
-    bottom: 10
-  },
-  Titulo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  tituloContainer: {
-    width: '90%',
-    bottom: 5,
-    right: 8
-  },
-  precio: {
-    fontSize: 12
-  },
-  precioContainer: {
-    width: '50%',
-    marginTop: 10,
-    right: 80
-  }
-});
+    containerListaB: {
+      marginLeft: 275,
+      marginTop: 180,
+      position: 'absolute',
+    },
+    containerListaImagen: {
+      width: 355,
+      height: 140,
+      backgroundColor: '#999',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#999',
+      bottom: 10
+    },
+    Titulo: {
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    tituloContainer: {
+      width: '90%',
+      bottom: 5,
+      right: 8
+    },
+    precio: {
+      fontSize: 12
+    },
+    precioContainer: {
+      width: '50%',
+      marginTop: 10,
+      right: 80
+    }
+  });

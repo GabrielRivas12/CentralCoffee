@@ -7,8 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/Firebase';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { ZoomIn } from 'react-native-reanimated';
-import { ZoomOut } from 'react-native-reanimated';
+
 import { handleMapPress, zoomIn, zoomOut, handleMarkerPress } from '../../Containers/AccionesMapa';
 
 
@@ -154,10 +153,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoTitle: {
-    marginLeft: 60,
     position: 'absolute',
     top: 15,
-    left: 10,
+    left: 70
   },
   infoText: {
     marginLeft: 60,
