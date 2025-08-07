@@ -1,4 +1,4 @@
-import { View, Text,  TouchableOpacity } from 'react-native';
+import { View, Text, Image,  TouchableOpacity } from 'react-native';
 import React from 'react';
 
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
@@ -90,6 +90,7 @@ function DrawerNavigate() {
                     drawerActiveTintColor: '#666',
                     drawerInactiveTintColor: '#666',
                     drawerActiveBackgroundColor: '#ffdfd7ff',
+                    
                     drawerLabelStyle: {
                         fontSize: 16,
                     },
@@ -308,21 +309,44 @@ function StackUsuario() {
 
 function StackChat() {
     return (
-        <Stack.Navigator initialRouteName='ScreenChat'
-
+        <Stack.Navigator
+            initialRouteName='ScreenChat'
             screenOptions={({ route }) => ({
                 headerShown: route.name !== 'ScreenChat',
                 headerStyle: {
-                    backgroundColor: '#ED6D4A', // color header
+                    backgroundColor: '#ED6D4A',
                 },
             })}
-
         >
             <Stack.Screen name='ScreenChat' component={ChatEntrantes} />
-            <Stack.Screen name='Chat' component={Chat} />
 
+            <Stack.Screen
+                name='Chat'
+                component={Chat}
+                options={({ route }) => ({
+                    headerTitle: () => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            {route.params?.fotoPerfil ? (
+                                <Image
+                                    source={{ uri: route.params.fotoPerfil }}
+                                    style={{
+                                        width: 35,
+                                        height: 35,
+                                        borderRadius: 17.5,
+                                        marginRight: 10,
+                                    }}
+                                />
+                            ) : null}
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>
+                                {route.params?.nombre || 'Chat'}
+                            </Text>
+                        </View>
+                    ),
+                    headerTintColor: '#000', // color de los íconos en el header
+                })}
+            />
         </Stack.Navigator>
-    )
+    );
 }
 
 export default Navegacion;

@@ -182,7 +182,7 @@ export default function EditarInformacion({ navigation }) {
             onchangetext={setDescripcion}
             placeholder="Cuéntanos sobre ti"
             maxCaracteres={300}
-             ancho='100%'
+            ancho='100%'
           />
 
           <InputText
@@ -190,11 +190,11 @@ export default function EditarInformacion({ navigation }) {
             Valor={ubicacion}
             onchangetext={setUbicacion}
             placeholder="Ciudad o municipio"
-             ancho='100%'
+            ancho='100%'
           />
         </View>
 
-        <Boton nombreB="Guardar Cambios"  onPress={guardarCambios} />
+        <Boton nombreB="Guardar Cambios" onPress={guardarCambios} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -218,15 +218,23 @@ const styles = StyleSheet.create({
     top: 90,
     left: 18,
     zIndex: 10,
-  },
-  imagenPerfil: {
-    width: 80,
-    height: 80,
-    borderRadius: 100,
-    borderColor: '#fff',
+    width: 86,      // un poco más que la imagen para que el borde se vea
+    height: 86,
+    borderRadius: 43,
     borderWidth: 3,
-    backgroundColor: '#999',
+    borderColor: '#fff',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ccc'
   },
+ imagenPerfil: {
+  width: '100%',
+  height: '100%',
+  borderRadius: 43,  // para que sea circular igual que el contenedor
+  backgroundColor: '#999',
+},
+
   textoImagen: {
     color: '#444',
     fontSize: 14,

@@ -209,6 +209,8 @@ export default function PerfilUsuario({ navigation, route }) {
             onPress={alternarTema}
             backgroundColor={modoOscuro ? '#888' : '#ddd'}
             textColor={modoOscuro ? '#fff' : '#000'}
+            ancho='90'
+            alto='30'
           />
         </View>
 
@@ -220,6 +222,7 @@ export default function PerfilUsuario({ navigation, route }) {
 
 const styles = StyleSheet.create({
   contenedor: {
+    flex: 1,
     paddingHorizontal: 5,
     paddingTop: 5,
     paddingBottom: 20, // para dejar espacio al final
@@ -303,6 +306,9 @@ const styles = StyleSheet.create({
     marginLeft: 5
   },
   seccionBotones: {
+    position: 'absolute',
+    top: '24%',
+    left: '72.2%',
     marginTop: 'auto',
     paddingBottom: 40,
     gap: 12,
