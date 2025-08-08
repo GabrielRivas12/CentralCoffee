@@ -4,6 +4,8 @@ import Boton from '../../Components/Boton'
 import appFirebase from '../../Services/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
+
+import { obtenerDatosUsuario } from '../../Containers/ObtenerUsuario';
 import {
   collection,
   getFirestore,
@@ -45,7 +47,8 @@ export default function DetallesOferta({ route, navigation }) {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        setSelectedMarker(docSnap.data());
+        setSelectedMarker({ id: docSnap.id, ...docSnap.data() });
+
       } else {
         console.log("No se encontró el lugar");
       }
@@ -53,6 +56,23 @@ export default function DetallesOferta({ route, navigation }) {
       console.error("Error al obtener el lugar:", error);
     }
   };
+
+  const iniciarChat = async () => {
+    try {
+      const datos = await obtenerDatosUsuario(oferta.userId);
+
+      navigation.navigate('Chat', {
+        otroUsuarioId: oferta.userId,
+        nombre: datos.nombre,
+        fotoPerfil: datos.fotoPerfil,
+        ofertaReferencia: oferta
+      });
+    } catch (error) {
+      console.error('Error al iniciar chat:', error);
+    }
+  };
+
+
 
 
   return (
@@ -74,73 +94,78 @@ export default function DetallesOferta({ route, navigation }) {
           <Text style={styles.TextoTitulo}>Características</Text>
           <View style={styles.row}>
             <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Tipo de café: </Text>
-                {oferta.tipoCafe}
-              </Text>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Tipo de café:</Text>
+                <Text>{oferta.tipoCafe}</Text>
+              </View>
             </View>
             <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Variedad: </Text>
-                {oferta.variedad}
-              </Text>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Variedad:</Text>
+                <Text>{oferta.variedad}</Text>
+              </View>
+            </View>
+          </View>
+
+
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Estado del grano:</Text>
+                <Text>{oferta.estadoGrano}</Text>
+              </View>
+            </View>
+            <View style={styles.col}>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Clima:</Text>
+                <Text>{oferta.clima}</Text>
+              </View>
             </View>
           </View>
 
           <View style={styles.row}>
             <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Estado del grano: </Text>
-                {oferta.estadoGrano}
-              </Text>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Altura:</Text>
+                <Text>{oferta.altura}</Text>
+              </View>
             </View>
             <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Clima: </Text>
-                {oferta.clima}
-              </Text>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Proceso de corte:</Text>
+                <Text>{oferta.procesoCorte}</Text>
+              </View>
             </View>
           </View>
 
           <View style={styles.row}>
             <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Altura: </Text>
-                {oferta.altura}
-              </Text>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Oferta por libra:</Text>
+                <Text>{oferta.ofertaLibra}</Text>
+              </View>
             </View>
             <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Proceso de corte: </Text>
-                {oferta.procesoCorte}
-              </Text>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Fecha de cosecha:</Text>
+                <Text>{oferta.fechaCosecha}</Text>
+              </View>
             </View>
           </View>
 
           <View style={styles.row}>
             <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Fecha de cosecha: </Text>
-                {oferta.fechaCosecha}
-              </Text>
-            </View>
-            <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Cantidad de producción: </Text>
-                {oferta.cantidadProduccion}
-              </Text>
+              <View style={styles.TextoDato}>
+                <Text style={styles.TextoInfo}>Cantidad de producción:</Text>
+                <Text>{oferta.cantidadProduccion}</Text>
+              </View>
             </View>
           </View>
 
-          <View style={styles.row}>
-            <View style={styles.col}>
-              <Text style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Oferta por libra: </Text>
-                {oferta.ofertaLibra}
-              </Text>
-            </View>
-          </View>
         </View>
+
+
+
 
         {selectedMarker && (
           <View style={styles.bottomPanel}>
@@ -154,10 +179,22 @@ export default function DetallesOferta({ route, navigation }) {
             <View style={styles.BotonInfo}>
               <Boton
                 nombreB="Ir a Info"
-                onPress={() => navigation.navigate('Más Información', { marker: selectedMarker, })}
+                onPress={() => navigation.navigate('Más Información', {
+                  marker: {
+                    id: selectedMarker.id,
+                    nombre: selectedMarker.nombre,
+                    horario: selectedMarker.horario,
+                    descripcion: selectedMarker.descripcion,
+                    coordinate: {
+                      latitude: selectedMarker.latitud,
+                      longitude: selectedMarker.longitud
+                    }
+                  }
+                })}
                 backgroundColor="#fff"
                 ancho="90"
                 alto="40"
+
               />
             </View>
           </View>
@@ -167,18 +204,13 @@ export default function DetallesOferta({ route, navigation }) {
         <View style={styles.BotonesContacto}>
 
           <Boton
-            nombreB='Iniciar Chat '
-            iconName='send'
-            iconLibrary="Feather"
-            marginRight='90'
+            nombreB='Iniciar Chat'
             ancho='150'
-            leftTexto='10'
+            Textoright='10'
             ColorBoton="#ED6D4A"
-            onPress={() => navigation.navigate('Chat', {
-              otroUsuarioId: oferta.userId, ofertaReferencia: oferta,  
-            })}
+            onPress={iniciarChat}
           />
-
+          <Feather name="send" size={24} color="white" position='absolute' left='60%' bottom='12' />
         </View>
       </SafeAreaView>
     </View >
@@ -193,18 +225,13 @@ const styles = StyleSheet.create({
   },
   containerInformacion: {
     backgroundColor: '#EBEBEB',
-    width: 373,
-    height: 250,
+    width: 355,
+    height: 300,
     borderRadius: 10,
   },
-  TextoInfo: {
-    marginTop: 10,
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginLeft: 20
-  },
+
   containerListaImagen: {
-    width: 373,
+    width: 355,
     height: 140,
     backgroundColor: '#999',
     justifyContent: 'center',
@@ -220,7 +247,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-around',
     marginTop: 50,
-    left: '20%'
+    left: '26.9%'
   },
   Titulo: {
     marginLeft: 15,
@@ -229,15 +256,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
 
   },
-  TextoDato: {
-    marginLeft: 5,
-    marginTop: 10,
-  },
+
   TextoTitulo: {
     fontSize: 18,
     fontWeight: 'bold',
     top: 5,
-    left: 15
+    left: 20
   },
   row: {
     flexDirection: 'row',
@@ -251,39 +275,47 @@ const styles = StyleSheet.create({
   bottomPanel: {
     position: 'relative',
     left: 0,
-    right: 20,
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     height: 70,
-    top: 10
+    top: 30
+    
 
   },
   BotonInfo: {
     alignItems: 'center',
     position: 'absolute',
-    bottom: 20,
-    right: 10,
+    bottom: 18,
+    right: 0,
+   
   },
   Icono: {
     width: 50,
     height: 50,
     backgroundColor: '#ddd',
     borderRadius: 10,
-    marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    right: 10
+
   },
   infoTitle: {
     marginLeft: 60,
     position: 'absolute',
     top: 15,
-    left: 10,
   },
   infoText: {
     marginLeft: 60,
     position: 'absolute',
     top: 35,
-    left: 10,
   },
+  TextoDato: {
+    marginLeft: 30,
+    marginTop: 15,
+  },
+  TextoInfo: {
+    fontSize: 13,
+    fontWeight: 'bold',
+  }
 });

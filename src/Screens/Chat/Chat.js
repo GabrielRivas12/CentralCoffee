@@ -8,6 +8,7 @@ import appFirebase from '../../Services/Firebase';
 import { getAuth } from 'firebase/auth';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const db = getFirestore(appFirebase);
 const auth = getAuth(appFirebase);
@@ -61,23 +62,23 @@ export default function Chat({ navigation, route }) {
     }, [chatId]);
 
     useEffect(() => {
-    if (!chatId) return;
+        if (!chatId) return;
 
-    const q = query(
-        collection(db, 'chats', chatId, 'mensajes'),
-        orderBy('timestamp', 'asc')
-    );
+        const q = query(
+            collection(db, 'chats', chatId, 'mensajes'),
+            orderBy('timestamp', 'asc')
+        );
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const mensajesFirestore = [];
-        querySnapshot.forEach((doc) => {
-            mensajesFirestore.push({ id: doc.id, ...doc.data() });
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const mensajesFirestore = [];
+            querySnapshot.forEach((doc) => {
+                mensajesFirestore.push({ id: doc.id, ...doc.data() });
+            });
+            setMensajes(mensajesFirestore);
         });
-        setMensajes(mensajesFirestore);
-    });
 
-    return () => unsubscribe();
-}, [chatId]);
+        return () => unsubscribe();
+    }, [chatId]);
 
 
 
@@ -106,6 +107,11 @@ export default function Chat({ navigation, route }) {
         } catch (error) {
         }
     };
+    useEffect(() => {
+        if (mensajes.length > 0) {
+            flatListRef.current?.scrollToEnd({ animated: false }); // animated: false para que no se vea el scroll
+        }
+    }, [mensajes]);
 
 
     return (
@@ -114,13 +120,12 @@ export default function Chat({ navigation, route }) {
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={95} 
+                keyboardVerticalOffset={95}
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={{ flex: 1 }}>
                         <FlatList
                             data={mensajes}
-
                             renderItem={({ item }) => (
                                 <View
                                     style={[
@@ -136,20 +141,20 @@ export default function Chat({ navigation, route }) {
                             style={{ flex: 1 }}
                             ref={flatListRef}
                             onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                            onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                            onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
                             keyboardShouldPersistTaps="handled"
                         />
 
                         {referenciaPendiente && (
                             <View style={styles.referenciaPreview}>
-                                <Text style={styles.referenciaTitulo}>{referenciaPendiente.Ntitulo}</Text>
-                                <Text>🫘 Tipo: {referenciaPendiente.NtipoCafe}</Text>
-                                <Text>📦 Cantidad: {referenciaPendiente.NcantidadProduccion}</Text>
-                                <Text>💲 Precio/libra: {referenciaPendiente.NofertaLibra}</Text>
+                                <Text style={styles.referenciaTitulo}>{referenciaPendiente.titulo}</Text>
+                                <Text>🫘 Tipo: {referenciaPendiente.tipoCafe}</Text>
+                                <Text>📦 Cantidad: {referenciaPendiente.cantidadProduccion}</Text>
+                                <Text>💲 Precio/libra: {referenciaPendiente.ofertaLibra}</Text>
 
                                 <View style={styles.botonesReferencia}>
                                     <TouchableOpacity
-                                        style={[styles.botonEnviar, { backgroundColor: '#34B7F1' }]}
+                                        style={[styles.botonEnviar, { backgroundColor: '#f16a34ff' }]}
                                         onPress={async () => {
                                             if (!chatId || !userId) return;
 
@@ -180,7 +185,7 @@ export default function Chat({ navigation, route }) {
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
-                                        style={[styles.botonEnviar, { backgroundColor: '#999' }]}
+                                        style={[styles.botonEnviar, { backgroundColor: '#545454' }]}
                                         onPress={() => setReferenciaPendiente(null)}
                                     >
                                         <Text style={styles.botonTexto}>Cancelar</Text>
@@ -198,7 +203,8 @@ export default function Chat({ navigation, route }) {
                                 multiline
                             />
                             <TouchableOpacity style={styles.botonEnviar} onPress={enviarMensaje}>
-                                <Text style={styles.botonTexto}>Enviar</Text>
+                                <Ionicons name="send-outline" size={24} color="white" />
+
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -222,7 +228,7 @@ const styles = StyleSheet.create({
         maxWidth: '80%',
     },
     mensajePropio: {
-        backgroundColor: '#DCF8C6',
+        backgroundColor: '#f8dbd7',
         alignSelf: 'flex-end',
     },
     mensajeOtro: {
@@ -253,7 +259,7 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
     botonEnviar: {
-        backgroundColor: '#25D366', // color WhatsApp
+        backgroundColor: '#ED6D4A', // color WhatsApp
         borderRadius: 25,
         paddingVertical: 10,
         paddingHorizontal: 15,
@@ -264,9 +270,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     referenciaPreview: {
-        backgroundColor: '#FFF3E0',
+        backgroundColor: '#f8dbd7',
         borderLeftWidth: 4,
-        borderLeftColor: '#FFA726',
+        borderLeftColor: '#b55034',
         padding: 10,
         margin: 10,
         borderRadius: 8,

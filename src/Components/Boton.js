@@ -55,7 +55,7 @@ export default function Boton(props) {
               size={iconSize || 24}
               color={iconColor || 'white'}
               style={{
-                marginRight: marginRight ?? 90,
+                marginRight: marginRight ?? 0,
                 position: 'absolute',
               }}
             />
@@ -64,7 +64,7 @@ export default function Boton(props) {
           <Text style={[
             styles.nombreb,
             { color: props.ColorTexto || 'white' },
-            { left: props.leftTexto || 0}
+            { right: props.Textoright || 0}
           ]}>
 
             {props.nombreB}

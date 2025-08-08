@@ -29,25 +29,27 @@ export default function CrearMarcador({ navigation, route }) {
   return (
     <View style={styles.container}>
       <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
-        <Text style={styles.previewTitle}>Vista previa de la ubicación</Text>
 
-        {coord && (
-          <MapView
-            style={styles.previewMap}
-            initialRegion={{
-              latitude: coord.latitude,
-              longitude: coord.longitude,
-              latitudeDelta: 0.005,
-              longitudeDelta: 0.005,
-            }}
-            scrollEnabled={false}
-            zoomEnabled={false}
-            rotateEnabled={false}
-            pitchEnabled={false}
-          >
-            <Marker coordinate={coord} />
-          </MapView>
-        )}
+        <View style={styles.mapacontainer}>
+          {coord && (
+
+            <MapView
+              style={styles.previewMap}
+              initialRegion={{
+                latitude: coord.latitude,
+                longitude: coord.longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+              }}
+              scrollEnabled={false}
+              zoomEnabled={false}
+              rotateEnabled={false}
+              pitchEnabled={false}
+            >
+              <Marker coordinate={coord} />
+            </MapView>
+          )}
+        </View>
 
         <View style={styles.containerCuerpo}>
           <View style={styles.containerInput}>
@@ -55,28 +57,28 @@ export default function CrearMarcador({ navigation, route }) {
               NombreLabel='Nombre del lugar'
               Valor={nombrelugar}
               onchangetext={setNombrelugar}
-              placeholder='nombre'
+              placeholder='Nombre de la ubicación'
             />
             <InputText
-              NombreLabel='descripcion'
+              NombreLabel='Descripcion'
               Valor={descripcion}
               onchangetext={setDescripcion}
-              placeholder='descripcion'
+              placeholder='Añade una descripcion del lugar'
             />
 
             <InputText
               NombreLabel='Horario'
               Valor={horario}
               onchangetext={setHorario}
-              placeholder='Horario'
+              placeholder='Establece un horario'
             />
 
 
-            <View style={{ width: '100%', paddingLeft: 250 }}>
+            <View style={{ width: '100%', left: 145 }}>
               <Boton
                 nombreB="Crear"
                 ancho="100"
-                onPress={() => GuardarMarcador (coord, nombrelugar, descripcion, horario, navigation)}
+                onPress={() => GuardarMarcador(coord, nombrelugar, descripcion, horario, navigation)}
               />
             </View>
           </View>
@@ -90,37 +92,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  containerBanner: {
-    flex: 1,
-    backgroundColor: '#ED6D4A',
-    justifyContent: 'center',
-    alignItems: 'center',
-
-
+    alignItems: 'center', 
+    justifyContent: 'center', 
   },
   containerCuerpo: {
     flex: 2.5,
-    justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: '90%',
   },
   containerInput: {
-  },
-  Titulo: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    paddingLeft: 150,
-    paddingTop: 10,
-    paddingBottom: 10
-  },
-  label: {
-
+    width: '100%',
+    paddingHorizontal: 10,
+    gap: 10,
   },
   previewMap: {
+    flex: 1,
+  },
+  Titulo: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  mapacontainer: {
     width: 355,
     height: 200,
-    marginBottom: 15,
-    marginLeft: 20
-
-  },
+    marginBottom: 30,
+    top: 10,
+    left: 20,
+    borderRadius: 10,
+    borderColor: '#000', 
+    overflow: 'hidden',  
+    backgroundColor: 'black'
+  }
 });

@@ -6,16 +6,9 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import QRCode from 'react-native-qrcode-svg';
-import { captureRef } from 'react-native-view-shot';
-import * as FileSystem from 'expo-file-system';
-import { decode as atob } from 'base-64';
-import * as MediaLibrary from 'expo-media-library';
-
 import { generarYSubirQR } from '../../Containers/GenerarSubirQR';
 import { descargarImagen } from '../../Containers/DescargarQR';
 
-import { supabase } from '../../Services/SupaBase';
 import appFirebase from '../../Services/Firebase';
 import { getAuth } from 'firebase/auth';
 const auth = getAuth(appFirebase);

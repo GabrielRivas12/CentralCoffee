@@ -217,7 +217,31 @@ function StackOfertas() {
             <Stack.Screen name='ScreenOfertas' component={Ofertas} />
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
-            <Stack.Screen name='Chat' component={Chat} />
+           <Stack.Screen
+                name='Chat'
+                component={Chat}
+                options={({ route }) => ({
+                    headerTitle: () => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            {route.params?.fotoPerfil ? (
+                                <Image
+                                    source={{ uri: route.params.fotoPerfil }}
+                                    style={{
+                                        width: 35,
+                                        height: 35,
+                                        borderRadius: 17.5,
+                                        marginRight: 10,
+                                    }}
+                                />
+                            ) : null}
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>
+                                {route.params?.nombre || 'Chat'}
+                            </Text>
+                        </View>
+                    ),
+                    headerTintColor: '#000', // color de los íconos en el header
+                })}
+            />
              <Stack.Screen name='Más Información' component={DetallesMapa} />
 
 
@@ -299,10 +323,34 @@ function StackUsuario() {
 
         >
             <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
-            <Stack.Screen name='Chat' component={Chat} />
+             <Stack.Screen
+                name='Chat'
+                component={Chat}
+                options={({ route }) => ({
+                    headerTitle: () => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            {route.params?.fotoPerfil ? (
+                                <Image
+                                    source={{ uri: route.params.fotoPerfil }}
+                                    style={{
+                                        width: 35,
+                                        height: 35,
+                                        borderRadius: 17.5,
+                                        marginRight: 10,
+                                    }}
+                                />
+                            ) : null}
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>
+                                {route.params?.nombre || 'Chat'}
+                            </Text>
+                        </View>
+                    ),
+                    headerTintColor: '#000', // color de los íconos en el header
+                })}
+            />
             <Stack.Screen name='Editar Informacion' component={EditarPerfil} />
-            
-
+            <Stack.Screen name='Informacion' component={DetallesOferta} />
+            <Stack.Screen name='Más Información' component={DetallesMapa} />
         </Stack.Navigator>
     )
 }
@@ -319,7 +367,6 @@ function StackChat() {
             })}
         >
             <Stack.Screen name='ScreenChat' component={ChatEntrantes} />
-
             <Stack.Screen
                 name='Chat'
                 component={Chat}

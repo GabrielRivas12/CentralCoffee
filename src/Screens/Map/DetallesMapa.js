@@ -53,14 +53,16 @@ export default function DetallesMapa({ route }) {
         </View>
 
 
-        <View>
+        <View style={styles.botonllegar}>
           <Boton
             nombreB="Cómo llegar"
             onPress={() => DirigirGoogleMaps (marker.coordinate)}
             backgroundColor="#ddd"
-            ancho='375'
+            ancho='140'
+            alto='45'
+            Textoright='15'
           />
-          <MaterialCommunityIcons name="directions" size={30} color="white" position='absolute' left='230' top='13' />
+          <MaterialCommunityIcons name="directions" size={30} color="white" position='absolute'  top='10' left='100' />
         </View>
       </SafeAreaView>
     </View>
@@ -70,52 +72,60 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   previewMap: {
     flex: 1
   },
   mapaContainer: {
-    width: 375,
+    width: 360,
     height: 200,
     marginBottom: 15,
     top: 10,
+    left: 8,
     borderRadius: 10,
     borderColor: '#000', 
     overflow: 'hidden',  
   },
   containerDescripcion: {
     width: 375,
-    height: 200
+    height: 200,
+    top: 50,
+    left: 8
   },
   PanelUbicacion: {
     backgroundColor: 'rgba(255,255,255,0.8)',
     borderRadius: 10,
     height: 70,
-    bottom: 50,
-    top: 0
+    top: 30
   },
   Icono: {
     width: 50,
     height: 50,
     backgroundColor: '#ddd',
     borderRadius: 10,
-    marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    left: 8
   },
   infoNombre: {
     position: 'absolute',
     top: 5,
-    left: 60
+    left: 70
   },
   infoHorario: {
     position: 'absolute',
     top: 25,
-    left: 60,
+    left: 70,
   },
   DescripcionText: {
     fontWeight: 'bold',
     fontSize: 16
+  },
+  botonllegar: {
+    position: 'absolute',
+    top: 243,
+    right: 8
   }
 });

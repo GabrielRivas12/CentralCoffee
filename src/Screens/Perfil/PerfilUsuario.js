@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   seccionBotones: {
     position: 'absolute',
     top: '24%',
-    left: '72.2%',
+    left: '71.4%',
     marginTop: 'auto',
     paddingBottom: 40,
     gap: 12,

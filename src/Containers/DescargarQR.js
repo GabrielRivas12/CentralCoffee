@@ -1,4 +1,3 @@
-// imageUtils.js
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 
