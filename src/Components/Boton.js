@@ -44,7 +44,7 @@ export default function Boton(props) {
           { height: props.alto || 50 },
           { borderColor: props.borderColor || '#ED6D4A' },
           { borderRadius: props.borderRadius || 5 },
-          { position: props.position || 'relative'}
+          { position: props.position || 'relative'},
 
 
 

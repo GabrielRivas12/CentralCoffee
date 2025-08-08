@@ -12,7 +12,7 @@
         <SafeAreaView edges={['left']}>
           {props.NombreLabel && (
             <Text style={[
-              styles.label,
+              styles.label, {  marginRight: props.margenRight || 0, marginLeft: props.margenLeft || 10 },
               modoOscuro ? styles.labelOscuro : styles.labelClaro
             ]}>
               {props.NombreLabel}
@@ -21,7 +21,7 @@
           <TextInput
             style={[
               styles.input,
-              { width: props.ancho || 350, height: props.alto || 50, marginRight: props.margenRight || 0 },
+              { width: props.ancho || 350, height: props.alto || 50, marginRight: props.margenRight || 0, marginLeft: props.margenLeft || 0 },
               modoOscuro ? styles.inputOscuro : styles.inputClaro
             ]}
             value={props.Valor}

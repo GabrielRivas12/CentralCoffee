@@ -14,13 +14,7 @@ export default function ComboBox(props) {
             selectedValue={props.value}
             onValueChange={props.onValuechange}
           >
-             {/* Placeholder no seleccionable */}
-            <Picker.Item
-              label="Seleccione una opción:"
-              value=""
-              enabled={false}
-              color="#666"  // color gris para diferenciar placeholder
-            />
+            
             {props.items.map((item, index) => (
              <Picker.Item
                 key={index}
@@ -51,6 +45,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    left:'2.5%'
   }
 });

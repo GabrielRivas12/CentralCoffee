@@ -123,6 +123,7 @@ export default function Login({ navigation }) {
               autoCapitalize="none"
               value={correoReset}
               onChangeText={setCorreoReset}
+               placeholderTextColor="#666" 
             />
             <Boton
               nombreB={bloquearBoton ? `Espera ${tiempoRestante}s` : 'Enviar correo'}
@@ -218,6 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    
   },
   modalInput: {
     width: '100%',

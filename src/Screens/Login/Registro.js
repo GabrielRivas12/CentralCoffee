@@ -5,11 +5,12 @@ import { useState } from 'react';
 import ComboBox from '../../Components/Picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { RegistroUsuario} from '../../Containers/RegistroUsuarios';
+import { RegistroUsuario } from '../../Containers/RegistroUsuarios';
 export default function Registro({ navigation }) {
 
     const opciones = [
 
+        { label: 'Seleccionar opcion', value: '' },
         { label: 'Comerciante', value: '1' },
         { label: 'Comprador', value: '2' },
     ];
@@ -46,35 +47,38 @@ export default function Registro({ navigation }) {
                         NombreLabel='Nombre de usuario'
                         Valor={nombre}
                         onchangetext={setNombre}
-                        placeholder='nombre'
+                        placeholder='Ingrese un nombre de usuario'
                     />
                     <InputText
                         NombreLabel='Correo'
                         Valor={correo}
                         onchangetext={setCorreo}
-                        placeholder='Correo'
+                        placeholder='Ingrese un correo valido'
                     />
                     <InputText
                         NombreLabel='Contraseña'
                         Valor={contrasena}
                         onchangetext={setContrasena}
-                        placeholder='Contraseña'
+                        placeholder='Ingrese una contraseña'
                         secureTextEntry
                     />
                     <InputText
                         NombreLabel='Confirme la contraseña'
                         Valor={confirmarContrasena}
                         onchangetext={setConfirmarContrasena}
-                        placeholder='Confirme contraseña'
+                        placeholder='Confirme la contraseña'
                         secureTextEntry
                     />
-                    <ComboBox
-                        NombrePicker="Seleccione su rol"
-                        value={valorSeleccionado}
-                        onValuechange={(itemValue) => setValorSeleccionado(itemValue)}
-                        items={opciones}
-                    />
-                    <View style={{ width: '100%', paddingLeft: 250 }}>
+
+                    <View style={styles.opciones}>
+                        <ComboBox
+                            NombrePicker="Seleccione su rol"
+                            value={valorSeleccionado}
+                            onValuechange={(itemValue) => setValorSeleccionado(itemValue)}
+                            items={opciones}
+                        />
+                    </View>
+                    <View style={styles.botonCrear}>
                         <Boton
                             nombreB="Crear"
                             ancho="100"
@@ -84,7 +88,7 @@ export default function Registro({ navigation }) {
                                 confirmarContrasena,
                                 nombre,
                                 valorSeleccionado,
-                                  limpiarFormulario 
+                                limpiarFormulario
                             })}
                         />
                     </View>
@@ -109,8 +113,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center'
     },
-    containerInput: {
-    },
     Titulo: {
         fontSize: 30,
         fontWeight: 'bold',
@@ -118,8 +120,12 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10
     },
-    label: {
-
+    opciones: {
+        left:'2.5%'
+    },
+    botonCrear: {
+        left: '32.5%',
+        top:'1%'
     }
 
 });

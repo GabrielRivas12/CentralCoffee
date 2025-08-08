@@ -131,15 +131,16 @@ export default function CrearOferta({ navigation }) {
           <View style={styles.formContainer}>
             <View style={styles.formContainerInputTipo}>
               <InputText
-                ancho='170'
-                margenRight='10'
+                ancho='165'
+
                 NombreLabel='Tipo de café'
                 Valor={TipoCafe}
                 onchangetext={setTipoCafe}
                 placeholder='Ingrese el tipo de café'
               />
               <InputText
-                ancho='170'
+                ancho='160'
+                marginRight='20'
                 NombreLabel='Variedad'
                 Valor={Variedad}
                 onchangetext={setVariedad}
@@ -149,15 +150,14 @@ export default function CrearOferta({ navigation }) {
 
             <View style={styles.formContainerInputTipo}>
               <InputText
-                ancho='170'
-                margenRight='10'
+                ancho='165'
                 NombreLabel='Estado del grano'
                 Valor={EstadoGrano}
                 onchangetext={setEstadoGrano}
                 placeholder='Ingrese el estado'
               />
               <InputText
-                ancho='170'
+                ancho='160'
                 NombreLabel='Clima'
                 Valor={Clima}
                 onchangetext={setClima}
@@ -167,15 +167,14 @@ export default function CrearOferta({ navigation }) {
 
             <View style={styles.formContainerInputTipo}>
               <InputText
-                ancho='170'
-                margenRight='10'
+                ancho='165'
                 NombreLabel='Altura'
                 Valor={Altura}
                 onchangetext={setAltura}
                 placeholder='Ingrese la altura'
               />
               <InputText
-                ancho='170'
+                ancho='160'
                 NombreLabel='Proceso de corte'
                 Valor={ProcesoCorte}
                 onchangetext={setProcesoCorte}
@@ -183,42 +182,54 @@ export default function CrearOferta({ navigation }) {
               />
             </View>
 
-            <View style={styles.formContainerInputTipo}>
+
+            <View style={styles.formp}>
               <ComboboxPickerDate
                 date={date}
                 show={show}
                 mode={mode}
                 text={text}
-                ancho='170'
                 verMode={() => verMode('date', setShow, setMode)}
                 onChange={SeleccionarFecha(setShow, setDate, setText, setFechaCosecha)}
               />
-              <InputText
-                ancho='170'
-                NombreLabel='Cantidad de p'
-                Valor={CantidadProduccion}
-                onchangetext={setCantidadProduccion}
-                placeholder='Ingrese la cantidad'
-              />
-            </View>
+
+
+
+            </View >
+
+          
+
+
 
             <View style={styles.formOfertalibra}>
               <InputText
-                ancho='170'
+                ancho='166'
                 NombreLabel='Oferta por libra'
                 Valor={OfertaLibra}
                 onchangetext={setOfertaLibra}
                 placeholder='Ingrese la oferta por libra'
               />
+               <InputText
+                ancho='165'
+                NombreLabel='Cantidad de p'
+                Valor={CantidadProduccion}
+                onchangetext={setCantidadProduccion}
+                placeholder='Ingrese la cantidad'
+              />
+
+            </View>
+
+            <View style={styles.panelopciones}>
               <ComboBox
                 NombrePicker="Lugar de entrega"
                 value={lugarSeleccionado}
                 onValuechange={(itemValue) => setLugarSeleccionado(itemValue)}
                 items={lugares}
               />
+              <Boton nombreB='Publicar' onPress={GuardarOferta} />
             </View>
 
-            <Boton nombreB='Publicar' onPress={GuardarOferta} />
+
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -236,7 +247,7 @@ const styles = StyleSheet.create({
     height: 150,
     backgroundColor: '#999',
     justifyContent: 'center',
-    marginLeft: 20,
+    marginLeft: '4.5%',
     marginTop: 10,
     borderRadius: 5,
     borderWidth: 1,
@@ -244,7 +255,6 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     alignItems: 'center',
-    width: '100%',
     paddingVertical: 20,
   },
   formContainerInputTipo: {
@@ -252,15 +262,26 @@ const styles = StyleSheet.create({
   },
   formOfertalibra: {
     alignSelf: 'flex-start',
-    marginLeft: 20,
+    top: '1%',
+    left: '2%'
   },
   encabezado: {
-    left: 20,
-    top: 8
+    top: 8,
+    left: '2%',
   },
   Titulo: {
     left: 10,
     fontWeight: 'bold',
     fontSize: 18
-  }
+  },
+  panelopciones: {
+    top: '1%'
+
+  },
+  formp: {
+    position: 'absolute',
+    top: '50.5%',
+    left: '53%'
+
+  },
 });

@@ -41,7 +41,7 @@ export default function Ofertas({ navigation }) {
 
         <View style={styles.containerBusqueda}>
           <InputText
-           modoOscuro={modoOscuro}
+            modoOscuro={modoOscuro}
             Valor={valorBusqueda}
             onchangetext={async (texto) => {
               setValorBusqueda(texto);
@@ -71,28 +71,17 @@ export default function Ofertas({ navigation }) {
               modoOscuro={modoOscuro}
             />
           ))}
-
         </ScrollView>
-        <View style={styles.botoncrear}>
+        <View style={styles.botoncrear} >
           <Boton
             onPress={() => navigation.navigate('Crear')}
             alto={60}
             ancho={60}
             borderRadius={40}
-            marginRight={0} />
-          <Octicons name="pencil" size={24} color="white" position='absolute' top={20} left={20} />
-        </View>
-
-        <View style={styles.botonbuscar}>
-          <Boton
-            onPress={BuscarOferta}
-            ColorBoton='transparent'
-            borderColor='transparent'
-            alto={50}
-            ancho={50}
-            borderRadius={5}
-            marginRight={0} />
-          <Octicons name="search" size={24} color="#666" position='absolute' top={16} left={15} />
+          />
+          <View pointerEvents="none" style={{ position: 'absolute', top: 20, left: 20 }}>
+            <Octicons name="pencil" size={24} color="white" />
+          </View>
         </View>
       </SafeAreaView>
     </View>
@@ -104,18 +93,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-    contenedorClaro: {
+  contenedorClaro: {
     backgroundColor: '#fff',
   },
   contenedorOscuro: {
     backgroundColor: '#000',
   },
   botoncrear: {
-    flex: 1,
     position: 'absolute',
-    bottom: 20,
     right: 10,
-    backgroundColor: 'transparent',
+    bottom: '10%'
   },
   containerBusqueda: {
     alignItems: 'center',
