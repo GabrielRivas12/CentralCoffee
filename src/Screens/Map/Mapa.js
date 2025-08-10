@@ -134,13 +134,14 @@ const styles = StyleSheet.create({
   },
   bottomPanel: {
     position: 'absolute',
-    bottom: 55,
-    left: 20,
+    bottom: 10,
+    left: 10,
     right: 20,
     backgroundColor: 'rgba(255,255,255,0.8)',
     padding: 10,
     borderRadius: 10,
-    height: 70
+    height: 70,
+    width: 373
 
   },
   Icono: {
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'Transparent',
     borderRadius: 8,
-    bottom: 150,
+    bottom: 100,
     right: 10,
   },
 

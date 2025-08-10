@@ -7,6 +7,7 @@ import Feather from '@expo/vector-icons/Feather';
 import OfertasCard from '../../Components/OfertasCard';
 import { VerificarOferta } from '../../Containers/VerificarOferta';
 import { EliminarOferta } from '../../Containers/EliminarOferta';
+import { usarTema } from '../../Containers/TemaApp';
 
 import appFirebase from '../../Services/Firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -23,6 +24,7 @@ const db = getFirestore(appFirebase);
 
 export default function EditarOfertas({ navigation }) {
 
+    const { modoOscuro } = usarTema();
     const [Ofertass, setOfertass] = useState([]);
     const [user, setUser] = useState(null);
 
@@ -62,11 +64,12 @@ export default function EditarOfertas({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
+        <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
             <SafeAreaView edges={['bottom']} style={{ flex: 1, alignItems: 'center' }}>
 
-                <Text style={styles.Titulo}> Mis ofertas </Text>
+                <Text style={[
+                    styles.Titulo, modoOscuro ? styles.TituloOscuro : styles.TituloClaro
+                ]}> Mis ofertas </Text>
 
                 <ScrollView style={styles.containerCard} showsVerticalScrollIndicator={false} >
                     {Ofertass.map((item, index) => (
@@ -77,6 +80,7 @@ export default function EditarOfertas({ navigation }) {
                                 titulo={item.titulo}
                                 precio={`Precio: C$${item.ofertaLibra} por libra`}
                                 navigation={navigation}
+                                modoOscuro={modoOscuro}
                             />
                             <TouchableOpacity
                                 onPress={() => VerificarOferta(item, LeerDatos)}
@@ -126,6 +130,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
+    containerClaro: {
+        backgroundColor: '#fff',
+    },
+    containerOscuro: {
+        backgroundColor: '#000',
+    },
+
     botoneditar: {
         borderRadius: 5,
         alignItems: 'center',
@@ -162,7 +173,14 @@ const styles = StyleSheet.create({
         right: 130,
         top: 10
     },
+    TituloClaro: {
+        color: '#000',
+    },
+    TituloOscuro: {
+        color: '#eee',
+    },
+
     containerCard: {
-        top: 10
+        top: 10,
     }
 });

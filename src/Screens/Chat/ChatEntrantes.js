@@ -5,9 +5,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { obtenerChatsDelUsuario } from '../../Containers/ObtenerChat';
+import { usarTema } from '../../Containers/TemaApp';
 import { auth } from '../../Services/Firebase';
 
 export default function ChatEntrantes({ navigation }) {
+
+    const { modoOscuro } = usarTema();
     const [chatsUsuario, setChatsUsuario] = useState([]);
     const userId = auth.currentUser ? auth.currentUser.uid : null;
 
@@ -46,13 +49,16 @@ export default function ChatEntrantes({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: '100%' }}>
+         <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+            <SafeAreaView edges={['bottom']} style={{ flex: 1, width: '100%' }}>
                 <FlatList
                     data={chatsUsuario}
                     keyExtractor={(item) => item.chatId}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={styles.chatItem} onPress={() => irAlChat(item.otroUsuarioId, item.nombreOtroUsuario, item.fotoPerfil)}>
+                        <TouchableOpacity
+                            style={styles.chatItem}
+                            onPress={() => irAlChat(item.otroUsuarioId, item.nombreOtroUsuario, item.fotoPerfil)}
+                        >
                             {item.fotoPerfil ? (
                                 <Image source={{ uri: item.fotoPerfil }} style={styles.avatar} />
                             ) : (
@@ -61,16 +67,28 @@ export default function ChatEntrantes({ navigation }) {
 
                             <View style={styles.chatContent}>
                                 <View style={styles.headerRow}>
-                                    <Text style={styles.chatTitle}>{item.nombreOtroUsuario}</Text>
-                                    <Text style={styles.chatDate}>{formatDate(item.ultimoTimestamp)}</Text>
+                                    <Text style={[styles.chatTitle, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                                        {item.nombreOtroUsuario}
+                                    </Text>
+                                    <Text style={[styles.chatDate, modoOscuro ? styles.textoOscuroSecundario : styles.textoClaroSecundario]}>
+                                        {formatDate(item.ultimoTimestamp)}
+                                    </Text>
                                 </View>
-                                <Text style={styles.chatMessage} numberOfLines={1} ellipsizeMode="tail">
+                                <Text
+                                    style={[styles.chatMessage, modoOscuro ? styles.textoOscuroSecundario : styles.textoClaroSecundario]}
+                                    numberOfLines={1}
+                                    ellipsizeMode="tail"
+                                >
                                     {item.ultimoMensaje || 'No hay mensajes aún'}
                                 </Text>
                             </View>
                         </TouchableOpacity>
                     )}
-                    ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>No tienes chats activos</Text>}
+                    ListEmptyComponent={
+                        <Text style={[{ textAlign: 'center', marginTop: 20 }, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                            No tienes chats activos
+                        </Text>
+                    }
                     contentContainerStyle={{ padding: 10 }}
                 />
             </SafeAreaView>
@@ -79,21 +97,33 @@ export default function ChatEntrantes({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
+     container: {
         flex: 1,
-        backgroundColor: '#fff'
+    },
+    containerClaro: {
+        backgroundColor: '#fff',
+    },
+    containerOscuro: {
+        backgroundColor: '#000',
     },
     chatItem: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#ddd'
+        borderBottomColor: '#ccc',
     },
     avatar: {
         width: 50,
         height: 50,
         borderRadius: 25,
+        marginRight: 12
+    },
+    avatarPlaceholder: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#bbb',
         marginRight: 12
     },
     chatContent: {
@@ -108,21 +138,23 @@ const styles = StyleSheet.create({
     chatTitle: {
         fontWeight: 'bold',
         fontSize: 16,
-        color: '#000'
     },
     chatDate: {
         fontSize: 12,
-        color: '#999'
     },
     chatMessage: {
-        color: '#666',
-        fontSize: 14
+        fontSize: 14,
     },
-    avatarPlaceholder: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#bbb',
-        marginRight: 12
-    }
+    textoClaro: {
+        color: '#000',
+    },
+    textoOscuro: {
+        color: '#fff',
+    },
+    textoClaroSecundario: {
+        color: '#666',
+    },
+    textoOscuroSecundario: {
+        color: '#ccc',
+    },
 });

@@ -10,6 +10,7 @@ import { Guardar } from '../../Containers/GuardarOferta';
 import { SubirImagenASupabase } from '../../Containers/SubirImagen';
 import { SeleccionarFecha, verMode } from '../../Containers/SeleccionarFecha';
 import { SeleccionarImagen } from '../../Containers/SeleccionarImagen';
+import { usarTema } from '../../Containers/TemaApp';
 
 import Boton from '../../Components/Boton';
 import InputText from '../../Components/TextInput';
@@ -22,6 +23,8 @@ export default function CrearOferta({ navigation }) {
   const route = useRoute();
   const ofertaEditar = route.params?.oferta || null;
   const db = getFirestore(appFirebase);
+  const { modoOscuro } = usarTema();
+
 
   const [imagen, SetImagen] = useState('');
   const [Titulo, setTitulo] = useState('');
@@ -42,7 +45,7 @@ export default function CrearOferta({ navigation }) {
   const [text, setText] = useState('Ingrese la fecha');
 
   const [lugares, setLugares] = useState([]);
-  const [lugarSeleccionado, setLugarSeleccionado] = useState('');
+  const [lugarSeleccionado, setLugarSeleccionado] = useState();
 
   const GuardarOferta = () => {
     Guardar({
@@ -102,7 +105,8 @@ export default function CrearOferta({ navigation }) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+
       <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.containerImagen}>
@@ -125,7 +129,11 @@ export default function CrearOferta({ navigation }) {
               placeholder='Ingrese el título de la oferta'
               maxCaracteres={50}
             />
-            <Text style={styles.Titulo}>Características</Text>
+
+            <Text style={[
+              styles.label, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>Características
+            </Text>
+
           </View>
 
           <View style={styles.formContainer}>
@@ -136,7 +144,7 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Tipo de café'
                 Valor={TipoCafe}
                 onchangetext={setTipoCafe}
-                placeholder='Ingrese el tipo de café'
+                placeholder=' '
               />
               <InputText
                 ancho='160'
@@ -144,7 +152,7 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Variedad'
                 Valor={Variedad}
                 onchangetext={setVariedad}
-                placeholder='Ingrese la variedad'
+                placeholder=' '
               />
             </View>
 
@@ -154,14 +162,14 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Estado del grano'
                 Valor={EstadoGrano}
                 onchangetext={setEstadoGrano}
-                placeholder='Ingrese el estado'
+                placeholder=' '
               />
               <InputText
                 ancho='160'
                 NombreLabel='Clima'
                 Valor={Clima}
                 onchangetext={setClima}
-                placeholder='Ingrese el clima'
+                placeholder=' '
               />
             </View>
 
@@ -171,20 +179,20 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Altura'
                 Valor={Altura}
                 onchangetext={setAltura}
-                placeholder='Ingrese la altura'
+                placeholder=' '
               />
               <InputText
                 ancho='160'
                 NombreLabel='Proceso de corte'
                 Valor={ProcesoCorte}
                 onchangetext={setProcesoCorte}
-                placeholder='Ingrese el proceso'
+                placeholder=' '
               />
             </View>
 
-
-            <View style={styles.formp}>
+            <View style={styles.Fecha}>
               <ComboboxPickerDate
+                label="Fecha de la cosecha"
                 date={date}
                 show={show}
                 mode={mode}
@@ -192,44 +200,36 @@ export default function CrearOferta({ navigation }) {
                 verMode={() => verMode('date', setShow, setMode)}
                 onChange={SeleccionarFecha(setShow, setDate, setText, setFechaCosecha)}
               />
-
-
-
             </View >
 
-          
-
-
-
-            <View style={styles.formOfertalibra}>
+            <View style={styles.formContainerInputTipo}>
               <InputText
                 ancho='166'
                 NombreLabel='Oferta por libra'
                 Valor={OfertaLibra}
                 onchangetext={setOfertaLibra}
-                placeholder='Ingrese la oferta por libra'
+                placeholder=' '
               />
-               <InputText
-                ancho='165'
+              <InputText
+                ancho='161'
                 NombreLabel='Cantidad de p'
                 Valor={CantidadProduccion}
                 onchangetext={setCantidadProduccion}
-                placeholder='Ingrese la cantidad'
+                placeholder=' '
               />
 
             </View>
 
             <View style={styles.panelopciones}>
               <ComboBox
-                NombrePicker="Lugar de entrega"
+                NombrePicker="Ubicación"
                 value={lugarSeleccionado}
                 onValuechange={(itemValue) => setLugarSeleccionado(itemValue)}
                 items={lugares}
               />
+              <Text style={styles.textopequeño}> Debe registrar una ubicación propia en el mapa</Text>
               <Boton nombreB='Publicar' onPress={GuardarOferta} />
             </View>
-
-
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -241,6 +241,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
+  },
+  textoClaro: {
+    color: '#000',
+  },
+  textoOscuro: {
+    color: '#fff',
+  },
+  panelOscuro: {
+    backgroundColor: '#1E1E1E',
+  },
+  labelClaro: {
+    color: '#000',
+    left: 10,
+    fontWeight: 'bold',
+    fontSize: 18
+  },
+  labelOscuro: {
+    color: '#fff',
+    left: 10,
+    fontWeight: 'bold',
+    fontSize: 18
   },
   containerImagen: {
     width: 350,
@@ -269,19 +296,16 @@ const styles = StyleSheet.create({
     top: 8,
     left: '2%',
   },
-  Titulo: {
-    left: 10,
-    fontWeight: 'bold',
-    fontSize: 18
+  textopequeño: {
+    color: '#999',
+    marginBottom: 10
   },
   panelopciones: {
-    top: '1%'
-
+    marginTop: '22%'
   },
-  formp: {
+  Fecha: {
     position: 'absolute',
-    top: '50.5%',
-    left: '53%'
-
+    marginTop: 370,
+    marginRight: 180,
   },
 });

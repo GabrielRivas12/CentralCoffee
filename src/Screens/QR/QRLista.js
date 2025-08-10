@@ -8,6 +8,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { generarYSubirQR } from '../../Containers/GenerarSubirQR';
 import { descargarImagen } from '../../Containers/DescargarQR';
+import { usarTema } from '../../Containers/TemaApp';
 
 import appFirebase from '../../Services/Firebase';
 import { getAuth } from 'firebase/auth';
@@ -23,6 +24,7 @@ import {
 const db = getFirestore(appFirebase);
 
 export default function QRLista({ navigation }) {
+  const { modoOscuro } = usarTema();
 
   const [Ofertass, setOfertass] = useState([]);
   const [qrImageUrl, setQrImageUrl] = useState(null);
@@ -58,15 +60,16 @@ export default function QRLista({ navigation }) {
     setOfertass(d);
   };
 
-  
-    
+
+
 
   return (
-    <View style={styles.container}>
-      <Text> Lista de QR </Text>
+    <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
       <SafeAreaView edges={['bottom']} style={{ flex: 1, alignItems: 'center' }}>
 
-        <Text style={styles.Titulo}> Mis ofertas </Text>
+        <Text style={[
+          styles.Titulo, modoOscuro ? styles.TituloOscuro : styles.TituloClaro
+        ]}> Lista de QR </Text>
 
         <ScrollView style={styles.containerCard} showsVerticalScrollIndicator={false} >
           {Ofertass.map((item, index) => (
@@ -77,11 +80,12 @@ export default function QRLista({ navigation }) {
                 titulo={item.titulo}
                 precio={`Precio: C$${item.ofertaLibra} por libra`}
                 navigation={navigation}
+                modoOscuro={modoOscuro}
               />
               <TouchableOpacity
-                 onPress={() => generarYSubirQR(item, setQrRender, setQrImageUrl, setModalVisible)}
+                onPress={() => generarYSubirQR(item, setQrRender, setQrImageUrl, setModalVisible)}
                 style={styles.botonCrearQR}>
-                <Ionicons name="qr-code-outline" size={24} color="black" />
+                <Ionicons name="qr-code-outline" size={24} color={modoOscuro ? '#fff' : '#000'} />
               </TouchableOpacity>
             </View>
           ))}
@@ -105,21 +109,21 @@ export default function QRLista({ navigation }) {
                   resizeMode="contain"
                 />
               )}
-               <View style={{ flexDirection: 'row', marginTop: 15 }}>
-            <TouchableOpacity
-              onPress={() => descargarImagen(qrImageUrl)}
-              style={[styles.modalButton, { marginRight: 10, backgroundColor: '#28a745' }]}
-            >
-              <Text style={styles.modalButtonText}>Descargar</Text>
-            </TouchableOpacity>
+              <View style={{ flexDirection: 'row', marginTop: 15 }}>
+                <TouchableOpacity
+                  onPress={() => descargarImagen(qrImageUrl)}
+                  style={[styles.modalButton, { marginRight: 10, backgroundColor: '#28a745' }]}
+                >
+                  <Text style={styles.modalButtonText}>Descargar</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              style={styles.modalButton}
-            >
-              <Text style={styles.modalButtonText}>Cerrar</Text>
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={styles.modalButton}
+                >
+                  <Text style={styles.modalButtonText}>Cerrar</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modal>
@@ -135,6 +139,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
+  },
+  Titulo: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    right: 130,
+    marginTop: 5
+  },
+  TituloClaro: {
+    color: '#000',
+  },
+  TituloOscuro: {
+    color: '#eee',
+  },
+
   botonCrearQR: {
     position: 'absolute',
     top: 205,
@@ -168,4 +191,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+
 });

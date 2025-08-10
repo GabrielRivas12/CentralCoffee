@@ -111,7 +111,7 @@ export default function PerfilUsuario({ navigation, route }) {
 
   return (
     <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[styles.contenedor, modoOscuro ? styles.contenedorOscuro : styles.contenedorClaro]}>
+      <ScrollView style={[modoOscuro ? styles.contenedorOscuro : styles.contenedorClaro]}>
 
         {/* Imagen de portada */}
         <View>
@@ -130,41 +130,37 @@ export default function PerfilUsuario({ navigation, route }) {
           />
         </View>
 
-        <View style={styles.encabezadoPerfil}>
-          <Text style={[styles.textoNombre, modoOscuro && styles.textoOscuro]}>
-            {usuarioData.nombre}
-          </Text>
+        <Text style={[styles.textoNombre, modoOscuro && styles.textoOscuro]}>{usuarioData.nombre}</Text>
+        <Text style={[styles.textoRol, modoOscuro && styles.textoOscuro]}>{usuarioData.rol}</Text>
 
-          <View style={styles.botonesAccion}>
-            {user?.uid !== usuarioData.uid && (
-              <Boton
-                nombreB="Mensaje"
-                alto={30}
-                ancho={90}
-                onPress={() => {
-                  navigation.navigate('Chat', {
-                    otroUsuarioId: usuarioData.uid,
-                  });
-                }}
-              />
-            )}
+        <View style={styles.botonEM}>
+          {user?.uid !== usuarioData.uid && (
+            <Boton
+              nombreB="Mensaje"
+              alto={30}
+              ancho={90}
+              onPress={() => {
+                navigation.navigate('Chat', {
+                  otroUsuarioId: usuarioData.uid,
+                });
+              }}
+            />
+          )}
 
-            {user?.uid === usuarioData.uid && (
-              <Boton
-                nombreB="Editar perfil"
-                alto={30}
-                ancho={90}
-                onPress={() => {
-                  navigation.navigate('Editar Informacion');
-                }}
-              />
-            )}
-          </View>
+          {user?.uid === usuarioData.uid && (
+            <Boton
+              nombreB="Editar perfil"
+              alto={30}
+              ancho={90}
+              onPress={() => {
+                navigation.navigate('Editar Informacion');
+              }}
+            />
+          )}
 
         </View>
 
 
-        <Text style={[styles.textoRol, modoOscuro && styles.textoOscuro]}>{usuarioData.rol} </Text>
 
         <View style={[styles.separador, modoOscuro && { backgroundColor: '#555' }]} />
 
@@ -188,7 +184,7 @@ export default function PerfilUsuario({ navigation, route }) {
 
 
 
-        <Text style={[styles.textoNombre, modoOscuro && styles.textoOscuro]}> Mis Ofertas</Text>
+        <Text style={[styles.textoOferta, modoOscuro && styles.textoOscuro]}> Mis Ofertas</Text>
 
         {Ofertass.map((item, index) => (
           <OfertasCard
@@ -202,19 +198,6 @@ export default function PerfilUsuario({ navigation, route }) {
           />
         ))}
 
-        {/* Botones inferiores */}
-        <View style={styles.seccionBotones}>
-          <Boton
-            nombreB={modoOscuro ? 'Tema Claro' : 'Tema Oscuro'}
-            onPress={alternarTema}
-            backgroundColor={modoOscuro ? '#888' : '#ddd'}
-            textColor={modoOscuro ? '#fff' : '#000'}
-            ancho='90'
-            alto='30'
-          />
-        </View>
-
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -224,26 +207,29 @@ const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
     paddingHorizontal: 5,
-    paddingTop: 5,
-    paddingBottom: 20, // para dejar espacio al final
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   contenedorClaro: {
     backgroundColor: '#fff',
   },
   contenedorOscuro: {
-    backgroundColor: '#111',
+    backgroundColor: '#000',
+  },
+  textoOscuro: {
+    color: '#fff',
   },
   imagenPortada: {
-    width: '100%',
+    width: '96%',
     height: 110,
     borderRadius: 10,
     backgroundColor: '#999',
+    marginTop: 5,
+    marginLeft: 7.5
   },
   contenedorImagenPerfil: {
-    position: 'absolute',
-    top: 90,
-    left: 10,
-    zIndex: 10,
+    marginTop: -35, // superpone un poco sobre la portada
+    marginLeft: 15,
   },
   imagenPerfil: {
     width: 80,
@@ -254,30 +240,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#999',
   },
   encabezadoPerfil: {
-    marginTop: 60,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
-    marginBottom: 10,
   },
   textoNombre: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000',
-    marginLeft: 10
+    marginBottom: 60,
+    marginLeft:10,
+    marginTop: 5
   },
   textoRol: {
     fontSize: 12,
-    marginLeft: 16,
-    position: 'absolute',
-    top: 205
+    marginBottom: 50,
+    marginVertical: -60,
+    marginLeft: 10
   },
   separador: {
     height: 2,
-    width: '100%',
+    width: '95%',
     backgroundColor: '#ccc',
-    marginVertical: 12,
+    marginLeft: 10,
+    marginTop: 35
   },
   tituloSobreMi: {
     fontSize: 16,
@@ -291,6 +277,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 10,
+    width: '95%',
+    marginLeft: 10
   },
   textoDescripcion: {
     fontSize: 14,
@@ -306,25 +294,21 @@ const styles = StyleSheet.create({
     marginLeft: 5
   },
   seccionBotones: {
-    position: 'absolute',
-    top: '24%',
-    left: '71.4%',
-    marginTop: 'auto',
-    paddingBottom: 40,
-    gap: 12,
-    paddingHorizontal: 20,
-  },
-  seccionInferior: {
-    marginTop: 10,
-  },
-  textoOscuro: {
-    color: '#fff',
-  },
-  botonesAccion: {
-    flexDirection: 'row',
+    marginTop: 20,
     alignItems: 'center',
-    bottom: '50',
-    right: 2
+  },
+  textoOferta: {
+    marginLeft: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  botonEM: {
+    marginTop: -95,
+    marginLeft: 285
+  },
+  botonTema: {
+    marginLeft: 285
   }
 
 });

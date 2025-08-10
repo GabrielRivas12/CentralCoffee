@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { IniciarLogin } from '../../Containers/IniciarSesion';
 import { enviarRecuperacion, IniciarTemporizador } from '../../Containers/RecuperarCuenta';
+import { usarTema } from '../../Containers/TemaApp';
 
 
 import {
@@ -23,6 +24,8 @@ const db = getFirestore(appFirebase);
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Login({ navigation }) {
+
+  const { modoOscuro } = usarTema();
 
   const [Correo, setCorreo] = useState('');
   const [Contraseña, setContraseña] = useState('');
@@ -51,7 +54,7 @@ export default function Login({ navigation }) {
   }, [response]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
       <SafeAreaView style={{ backgroundColor: '#ED6D4A', flex: 1, alignItems: 'center' }}>
         <View style={styles.containerBanner}>
@@ -60,7 +63,7 @@ export default function Login({ navigation }) {
       </SafeAreaView>
       <View style={styles.containerCuerpo}>
 
-        <Text style={styles.Titulo}>Login</Text>
+        <Text style={[styles.Titulo, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>Login</Text>
 
         <TouchableOpacity style={styles.button} disabled={!request}
           onPress={() => promptAsync()}>
@@ -74,9 +77,18 @@ export default function Login({ navigation }) {
           <Text style={styles.text}></Text>
         </TouchableOpacity>
 
-        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 30, alignSelf: 'flex-start', marginLeft: 25, }} />
-        <Text style={{ position: 'absolute', marginVertical: 164 }}> O </Text>
-        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 174, alignSelf: 'flex-end', position: 'absolute', marginRight: 20, }} />
+        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 32, alignSelf: 'flex-start', marginLeft: 25, }} />
+        <Text
+          style={[
+            styles.label,
+            modoOscuro ? styles.labelOscuro : styles.labelClaro,
+            { position: 'absolute', marginVertical: 145, marginLeft: 10 }
+          ]}
+        >
+          O
+        </Text>
+
+        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 173, alignSelf: 'flex-end', position: 'absolute', marginRight: 20, }} />
 
         <View style={styles.containerInput}>
           <InputText
@@ -114,8 +126,8 @@ export default function Login({ navigation }) {
         onRequestClose={() => setModalVisible(false)}>
 
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Recuperar contraseña</Text>
+          <View style={[styles.modalContainer, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+            <Text style={[styles.modalTitle, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>Recuperar contraseña</Text>
             <TextInput
               style={styles.modalInput}
               placeholder="Ingresa tu correo"
@@ -123,7 +135,7 @@ export default function Login({ navigation }) {
               autoCapitalize="none"
               value={correoReset}
               onChangeText={setCorreoReset}
-               placeholderTextColor="#666" 
+              placeholderTextColor="#666"
             />
             <Boton
               nombreB={bloquearBoton ? `Espera ${tiempoRestante}s` : 'Enviar correo'}
@@ -136,7 +148,7 @@ export default function Login({ navigation }) {
                 })
               }
               ancho='270'
-              deshabilitado={bloquearBoton}/>
+              deshabilitado={bloquearBoton} />
 
             <Boton nombreB='Cancelar' onPress={() => setModalVisible(false)} backgroundColor="#ccc" ancho='270' />
 
@@ -152,6 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+
   containerBanner: {
     flex: 1,
     backgroundColor: '#ED6D4A',
@@ -160,6 +173,13 @@ const styles = StyleSheet.create({
 
 
   },
+  containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
+  },
+
   containerCuerpo: {
     flex: 2.5,
     justifyContent: 'flex-start',
@@ -177,6 +197,12 @@ const styles = StyleSheet.create({
     marginLeft: 180,
     paddingBottom: 20,
     paddingTop: 20
+  },
+  labelClaro: {
+    color: '#000',
+  },
+  labelOscuro: {
+    color: '#eee',
   },
   vboton: {
     marginBottom: 5
@@ -219,7 +245,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    
+
   },
   modalInput: {
     width: '100%',

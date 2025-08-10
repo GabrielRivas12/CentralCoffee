@@ -1,51 +1,77 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { usarTema } from '../Containers/TemaApp';
 
 export default function ComboBox(props) {
+  const { modoOscuro } = usarTema();
+
   return (
-    <View style={styles.container}>
-      <SafeAreaView edges={['left']} style={{ backgroundColor: '#fff', }}>
-        <Text style={styles.label}>{props.NombrePicker}</Text>
-        <View style={styles.picker}>
-          <Picker
-            style={styles.picker}
-            selectedValue={props.value}
-            onValueChange={props.onValuechange}
-          >
-            
-            {props.items.map((item, index) => (
-             <Picker.Item
-                key={index}
-                label={item.label}
-                value={item.value}
-                color={props.textColor || '#666'}
-                />
-            ))}
-          </Picker>
-        </View>
-      </SafeAreaView>
+      <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+      <Text style={[styles.label, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>
+        {props.NombrePicker}
+      </Text>
+      <View style={[
+        styles.pickerContainer,
+        modoOscuro ? styles.pickerContainerOscuro : styles.pickerContainerClaro
+      ]}>
+        <Picker
+          style={[styles.picker, { color: modoOscuro ? '#fff' : '#000' }]}
+          selectedValue={props.value}
+          onValueChange={props.onValuechange}
+        >
+          {props.items.map((item, index) => (
+            <Picker.Item
+              key={index}
+              label={item.label}
+              value={item.value}
+              color={modoOscuro ? '#000' : '#000'}
+            />
+          ))}
+        </Picker>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    paddingBottom: 5
+container: {
+    paddingBottom: 5,
   },
-  picker: {
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#999',
-    width: 350,
-    borderColor: '#999',
-    height: 52,
+  containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    left:'2.5%'
-  }
+    marginLeft: '2.5%',
+    marginBottom: 5,
+  },
+  labelClaro: {
+    color: '#000',
+  },
+  labelOscuro: {
+    color: '#fff',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderRadius: 5,
+    width: 350,
+    height: 52,
+    overflow: 'hidden', // esto mantiene las esquinas redondeadas
+  },
+  pickerContainerClaro: {
+    backgroundColor: '#fff',
+    borderColor: '#999',
+  },
+  pickerContainerOscuro: {
+    backgroundColor: '#333',
+    borderColor: '#666',
+  },
+  picker: {
+    height: 52,
+    width: '100%',
+  },
 });

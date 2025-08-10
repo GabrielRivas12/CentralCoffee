@@ -8,14 +8,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { DirigirGoogleMaps } from '../../Containers/DirigirGoogleMaps';
+import { usarTema } from '../../Containers/TemaApp';
 
 
 export default function DetallesMapa({ route }) {
   const { marker } = route.params;
+  const { modoOscuro } = usarTema();
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView edges={[ 'bottom']} style={{ backgroundColor: '#fff', flex: 1 }}>
+    <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
         <View style={styles.mapaContainer}>
           {marker.coordinate && (
             <MapView
@@ -43,26 +45,36 @@ export default function DetallesMapa({ route }) {
             <Feather name="map-pin" size={24} color="black" />
           </View>
 
-            <Text style={styles.infoNombre}>{marker.nombre}</Text>
-            <Text style={styles.infoHorario}>Horario: {marker.horario}</Text>
+          <Text style={[
+            styles.infoNombre, modoOscuro ? styles.infoNombreOscuro : styles.infoClaro
+          ]}>{marker.nombre}</Text>
+          <Text style={[styles.infoHorario, modoOscuro ? styles.infoHorarioOscuro : styles.infoHorarioClaro]}>
+            Horario: {marker.horario}
+          </Text>
         </View>
 
-          <View style={styles.containerDescripcion}>
-          <Text style={styles.DescripcionText}>Descripción:</Text>
-          <Text>{marker.descripcion}</Text>
+        <View style={styles.containerDescripcion}>
+           <Text style={[styles.DescripcionText, modoOscuro ? styles.textOscuro : styles.textClaro]}>
+            Descripción:
+          </Text>
+          <Text style={[modoOscuro ? styles.textOscuro : styles.textClaro]}>
+            {marker.descripcion}
+          </Text>
         </View>
 
 
         <View style={styles.botonllegar}>
           <Boton
-            nombreB="Cómo llegar"
-            onPress={() => DirigirGoogleMaps (marker.coordinate)}
+            nombreB=" "
+            onPress={() => DirigirGoogleMaps(marker.coordinate)}
             backgroundColor="#ddd"
-            ancho='140'
+            ancho='50'
             alto='45'
             Textoright='15'
           />
-          <MaterialCommunityIcons name="directions" size={30} color="white" position='absolute'  top='10' left='100' />
+          <View pointerEvents="none" style={{ position: 'absolute' }}>
+            <MaterialCommunityIcons name="directions" size={30} color="white" position='absolute' top='10' left='10' />
+          </View>
         </View>
       </SafeAreaView>
     </View>
@@ -75,6 +87,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
+  },
   previewMap: {
     flex: 1
   },
@@ -85,8 +103,8 @@ const styles = StyleSheet.create({
     top: 10,
     left: 8,
     borderRadius: 10,
-    borderColor: '#000', 
-    overflow: 'hidden',  
+    borderColor: '#000',
+    overflow: 'hidden',
   },
   containerDescripcion: {
     width: 375,
@@ -95,7 +113,6 @@ const styles = StyleSheet.create({
     left: 8
   },
   PanelUbicacion: {
-    backgroundColor: 'rgba(255,255,255,0.8)',
     borderRadius: 10,
     height: 70,
     top: 30
@@ -103,7 +120,7 @@ const styles = StyleSheet.create({
   Icono: {
     width: 50,
     height: 50,
-    backgroundColor: '#ddd',
+    backgroundColor: '#fff',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -114,18 +131,36 @@ const styles = StyleSheet.create({
     top: 5,
     left: 70
   },
+  infoNombreClaro: {
+    color: '#000',
+  },
+  infoNombreOscuro: {
+    color: '#fff',
+  },
   infoHorario: {
     position: 'absolute',
     top: 25,
     left: 70,
   },
+  infoHorarioClaro: {
+    color: '#000',
+  },
+  infoHorarioOscuro: {
+    color: '#fff',
+  },
   DescripcionText: {
     fontWeight: 'bold',
     fontSize: 16
   },
+    textClaro: {
+    color: '#000',
+  },
+  textOscuro: {
+    color: '#fff',
+  },
   botonllegar: {
     position: 'absolute',
-    top: 243,
+    top: 245,
     right: 8
   }
 });

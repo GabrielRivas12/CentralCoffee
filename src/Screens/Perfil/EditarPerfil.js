@@ -1,5 +1,3 @@
-// src/Screens/EditarInformacion.js
-
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -22,11 +20,14 @@ import appFirebase from '../../Services/Firebase';
 import Boton from '../../Components/Boton';
 import InputText from '../../Components/TextInput';
 import { SeleccionarImagen } from '../../Containers/SeleccionarImagen';
+import { usarTema } from '../../Containers/TemaApp';
 
 export default function EditarInformacion({ navigation }) {
   const auth = getAuth(appFirebase);
   const db = getFirestore(appFirebase);
   const user = auth.currentUser;
+  const { modoOscuro } = usarTema();
+
 
   const [nombre, setNombre] = useState('');
   const [rol, setRol] = useState('');
@@ -138,7 +139,11 @@ export default function EditarInformacion({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['bottom']}>
+    <SafeAreaView
+      style={[{ flex: 1 }, modoOscuro ? styles.fondoOscuro : styles.fondoClaro]}
+      edges={['bottom']}
+    >
+
       <ScrollView contentContainerStyle={styles.container}>
         {/* Imagen de portada */}
         <TouchableOpacity onPress={seleccionarImagenPortada} style={styles.imagenPortada}>
@@ -205,6 +210,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 15,
   },
+  fondoClaro: {
+    backgroundColor: '#fff',
+  },
+  fondoOscuro: {
+    backgroundColor: '#000',
+  },
+
   imagenPortada: {
     width: '100%',
     height: 110,
@@ -228,12 +240,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ccc'
   },
- imagenPerfil: {
-  width: '100%',
-  height: '100%',
-  borderRadius: 43,  // para que sea circular igual que el contenedor
-  backgroundColor: '#999',
-},
+  imagenPerfil: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 43,  // para que sea circular igual que el contenedor
+    backgroundColor: '#999',
+  },
 
   textoImagen: {
     color: '#444',

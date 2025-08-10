@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 
 import { obtenerDatosUsuario } from '../../Containers/ObtenerUsuario';
+import { usarTema } from '../../Containers/TemaApp';
+
 import {
   collection,
   getFirestore,
@@ -18,7 +20,7 @@ const db = getFirestore(appFirebase);
 
 
 export default function DetallesOferta({ route, navigation }) {
-
+  const { modoOscuro } = usarTema();
   const { oferta } = route.params;
   const [Ofertass, setOfertass] = useState([]);
 
@@ -76,9 +78,9 @@ export default function DetallesOferta({ route, navigation }) {
 
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
       <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
-      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1 }}>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
 
         <View style={styles.containerListaImagen}>
           <Image
@@ -88,37 +90,30 @@ export default function DetallesOferta({ route, navigation }) {
           />
         </View>
 
-        <Text style={styles.Titulo}>{oferta.titulo}</Text>
+        <Text style={[styles.Titulo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>{oferta.titulo}</Text>
 
-        <View style={styles.containerInformacion}>
-          <Text style={styles.TextoTitulo}>Características</Text>
-          <View style={styles.row}>
-            <View style={styles.col}>
-              <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Tipo de café:</Text>
-                <Text>{oferta.tipoCafe}</Text>
-              </View>
-            </View>
-            <View style={styles.col}>
-              <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Variedad:</Text>
-                <Text>{oferta.variedad}</Text>
-              </View>
-            </View>
-          </View>
-
+        <View style={[styles.containerInformacion, modoOscuro && { backgroundColor: '#333' }]}>
+          <Text style={[styles.TextoTitulo, modoOscuro ? styles.TextoTituloOscuro : styles.TextoTituloClaro]}>Características</Text>
 
           <View style={styles.row}>
             <View style={styles.col}>
               <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Estado del grano:</Text>
-                <Text>{oferta.estadoGrano}</Text>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Tipo de café:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.tipoCafe}
+                </Text>
               </View>
             </View>
             <View style={styles.col}>
               <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Clima:</Text>
-                <Text>{oferta.clima}</Text>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Variedad:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.variedad}
+                </Text>
               </View>
             </View>
           </View>
@@ -126,14 +121,22 @@ export default function DetallesOferta({ route, navigation }) {
           <View style={styles.row}>
             <View style={styles.col}>
               <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Altura:</Text>
-                <Text>{oferta.altura}</Text>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Estado del grano:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.estadoGrano}
+                </Text>
               </View>
             </View>
             <View style={styles.col}>
               <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Proceso de corte:</Text>
-                <Text>{oferta.procesoCorte}</Text>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Clima:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.clima}
+                </Text>
               </View>
             </View>
           </View>
@@ -141,14 +144,22 @@ export default function DetallesOferta({ route, navigation }) {
           <View style={styles.row}>
             <View style={styles.col}>
               <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Oferta por libra:</Text>
-                <Text>{oferta.ofertaLibra}</Text>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Altura:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.altura}
+                </Text>
               </View>
             </View>
             <View style={styles.col}>
               <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Fecha de cosecha:</Text>
-                <Text>{oferta.fechaCosecha}</Text>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Proceso de corte:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.procesoCorte}
+                </Text>
               </View>
             </View>
           </View>
@@ -156,13 +167,40 @@ export default function DetallesOferta({ route, navigation }) {
           <View style={styles.row}>
             <View style={styles.col}>
               <View style={styles.TextoDato}>
-                <Text style={styles.TextoInfo}>Cantidad de producción:</Text>
-                <Text>{oferta.cantidadProduccion}</Text>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Oferta por libra:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.ofertaLibra}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.col}>
+              <View style={styles.TextoDato}>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Fecha de cosecha:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.fechaCosecha}
+                </Text>
               </View>
             </View>
           </View>
 
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <View style={styles.TextoDato}>
+                <Text style={[styles.TextoInfo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+                  Cantidad de producción:
+                </Text>
+                <Text style={modoOscuro ? styles.textoOscuro : styles.textoClaro}>
+                  {oferta.cantidadProduccion}
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
+
 
 
 
@@ -173,8 +211,8 @@ export default function DetallesOferta({ route, navigation }) {
               <Feather name="map-pin" size={24} color="black" />
             </View>
 
-            <Text style={styles.infoTitle}>{selectedMarker.nombre}</Text>
-            <Text style={styles.infoText}>Horario: {selectedMarker.horario}</Text>
+            <Text style={[styles.infoTitle, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>{selectedMarker.nombre}</Text>
+            <Text style={[styles.infoText, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>Horario: {selectedMarker.horario}</Text>
 
             <View style={styles.BotonInfo}>
               <Boton
@@ -223,6 +261,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff'
   },
+  containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
+  },
+
   containerInformacion: {
     backgroundColor: '#EBEBEB',
     width: 355,
@@ -247,7 +292,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-around',
     marginTop: 50,
-    left: '26.9%'
+    left: '26%'
   },
   Titulo: {
     marginLeft: 15,
@@ -263,6 +308,13 @@ const styles = StyleSheet.create({
     top: 5,
     left: 20
   },
+  TextoTituloClaro: {
+    color: '#000',
+  },
+  TextoTituloOscuro: {
+    color: '#eee',
+  },
+
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -275,12 +327,11 @@ const styles = StyleSheet.create({
   bottomPanel: {
     position: 'relative',
     left: 0,
-    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     height: 70,
     top: 30
-    
+
 
   },
   BotonInfo: {
@@ -288,12 +339,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 18,
     right: 0,
-   
+
   },
   Icono: {
     width: 50,
     height: 50,
-    backgroundColor: '#ddd',
+    backgroundColor: '#fff',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -310,6 +361,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 35,
   },
+  textoClaro: {
+    color: '#000',
+  },
+  textoOscuro: {
+    color: '#fff',
+  },
+
   TextoDato: {
     marginLeft: 30,
     marginTop: 15,

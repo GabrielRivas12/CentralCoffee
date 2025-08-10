@@ -1,13 +1,14 @@
-import { StyleSheet, Text, View, Alert } from 'react-native';
+import { StyleSheet, Text, View, Alert, ScrollView } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import { useState } from 'react';
-import ComboBox from '../../Components/Picker';
 import appFirebase from '../../Services/Firebase';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GuardarMarcador } from '../../Containers/GuardarMarcador';
+import { usarTema } from '../../Containers/TemaApp';
+import ComboboxPickerDate from '../../Components/PickerDate';
 
 import {
   collection,
@@ -21,14 +22,23 @@ const db = getFirestore(appFirebase);
 
 export default function CrearMarcador({ navigation, route }) {
   const coord = route.params?.coordinate;
+  const { modoOscuro } = usarTema();
 
   const [nombrelugar, setNombrelugar] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [horario, setHorario] = useState('');
+  const [horaInicio, setHoraInicio] = useState(new Date());
+  const [horaFin, setHoraFin] = useState(new Date());
+  const [mostrarHoraInicio, setMostrarHoraInicio] = useState(false);
+  const [mostrarHoraFin, setMostrarHoraFin] = useState(false);
+  const [textoHoraInicio, setTextoHoraInicio] = useState('');
+  const [textoHoraFin, setTextoHoraFin] = useState('');
+
+
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', flex: 1, width: 390 }}>
+   <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
 
         <View style={styles.mapacontainer}>
           {coord && (
@@ -51,7 +61,8 @@ export default function CrearMarcador({ navigation, route }) {
           )}
         </View>
 
-        <View style={styles.containerCuerpo}>
+        <View contentContainerStyle={styles.containerInput}>
+
           <View style={styles.containerInput}>
             <InputText
               NombreLabel='Nombre del lugar'
@@ -66,15 +77,59 @@ export default function CrearMarcador({ navigation, route }) {
               placeholder='Añade una descripcion del lugar'
             />
 
-            <InputText
-              NombreLabel='Horario'
-              Valor={horario}
-              onchangetext={setHorario}
-              placeholder='Establece un horario'
-            />
 
 
-            <View style={{ width: '100%', left: 145 }}>
+            <View style={styles.pickerhora}>
+              <ComboboxPickerDate
+                label="Hora de inicio"
+                date={horaInicio}
+                mode="time"
+                show={mostrarHoraInicio}
+                verMode={() => setMostrarHoraInicio(true)}
+                text={textoHoraInicio || 'Hora de inicio'}
+                onChange={(event, selectedDate) => {
+                  const currentDate = selectedDate || horaInicio;
+                  setMostrarHoraInicio(false);
+                  setHoraInicio(currentDate);
+
+                  const formatted = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  setTextoHoraInicio(formatted);
+
+                  // Usar el valor actual de formatted y textoHoraFin
+                  if (textoHoraFin) {
+                    setHorario(`${formatted} - ${textoHoraFin}`);
+                  } else {
+                    setHorario(formatted);
+                  }
+                }}
+              />
+
+              <ComboboxPickerDate
+                label="Hora de fin"
+                date={horaFin}
+                mode="time"
+                show={mostrarHoraFin}
+                verMode={() => setMostrarHoraFin(true)}
+                text={textoHoraFin || 'Hora de fin'}
+                onChange={(event, selectedDate) => {
+                  const currentDate = selectedDate || horaFin;
+                  setMostrarHoraFin(false);
+                  setHoraFin(currentDate);
+
+                  const formatted = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  setTextoHoraFin(formatted);
+
+                  // Usar el valor actual de formatted y textoHoraInicio
+                  if (textoHoraInicio) {
+                    setHorario(`${textoHoraInicio} - ${formatted}`);
+                  } else {
+                    setHorario(formatted);
+                  }
+                }}
+              />
+            </View>
+
+            <View style={styles.botoncrear}>
               <Boton
                 nombreB="Crear"
                 ancho="100"
@@ -92,18 +147,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+    containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
   },
   containerCuerpo: {
-    flex: 2.5,
     alignItems: 'center',
     width: '90%',
   },
   containerInput: {
     width: '100%',
     paddingHorizontal: 10,
-    gap: 10,
   },
   previewMap: {
     flex: 1,
@@ -121,8 +180,17 @@ const styles = StyleSheet.create({
     top: 10,
     left: 20,
     borderRadius: 10,
-    borderColor: '#000', 
-    overflow: 'hidden',  
+    borderColor: '#000',
+    overflow: 'hidden',
     backgroundColor: 'black'
+  },
+  pickerhora: {
+    flexDirection: 'row',
+    marginLeft: 5,
+    justifyContent: 'space-around',
+  },
+  botoncrear: {
+    marginLeft: 250,
+    marginTop: 10
   }
 });

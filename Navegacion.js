@@ -1,4 +1,4 @@
-import { View, Text, Image,  TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
@@ -13,6 +13,7 @@ import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+import { usarTema } from './src/Containers/TemaApp';
 
 import Ofertas from './src/Screens/Ofertas/Ofertas';
 import Mapa from './src/Screens/Map/Mapa';
@@ -63,10 +64,8 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigate() {
+    const { modoOscuro } = usarTema();
     return (
-
-
-
         <Drawer.Navigator
             initialRouteName='Ofertas'
             drawerContent={props => <CustomDrawerContent {...props} />}
@@ -90,7 +89,7 @@ function DrawerNavigate() {
                     drawerActiveTintColor: '#666',
                     drawerInactiveTintColor: '#666',
                     drawerActiveBackgroundColor: '#ffdfd7ff',
-                    
+
                     drawerLabelStyle: {
                         fontSize: 16,
                     },
@@ -114,7 +113,7 @@ function DrawerNavigate() {
             <Drawer.Screen name="Bandeja de entrada" component={StackChat}
                 options={{
                     drawerIcon: ({ color, size }) => (
-                        <MaterialIcons name="chat-bubble-outline" size={15} color="black" />
+                        <MaterialIcons name="chat-bubble-outline" size={15} color={color} />
                     )
                 }} />
 
@@ -155,7 +154,7 @@ function DrawerNavigate() {
                     drawerIcon: ({ color, size }) => (
                         <Feather name="user" size={15} color={color} />
                     )
-                  
+
                 })}
             />
 
@@ -165,10 +164,21 @@ function DrawerNavigate() {
 
 
 function CustomDrawerContent(props) {
+    const { modoOscuro, alternarTema } = usarTema();
+
     return (
-        <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
+        <DrawerContentScrollView
+            {...props}
+            contentContainerStyle={{
+                flex: 1,
+                borderTopRightRadius: 10,
+                borderBottomRightRadius: 10,
+                backgroundColor: modoOscuro ? '#000' : '#fff',
+
+            }}
+        >
             <View style={{ padding: 20 }}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20, color: modoOscuro ? '#fff' : '#000' }}>
                     Central Coffee
                 </Text>
             </View>
@@ -177,9 +187,27 @@ function CustomDrawerContent(props) {
 
             <View style={{ flex: 1 }} />
 
+            {/* Botón para alternar modo */}
+            <TouchableOpacity
+                onPress={alternarTema}
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingVertical: 15,
+                    paddingHorizontal: 20,
+                    borderTopWidth: 1,
+                    borderColor: modoOscuro ? '#444' : '#ccc',
+                }}
+            >
+                <Feather name={modoOscuro ? 'sun' : 'moon'} size={18} color={modoOscuro ? '#fff' : '#666'} />
+                <Text style={{ fontSize: 16, color: modoOscuro ? '#fff' : '#666', marginLeft: 10 }}>
+                    {modoOscuro ? 'Modo Claro' : 'Modo Oscuro'}
+                </Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
                 onPress={() => {
-                    Logout(); // llamada a la función logout
+                    Logout();
                 }}
                 style={{
                     flexDirection: 'row',
@@ -187,17 +215,18 @@ function CustomDrawerContent(props) {
                     paddingVertical: 15,
                     paddingHorizontal: 20,
                     borderTopWidth: 1,
-                    borderColor: '#ccc',
+                    borderColor: modoOscuro ? '#444' : '#ccc',
                 }}
             >
-                <Feather name="log-out" size={18} color="#666" />
-                <Text style={{ fontSize: 16, color: '#666', marginLeft: 10 }}>
+                <Feather name="log-out" size={18} color={modoOscuro ? '#fff' : '#666'} />
+                <Text style={{ fontSize: 16, color: modoOscuro ? '#fff' : '#666', marginLeft: 10 }}>
                     Cerrar sesión
                 </Text>
             </TouchableOpacity>
         </DrawerContentScrollView>
     );
 }
+
 
 
 function StackOfertas() {
@@ -217,7 +246,7 @@ function StackOfertas() {
             <Stack.Screen name='ScreenOfertas' component={Ofertas} />
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
-           <Stack.Screen
+            <Stack.Screen
                 name='Chat'
                 component={Chat}
                 options={({ route }) => ({
@@ -242,7 +271,7 @@ function StackOfertas() {
                     headerTintColor: '#000', // color de los íconos en el header
                 })}
             />
-             <Stack.Screen name='Más Información' component={DetallesMapa} />
+            <Stack.Screen name='Más Información' component={DetallesMapa} />
 
 
         </Stack.Navigator>
@@ -323,7 +352,7 @@ function StackUsuario() {
 
         >
             <Stack.Screen name='ScreenUsuario' component={PerfilUsuario} />
-             <Stack.Screen
+            <Stack.Screen
                 name='Chat'
                 component={Chat}
                 options={({ route }) => ({

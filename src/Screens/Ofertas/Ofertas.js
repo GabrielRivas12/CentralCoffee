@@ -102,20 +102,11 @@ const styles = StyleSheet.create({
   botoncrear: {
     position: 'absolute',
     right: 10,
-    bottom: '10%'
+    bottom: '20'
   },
   containerBusqueda: {
     alignItems: 'center',
     top: 10,
     height: 70
   },
-  botonbuscar: {
-    marginBottom: 50,
-    position: 'absolute',
-    top: 9,
-    right: 12,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
 });

@@ -4,9 +4,12 @@ import Boton from '../../Components/Boton';
 import { useState } from 'react';
 import ComboBox from '../../Components/Picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usarTema } from '../../Containers/TemaApp';
 
 import { RegistroUsuario } from '../../Containers/RegistroUsuarios';
 export default function Registro({ navigation }) {
+
+  const { modoOscuro } = usarTema();
 
     const opciones = [
 
@@ -31,7 +34,7 @@ export default function Registro({ navigation }) {
 
 
     return (
-        <View style={styles.container}>
+       <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
             <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
             <SafeAreaView style={{ backgroundColor: '#ED6D4A', flex: 1, alignItems: 'center' }}>
                 <View style={styles.containerBanner}>
@@ -40,7 +43,7 @@ export default function Registro({ navigation }) {
             </SafeAreaView>
 
             <View style={styles.containerCuerpo}>
-                <Text style={styles.Titulo}>Crea tu cuenta</Text>
+               <Text style={[styles.Titulo, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>Crea tu cuenta</Text>
 
                 <View style={styles.containerInput}>
                     <InputText
@@ -108,6 +111,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+      containerClaro: {
+    backgroundColor: '#fff',
+  },
+  containerOscuro: {
+    backgroundColor: '#000',
+  },
+
     containerCuerpo: {
         flex: 2.5,
         justifyContent: 'flex-start',
@@ -120,6 +130,12 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10
     },
+      labelClaro: {
+    color: '#000',
+  },
+  labelOscuro: {
+    color: '#eee',
+  },
     opciones: {
         left:'2.5%'
     },
