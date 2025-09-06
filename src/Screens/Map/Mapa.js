@@ -9,16 +9,13 @@ import { useFocusEffect } from '@react-navigation/native';
 
 
 import { handleMapPress, zoomIn, zoomOut, handleMarkerPress } from '../../Containers/AccionesMapa';
+import { obtenerLugaresMapa } from '../../Containers/ObtenerLugaresMapa';
 
 
 import { PROVIDER_GOOGLE } from 'react-native-maps';
 
 import {
-  collection,
   getFirestore,
-  query, doc,
-  setDoc, getDocs, getDoc, addDoc,
-  deleteDoc
 } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
@@ -34,34 +31,12 @@ export default function Mapa({ navigation }) {
     longitudeDelta: 4.0,
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      const obtenerLugares = async () => {
-        try {
-          const lugaresRef = collection(db, 'lugares');
-          const snapshot = await getDocs(lugaresRef);
-          const lugaresData = snapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              nombre: data.nombre,
-              horario: data.horario,
-              descripcion: data.descripcion,
-              coordinate: {
-                latitude: data.latitud,
-                longitude: data.longitud
-              }
-            };
-          });
+useFocusEffect(
+  useCallback(() => {
+    obtenerLugaresMapa(db, setMarkers);
+  }, [])
+);
 
-          setMarkers(lugaresData);
-        } catch (error) {
-          console.error('Error al obtener lugares: ', error);
-        }
-      };
-
-      obtenerLugares();
-    }, []));
 
   return (
     <View style={styles.container}>

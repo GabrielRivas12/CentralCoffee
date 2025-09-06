@@ -16,7 +16,7 @@ export const Guardar = async ({
 }) => {
 
     if (!Titulo || !TipoCafe || !Variedad || !EstadoGrano || !Clima || !Altura || !ProcesoCorte || !FechaCosecha || !lugarSeleccionado || !CantidadProduccion || !OfertaLibra || !imagen.trim()) {
-        Alert.alert("Error", "Todos los campos son obligatorios.");
+        Alert.alert("Error", "Todos los campos son obligatorios o Seleccione la ubicacion nuevamente");
         return;
     }
 

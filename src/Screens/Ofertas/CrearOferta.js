@@ -10,12 +10,14 @@ import { Guardar } from '../../Containers/GuardarOferta';
 import { SubirImagenASupabase } from '../../Containers/SubirImagen';
 import { SeleccionarFecha, verMode } from '../../Containers/SeleccionarFecha';
 import { SeleccionarImagen } from '../../Containers/SeleccionarImagen';
+import { obtenerLugares } from '../../Containers/ObtenerLugares';
 import { usarTema } from '../../Containers/TemaApp';
 
 import Boton from '../../Components/Boton';
 import InputText from '../../Components/TextInput';
 import ComboboxPickerDate from '../../Components/PickerDate';
 import ComboBox from '../../Components/Picker';
+import Imagen from '../../Components/Imagen';
 
 const auth = getAuth(appFirebase);
 
@@ -80,29 +82,10 @@ export default function CrearOferta({ navigation }) {
     }
   }, [ofertaEditar]);
 
-  useEffect(() => {
-    const obtenerLugares = async () => {
-      try {
-        const user = auth.currentUser;
-        if (!user) return;
+useEffect(() => {
+  obtenerLugares(auth, db, setLugares);
+}, []);
 
-        const lugaresRef = collection(db, 'lugares');
-        const q = query(lugaresRef, where('userId', '==', user.uid));
-        const querySnapshot = await getDocs(q);
-
-        const lugaresObtenidos = querySnapshot.docs.map(doc => ({
-          label: `${doc.data().nombre} (${doc.data().horario})`,
-          value: doc.id
-        }));
-
-        setLugares(lugaresObtenidos);
-      } catch (error) {
-        console.error('Error obteniendo lugares:', error);
-      }
-    };
-
-    obtenerLugares();
-  }, []);
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
@@ -112,12 +95,17 @@ export default function CrearOferta({ navigation }) {
           <View style={styles.containerImagen}>
             <TouchableOpacity onPress={PickImage} style={{ width: '100%', height: '100%' }}>
               {imagen ? (
-                <Image source={{ uri: imagen }} style={{ width: '100%', height: '100%', borderRadius: 5 }} />
+                <Imagen
+                  imagen={imagen}
+                  style={{ width: '100%', height: '100%' }}
+                  imagenStyle={{ width: '100%', height: '100%', borderRadius: 5 }}
+                />
               ) : (
                 <View style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                   <Text style={{ color: '#fff' }}>Seleccionar imagen</Text>
                 </View>
               )}
+
             </TouchableOpacity>
           </View>
 
@@ -144,7 +132,7 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Tipo de café'
                 Valor={TipoCafe}
                 onchangetext={setTipoCafe}
-                placeholder=' '
+                placeholder='ej: Arábica'
               />
               <InputText
                 ancho='160'
@@ -152,7 +140,7 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Variedad'
                 Valor={Variedad}
                 onchangetext={setVariedad}
-                placeholder=' '
+                placeholder='ej: Bourbon'
               />
             </View>
 
@@ -162,14 +150,15 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Estado del grano'
                 Valor={EstadoGrano}
                 onchangetext={setEstadoGrano}
-                placeholder=' '
+                placeholder='ej: Café oro'
               />
               <InputText
                 ancho='160'
                 NombreLabel='Clima'
                 Valor={Clima}
                 onchangetext={setClima}
-                placeholder=' '
+                placeholder='ej: 15°C - 20°C'
+                tipoDato="numeric"
               />
             </View>
 
@@ -179,14 +168,14 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Altura'
                 Valor={Altura}
                 onchangetext={setAltura}
-                placeholder=' '
+                placeholder='ej: 1200'
               />
               <InputText
                 ancho='160'
                 NombreLabel='Proceso de corte'
                 Valor={ProcesoCorte}
                 onchangetext={setProcesoCorte}
-                placeholder=' '
+                placeholder='ej: A mano'
               />
             </View>
 
@@ -208,14 +197,16 @@ export default function CrearOferta({ navigation }) {
                 NombreLabel='Oferta por libra'
                 Valor={OfertaLibra}
                 onchangetext={setOfertaLibra}
-                placeholder=' '
+                placeholder='ej: 130.00'
+                tipoDato="decimal-pad"
               />
               <InputText
                 ancho='161'
-                NombreLabel='Cantidad de p'
+                NombreLabel='Cantidad producida'
                 Valor={CantidadProduccion}
                 onchangetext={setCantidadProduccion}
-                placeholder=' '
+                placeholder='ej: 500'
+                tipoDato="numeric"
               />
 
             </View>

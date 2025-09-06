@@ -37,6 +37,9 @@ export default function PerfilUsuario({ navigation, route }) {
 
   const [usuarioData, setUsuarioData] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
+  const [usuarioMostrado, setUsuarioMostrado] = useState(null);
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -64,22 +67,28 @@ export default function PerfilUsuario({ navigation, route }) {
   useEffect(() => {
     async function cargarDatosUsuario() {
       try {
-        const auth = getAuth(appFirebase);
-        const user = auth.currentUser;
+        const usuarioParam = route?.params?.usuario;
 
-        if (user) {
-          setUser(user);  // <- aquí actualizas el estado user
-          const db = getFirestore(appFirebase);
-          const docRef = doc(db, 'usuarios', user.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setUsuarioData(docSnap.data());
-          } else {
-            console.log('No se encontró el usuario en Firestore');
-          }
+        if (usuarioParam) {
+          setUsuarioData(usuarioParam);
+          setUser({ uid: usuarioParam.uid });
         } else {
-          console.log('No hay usuario logueado');
+          const auth = getAuth(appFirebase);
+          const user = auth.currentUser;
+
+          if (user) {
+            setUser(user);
+            const docRef = doc(db, 'usuarios', user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+              setUsuarioData(docSnap.data());
+            } else {
+              console.log('No se encontró el usuario en Firestore');
+            }
+          } else {
+            console.log('No hay usuario logueado');
+          }
         }
       } catch (error) {
         console.error('Error al cargar datos del usuario:', error);
@@ -89,7 +98,8 @@ export default function PerfilUsuario({ navigation, route }) {
     }
 
     cargarDatosUsuario();
-  }, []);
+  }, [route?.params?.usuario]);
+
 
 
   if (cargando) {
@@ -134,7 +144,7 @@ export default function PerfilUsuario({ navigation, route }) {
         <Text style={[styles.textoRol, modoOscuro && styles.textoOscuro]}>{usuarioData.rol}</Text>
 
         <View style={styles.botonEM}>
-          {user?.uid !== usuarioData.uid && (
+          {auth.currentUser?.uid !== usuarioData?.uid && (
             <Boton
               nombreB="Mensaje"
               alto={30}
@@ -147,7 +157,8 @@ export default function PerfilUsuario({ navigation, route }) {
             />
           )}
 
-          {user?.uid === usuarioData.uid && (
+
+          {auth.currentUser?.uid === usuarioData?.uid && (
             <Boton
               nombreB="Editar perfil"
               alto={30}
@@ -159,7 +170,6 @@ export default function PerfilUsuario({ navigation, route }) {
           )}
 
         </View>
-
 
 
         <View style={[styles.separador, modoOscuro && { backgroundColor: '#555' }]} />
@@ -249,7 +259,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     marginBottom: 60,
-    marginLeft:10,
+    marginLeft: 10,
     marginTop: 5
   },
   textoRol: {
@@ -305,10 +315,6 @@ const styles = StyleSheet.create({
   },
   botonEM: {
     marginTop: -95,
-    marginLeft: 285
+    marginLeft: 270
   },
-  botonTema: {
-    marginLeft: 285
-  }
-
 });

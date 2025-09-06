@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Alert, ScrollView } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import appFirebase from '../../Services/Firebase';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,6 +22,8 @@ const db = getFirestore(appFirebase);
 
 export default function CrearMarcador({ navigation, route }) {
   const coord = route.params?.coordinate;
+  const markerToEdit = route.params?.marker; // Aquí el marcador a editar (si existe)
+
   const { modoOscuro } = usarTema();
 
   const [nombrelugar, setNombrelugar] = useState('');
@@ -34,15 +36,47 @@ export default function CrearMarcador({ navigation, route }) {
   const [textoHoraInicio, setTextoHoraInicio] = useState('');
   const [textoHoraFin, setTextoHoraFin] = useState('');
 
+  // useEffect para cargar datos si es edición
+  useEffect(() => {
+    if (markerToEdit) {
+      setNombrelugar(markerToEdit.nombre || '');
+      setDescripcion(markerToEdit.descripcion || '');
+      setHorario(markerToEdit.horario || '');
 
+      // Si horario tiene formato "HH:mm - HH:mm", lo parseamos
+      if (markerToEdit.horario) {
+        const partes = markerToEdit.horario.split(' - ');
+        if (partes.length === 2) {
+          const [inicioStr, finStr] = partes;
+
+          // Crear fechas con la hora parseada y hoy como fecha (para usar en DatePicker)
+          const hoy = new Date();
+          const [horaIni, minIni] = inicioStr.split(':').map(Number);
+          const [horaFinParsed, minFin] = finStr.split(':').map(Number);
+
+          const fechaInicio = new Date(hoy);
+          fechaInicio.setHours(horaIni, minIni, 0, 0);
+          const fechaFin = new Date(hoy);
+          fechaFin.setHours(horaFinParsed, minFin, 0, 0);
+
+          setHoraInicio(fechaInicio);
+          setHoraFin(fechaFin);
+          setTextoHoraInicio(inicioStr);
+          setTextoHoraFin(finStr);
+        } else {
+          // Si no tiene el formato esperado, solo pon el texto completo en textoHoraInicio
+          setTextoHoraInicio(markerToEdit.horario);
+          setTextoHoraFin('');
+        }
+      }
+    }
+  }, [markerToEdit]);
 
   return (
-   <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+    <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
       <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
-
         <View style={styles.mapacontainer}>
           {coord && (
-
             <MapView
               style={styles.previewMap}
               initialRegion={{
@@ -62,7 +96,6 @@ export default function CrearMarcador({ navigation, route }) {
         </View>
 
         <View contentContainerStyle={styles.containerInput}>
-
           <View style={styles.containerInput}>
             <InputText
               NombreLabel='Nombre del lugar'
@@ -76,8 +109,6 @@ export default function CrearMarcador({ navigation, route }) {
               onchangetext={setDescripcion}
               placeholder='Añade una descripcion del lugar'
             />
-
-
 
             <View style={styles.pickerhora}>
               <ComboboxPickerDate
@@ -95,7 +126,7 @@ export default function CrearMarcador({ navigation, route }) {
                   const formatted = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                   setTextoHoraInicio(formatted);
 
-                  // Usar el valor actual de formatted y textoHoraFin
+                  // Actualizar horario con ambos textos
                   if (textoHoraFin) {
                     setHorario(`${formatted} - ${textoHoraFin}`);
                   } else {
@@ -119,7 +150,7 @@ export default function CrearMarcador({ navigation, route }) {
                   const formatted = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                   setTextoHoraFin(formatted);
 
-                  // Usar el valor actual de formatted y textoHoraInicio
+                  // Actualizar horario con ambos textos
                   if (textoHoraInicio) {
                     setHorario(`${textoHoraInicio} - ${formatted}`);
                   } else {
@@ -131,9 +162,18 @@ export default function CrearMarcador({ navigation, route }) {
 
             <View style={styles.botoncrear}>
               <Boton
-                nombreB="Crear"
+                nombreB={markerToEdit ? "Guardar" : "Crear"}
                 ancho="100"
-                onPress={() => GuardarMarcador(coord, nombrelugar, descripcion, horario, navigation)}
+                onPress={() => GuardarMarcador({
+                  coord,
+                  nombre: nombrelugar,
+                  descripcion,
+                  horario,
+                  editar: !!markerToEdit,
+                  idLugar: markerToEdit?.id,
+                  navigation,
+                })}
+
               />
             </View>
           </View>
@@ -150,7 +190,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-    containerClaro: {
+  containerClaro: {
     backgroundColor: '#fff',
   },
   containerOscuro: {

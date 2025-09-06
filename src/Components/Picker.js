@@ -41,7 +41,7 @@ container: {
     backgroundColor: '#fff',
   },
   containerOscuro: {
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
   label: {
     fontSize: 16,
@@ -67,8 +67,8 @@ container: {
     borderColor: '#999',
   },
   pickerContainerOscuro: {
-    backgroundColor: '#333',
-    borderColor: '#666',
+    backgroundColor: '#fff',
+    borderColor: '#999',
   },
   picker: {
     height: 52,

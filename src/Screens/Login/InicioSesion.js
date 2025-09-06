@@ -101,7 +101,8 @@ export default function Login({ navigation }) {
             NombreLabel='Contraseña'
             Valor={Contraseña}
             onchangetext={setContraseña}
-            placeholder='Ingrese su contraseña' />
+            placeholder='Ingrese su contraseña'
+            esPassword={true} />
 
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>

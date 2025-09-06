@@ -1,81 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar, Image } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, Image, TouchableOpacity } from 'react-native';
 import Boton from '../../Components/Boton'
 import appFirebase from '../../Services/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 
-import { obtenerDatosUsuario } from '../../Containers/ObtenerUsuario';
 import { usarTema } from '../../Containers/TemaApp';
+import { obtenerUsuarioPorUID } from '../../Containers/ObtenerUsuarioOferta';
+import { obtenerLugarDetalles } from '../../Containers/ObtenerLugarDetalles';
+import { iniciarChatConUsuario } from '../../Containers/IniciarChat';
 
-import {
-  collection,
-  getFirestore,
-  query, doc,
-  setDoc, getDocs, getDoc,
-  deleteDoc
-} from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
-
-
 export default function DetallesOferta({ route, navigation }) {
   const { modoOscuro } = usarTema();
   const { oferta } = route.params;
   const [Ofertass, setOfertass] = useState([]);
-
+  const [usuarioOferta, setUsuarioOferta] = useState(null);
+  const [cargandoUsuario, setCargandoUsuario] = useState(true);
   const [selectedMarker, setSelectedMarker] = useState(null);
 
-
-  const LeerDatos = async () => {
-    const q = query(collection(db, "oferta"));
-    const querySnapshot = await getDocs(q);
-    const d = [];
-    querySnapshot.forEach((doc) => {
-      const datosBD = doc.data();
-      d.push(datosBD);
-    });
-    setOfertass(d);
-  }
-
   useEffect(() => {
-    LeerDatos();
-    obtenerLugar();
-  }, []);
-
-  const obtenerLugar = async () => {
-    try {
-      const docRef = doc(db, "lugares", oferta.lugarSeleccionado);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setSelectedMarker({ id: docSnap.id, ...docSnap.data() });
-
-      } else {
-        console.log("No se encontró el lugar");
-      }
-    } catch (error) {
-      console.error("Error al obtener el lugar:", error);
-    }
-  };
-
-  const iniciarChat = async () => {
-    try {
-      const datos = await obtenerDatosUsuario(oferta.userId);
-
-      navigation.navigate('Chat', {
-        otroUsuarioId: oferta.userId,
-        nombre: datos.nombre,
-        fotoPerfil: datos.fotoPerfil,
-        ofertaReferencia: oferta
+    if (oferta.userId) {
+      obtenerUsuarioPorUID(db, oferta.userId).then((usuario) => {
+        if (usuario) {
+          setUsuarioOferta(usuario);
+        }
       });
-    } catch (error) {
-      console.error('Error al iniciar chat:', error);
     }
-  };
 
-
-
+    obtenerLugarDetalles(db, oferta.lugarSeleccionado, setSelectedMarker);
+    if (oferta.uidUsuario) {
+      obtenerUsuarioPorUID(db, oferta.uidUsuario).then((usuario) => {
+        if (usuario) {
+          console.log("✅ Usuario obtenido:", usuario); // <-- AÑADE ESTO
+          setUsuarioOferta(usuario);
+        } else {
+          console.warn("⚠️ No se encontró usuario con ese UID");
+        }
+      }).catch((err) => {
+        console.error("❌ Error al obtener usuario:", err);
+      });
+    }
+  }, []);
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
@@ -91,6 +59,31 @@ export default function DetallesOferta({ route, navigation }) {
         </View>
 
         <Text style={[styles.Titulo, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>{oferta.titulo}</Text>
+
+        {usuarioOferta && (
+          <TouchableOpacity
+            style={styles.perfilContainer}
+            onPress={() => navigation.navigate('Perfil', { usuario: usuarioOferta })}
+          >
+            {usuarioOferta.fotoPerfil ? (
+              <Image
+                source={{ uri: usuarioOferta.fotoPerfil }}
+                style={styles.imagenPerfil}
+              />
+            ) : (
+              <View style={[styles.imagenPerfil, { backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center' }]}>
+                <Feather name="user" size={24} color="#fff" />
+              </View>
+            )}
+
+            <Text style={[styles.nombreUsuario, modoOscuro ? styles.textoOscuro : styles.textoClaro]}>
+              {usuarioOferta.nombre || "Usuario desconocido"}
+            </Text>
+
+            <Feather name="arrow-right" size={20} color={modoOscuro ? "#fff" : "#000"} style={styles.iconoPerfil} />
+          </TouchableOpacity>
+        )}
+
 
         <View style={[styles.containerInformacion, modoOscuro && { backgroundColor: '#333' }]}>
           <Text style={[styles.TextoTitulo, modoOscuro ? styles.TextoTituloOscuro : styles.TextoTituloClaro]}>Características</Text>
@@ -246,7 +239,8 @@ export default function DetallesOferta({ route, navigation }) {
             ancho='150'
             Textoright='10'
             ColorBoton="#ED6D4A"
-            onPress={iniciarChat}
+            onPress={() => iniciarChatConUsuario(navigation, oferta)}
+
           />
           <Feather name="send" size={24} color="white" position='absolute' left='60%' bottom='12' />
         </View>
@@ -291,15 +285,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-around',
-    marginTop: 50,
+    marginTop: 20,
     left: '26%'
   },
   Titulo: {
-    marginLeft: 15,
+    marginLeft: 5,
     marginBottom: 10,
     fontSize: 20,
     fontWeight: 'bold',
-
   },
 
   TextoTitulo: {
@@ -307,6 +300,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     top: 5,
     left: 20
+  },
+  perfilContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    marginLeft: 5,
+  },
+
+  imagenPerfil: {
+    width: 50,
+    height: 50,
+    borderRadius: 25, // Esto lo hace circular
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginRight: 10,
+  },
+
+  nombreUsuario: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   TextoTituloClaro: {
     color: '#000',
@@ -330,7 +343,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     height: 70,
-    top: 30
+    top: 1
 
 
   },
@@ -375,5 +388,10 @@ const styles = StyleSheet.create({
   TextoInfo: {
     fontSize: 13,
     fontWeight: 'bold',
+  },
+  iconoPerfil: {
+    marginLeft: 'auto',
+    marginRight: 10,
   }
+
 });

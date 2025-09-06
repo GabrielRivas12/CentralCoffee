@@ -32,6 +32,7 @@ import ScannerQR from './src/Screens/QR/ScannerQR';
 import Chat from './src/Screens/Chat/Chat';
 import ChatEntrantes from './src/Screens/Chat/ChatEntrantes';
 import Logout from './src/Containers/CerrarSesión';
+import IAScanner from './src/Screens/AnalizarCultivo/ScannearImagen';
 
 function Navegacion({ user }) {
     return (
@@ -77,6 +78,7 @@ function DrawerNavigate() {
                     (route.name === 'Gestionar ofertas' && (routeName === 'ScreenEditar' || routeName === '')) ||
                     (route.name === 'Bandeja de entrada' && (routeName === 'ScreenChat' || routeName === '')) ||
                     (route.name === 'IA' && (routeName === 'Asistente' || routeName === '')) ||
+                    (route.name === 'Analizar cultivo' && (routeName === 'IAScanner' || routeName === '')) ||
                     (route.name === 'Mapa' && (routeName === 'ScreenMapa' || routeName === '')) ||
                     (route.name === 'Perfil' && (routeName === 'ScreenUsuario' || routeName === '')) ||
                     (route.name === 'QR' && (routeName === 'ScreenQR' || routeName === ''));
@@ -144,6 +146,13 @@ function DrawerNavigate() {
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Feather name="cpu" size={15} color={color} />
+                    )
+                }} />
+
+            <Drawer.Screen name="Analizar cultivo" component={IAScanner}
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <Feather name="image" size={15} color={color} />
                     )
                 }} />
 
@@ -246,6 +255,7 @@ function StackOfertas() {
             <Stack.Screen name='ScreenOfertas' component={Ofertas} />
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
+            <Stack.Screen name='Perfil' component={PerfilUsuario} />
             <Stack.Screen
                 name='Chat'
                 component={Chat}
@@ -312,8 +322,9 @@ function StackMapa() {
 
         >
             <Stack.Screen name='ScreenMapa' component={Mapa} />
+             <Stack.Screen name='Crear Marcador' component={CrearMarcador} />
             <Stack.Screen name='Más Información' component={DetallesMapa} />
-            <Stack.Screen name='Crear Marcador' component={CrearMarcador} />
+           
 
         </Stack.Navigator>
     )

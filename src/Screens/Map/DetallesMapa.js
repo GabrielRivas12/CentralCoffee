@@ -1,19 +1,38 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Boton from '../../Components/Boton'
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import Boton from '../../Components/Boton';
 import MapView, { Marker } from 'react-native-maps';
-import { Linking } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { DirigirGoogleMaps } from '../../Containers/DirigirGoogleMaps';
 import { usarTema } from '../../Containers/TemaApp';
+import { eliminarLugar } from '../../Containers/EliminarUbicacion';
 
+import { getAuth } from 'firebase/auth';
+import appFirebase from '../../Services/Firebase';
 
-export default function DetallesMapa({ route }) {
+const auth = getAuth(appFirebase);
+
+export default function DetallesMapa({ route, navigation }) {
   const { marker } = route.params;
   const { modoOscuro } = usarTema();
+
+  const [usuarioId, setUsuarioId] = useState(null);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    setUsuarioId(user ? user.uid : null);
+
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUsuarioId(user ? user.uid : null);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const esCreador = marker.userId === usuarioId;
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
@@ -38,23 +57,26 @@ export default function DetallesMapa({ route }) {
           )}
         </View>
 
-
-
         <View style={styles.PanelUbicacion}>
           <View style={styles.Icono}>
-            <Feather name="map-pin" size={24} color="black" />
+            <Feather name="map-pin" size={24} color={modoOscuro ? 'white' : 'black'} />
           </View>
 
-          <Text style={[
-            styles.infoNombre, modoOscuro ? styles.infoNombreOscuro : styles.infoClaro
-          ]}>{marker.nombre}</Text>
+          <Text
+            style={[
+              styles.infoNombre,
+              modoOscuro ? styles.infoNombreOscuro : styles.infoNombreClaro,
+            ]}
+          >
+            {marker.nombre}
+          </Text>
           <Text style={[styles.infoHorario, modoOscuro ? styles.infoHorarioOscuro : styles.infoHorarioClaro]}>
             Horario: {marker.horario}
           </Text>
         </View>
 
         <View style={styles.containerDescripcion}>
-           <Text style={[styles.DescripcionText, modoOscuro ? styles.textOscuro : styles.textClaro]}>
+          <Text style={[styles.DescripcionText, modoOscuro ? styles.textOscuro : styles.textClaro]}>
             Descripción:
           </Text>
           <Text style={[modoOscuro ? styles.textOscuro : styles.textClaro]}>
@@ -62,30 +84,83 @@ export default function DetallesMapa({ route }) {
           </Text>
         </View>
 
-
         <View style={styles.botonllegar}>
           <Boton
             nombreB=" "
             onPress={() => DirigirGoogleMaps(marker.coordinate)}
             backgroundColor="#ddd"
-            ancho='50'
-            alto='45'
-            Textoright='15'
+            ancho="50"
+            alto="45"
+            Textoright="15"
           />
           <View pointerEvents="none" style={{ position: 'absolute' }}>
-            <MaterialCommunityIcons name="directions" size={30} color="white" position='absolute' top='10' left='10' />
+            <MaterialCommunityIcons
+              name="directions"
+              size={30}
+              color="white"
+              position="absolute"
+              top="10"
+              left="10"
+            />
           </View>
         </View>
+
+        {esCreador && (
+          <View style={styles.botonesAccionContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Crear Marcador', {
+                  editar: true,
+                  marker,
+                  coordinate: marker.coordinate,
+                });
+              }}
+              style={styles.botonAccion}
+            >
+              <Feather name="edit" size={28} color="blue" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  '¿Eliminar ubicación?',
+                  'Esta acción no se puede deshacer.',
+                  [
+                    { text: 'Cancelar', style: 'cancel' },
+                    {
+                      text: 'Eliminar',
+                      style: 'destructive',
+                      onPress: async () => {
+                        const eliminado = await eliminarLugar(marker.id);
+                        if (eliminado) {
+                          alert('Lugar eliminado con éxito');
+                          navigation.goBack();
+                        } else {
+                          alert('Error al eliminar el lugar');
+                        }
+                      },
+                    },
+                  ],
+                  { cancelable: true }
+                );
+              }}
+              style={styles.botonAccion}
+            >
+              <Feather name="trash" size={28} color="red" />
+            </TouchableOpacity>
+          </View>
+        )}
       </SafeAreaView>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   containerClaro: {
     backgroundColor: '#fff',
@@ -94,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   previewMap: {
-    flex: 1
+    flex: 1,
   },
   mapaContainer: {
     width: 360,
@@ -110,12 +185,12 @@ const styles = StyleSheet.create({
     width: 375,
     height: 200,
     top: 50,
-    left: 8
+    left: 8,
   },
   PanelUbicacion: {
     borderRadius: 10,
     height: 70,
-    top: 30
+    top: 30,
   },
   Icono: {
     width: 50,
@@ -124,12 +199,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    left: 8
+    left: 8,
   },
   infoNombre: {
     position: 'absolute',
     top: 5,
-    left: 70
+    left: 70,
   },
   infoNombreClaro: {
     color: '#000',
@@ -150,9 +225,9 @@ const styles = StyleSheet.create({
   },
   DescripcionText: {
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
   },
-    textClaro: {
+  textClaro: {
     color: '#000',
   },
   textOscuro: {
@@ -161,6 +236,15 @@ const styles = StyleSheet.create({
   botonllegar: {
     position: 'absolute',
     top: 245,
-    right: 8
-  }
+    right: 8,
+  },
+  botonesAccionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginTop: 15,
+  },
+  botonAccion: {
+    marginLeft: 20,
+    padding: 5,
+  },
 });
