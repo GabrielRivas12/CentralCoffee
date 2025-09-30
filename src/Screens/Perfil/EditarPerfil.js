@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react'
 import {
   View,
   Text,
@@ -10,24 +12,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 
-import * as FileSystem from 'expo-file-system';
-import { decode as atob } from 'base-64';
-import { supabase } from '../../Services/SupaBase'; // Asegúrate que esté bien el path
-
-import appFirebase from '../../Services/Firebase';
+import { usarTema } from '../../Containers/TemaApp';
 import Boton from '../../Components/Boton';
 import InputText from '../../Components/TextInput';
-import { SeleccionarImagen } from '../../Containers/SeleccionarImagen';
-import { usarTema } from '../../Containers/TemaApp';
+import { cargarDatosUsuario } from '../../Containers/ObtenerDatosUsuario';
+import { seleccionarImagen } from '../../Containers/SeleccionarImagenPP';
+import { actualizarPerfil } from '../../Containers/ActualizarPerfil';
 
 export default function EditarInformacion({ navigation }) {
-  const auth = getAuth(appFirebase);
-  const db = getFirestore(appFirebase);
+  const auth = getAuth();
   const user = auth.currentUser;
   const { modoOscuro } = usarTema();
-
 
   const [nombre, setNombre] = useState('');
   const [rol, setRol] = useState('');
@@ -36,104 +32,56 @@ export default function EditarInformacion({ navigation }) {
   const [fotoPerfil, setFotoPerfil] = useState('');
   const [fotoPortada, setFotoPortada] = useState('');
 
-  // 🔁 Cargar datos existentes del usuario
+  // Cargar datos existentes
   const cargarDatos = async () => {
-    try {
-      const docRef = doc(db, 'usuarios', user.uid);
-      const docSnap = await getDoc(docRef);
+    if (!user) return;
+    const data = await cargarDatosUsuario(user.uid);
+    if (!data) return;
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setNombre(data.nombre || '');
-        setRol(data.rol || '');
-        setDescripcion(data.descripcion || '');
-        setUbicacion(data.ubicacion || '');
-        setFotoPerfil(data.fotoPerfil || '');
-        setFotoPortada(data.fotoPortada || '');
-      }
-    } catch (error) {
-      console.error('Error al cargar datos del usuario:', error);
-    }
+    setNombre(data.nombre || '');
+    setRol(data.rol || '');
+    setDescripcion(data.descripcion || '');
+    setUbicacion(data.ubicacion || '');
+    setFotoPerfil(data.fotoPerfil || '');
+    setFotoPortada(data.fotoPortada || '');
   };
 
-  useEffect(() => {
-    if (user) cargarDatos();
-  }, [user]);
+   // Se ejecuta cada vez que la pantalla está en foco
+  useFocusEffect(
+    useCallback(() => {
+      cargarDatos();
+    }, [])
+  );
 
-  // 📤 Método local para subir imagen a Supabase
-  const subirImagenASupabase = async (uri, bucketPath) => {
-    try {
-      if (!uri) return null;
-
-      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
-      if (!base64) return null;
-
-      const binaryString = atob(base64);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-
-      const fileExt = (uri.split('.').pop() || 'png').toLowerCase();
-      const validExtensions = ['png', 'jpg', 'jpeg', 'webp'];
-      const ext = validExtensions.includes(fileExt) ? fileExt : 'png';
-
-      const fileName = `${Date.now()}.${ext}`;
-
-      const { error } = await supabase.storage
-        .from(bucketPath)
-        .upload(fileName, bytes, {
-          contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
-          upsert: false,
-        });
-
-      if (error) {
-        console.error('Error al subir imagen:', error);
-        return null;
-      }
-
-      const { data } = supabase.storage.from(bucketPath).getPublicUrl(fileName);
-      return data?.publicUrl || null;
-    } catch (e) {
-      console.error('Error en subirImagenASupabase:', e);
-      return null;
-    }
+  // Seleccionar imagen de perfil
+  const cambiarFotoPerfil = async () => {
+    const url = await seleccionarImagen('fotosperfil');
+    if (url) setFotoPerfil(url);
   };
 
-  // 📸 Seleccionar y subir imagen de perfil
-  const seleccionarImagenPerfil = async () => {
-    const uri = await SeleccionarImagen();
-    if (uri) {
-      const url = await subirImagenASupabase(uri, 'fotosperfil');
-      if (url) setFotoPerfil(url);
-    }
+  // Seleccionar imagen de portada
+  const cambiarFotoPortada = async () => {
+    const url = await seleccionarImagen('fotoportada');
+    if (url) setFotoPortada(url);
   };
 
-  // 🖼️ Seleccionar y subir imagen de portada
-  const seleccionarImagenPortada = async () => {
-    const uri = await SeleccionarImagen();
-    if (uri) {
-      const url = await subirImagenASupabase(uri, 'fotoportada');
-      if (url) setFotoPortada(url);
-    }
-  };
-
-  // 💾 Guardar los cambios en Firestore
+  // Guardar cambios
   const guardarCambios = async () => {
-    try {
-      await updateDoc(doc(db, 'usuarios', user.uid), {
-        nombre,
-        rol,
-        descripcion,
-        ubicacion,
-        fotoPerfil,
-        fotoPortada
-      });
+    if (!user) return;
+
+    const exito = await actualizarPerfil(user.uid, {
+      nombre,
+      rol,
+      descripcion,
+      ubicacion,
+      fotoPerfil,
+      fotoPortada
+    });
+
+    if (exito) {
       Alert.alert('Éxito', 'Datos actualizados correctamente');
       navigation.goBack();
-    } catch (error) {
-      console.error('Error al guardar cambios:', error);
+    } else {
       Alert.alert('Error', 'No se pudieron guardar los cambios');
     }
   };
@@ -143,10 +91,9 @@ export default function EditarInformacion({ navigation }) {
       style={[{ flex: 1 }, modoOscuro ? styles.fondoOscuro : styles.fondoClaro]}
       edges={['bottom']}
     >
-
       <ScrollView contentContainerStyle={styles.container}>
         {/* Imagen de portada */}
-        <TouchableOpacity onPress={seleccionarImagenPortada} style={styles.imagenPortada}>
+        <TouchableOpacity onPress={cambiarFotoPortada} style={styles.imagenPortada}>
           {fotoPortada ? (
             <>
               <Image source={{ uri: fotoPortada }} style={styles.imagenPortada} />
@@ -157,9 +104,8 @@ export default function EditarInformacion({ navigation }) {
           )}
         </TouchableOpacity>
 
-
         {/* Imagen de perfil */}
-        <TouchableOpacity onPress={seleccionarImagenPerfil} style={styles.contenedorImagenPerfil}>
+        <TouchableOpacity onPress={cambiarFotoPerfil} style={styles.contenedorImagenPerfil}>
           {fotoPerfil ? (
             <>
               <Image source={{ uri: fotoPerfil }} style={styles.imagenPerfil} />
@@ -169,7 +115,6 @@ export default function EditarInformacion({ navigation }) {
             <Text style={styles.textoImagen}>Perfil</Text>
           )}
         </TouchableOpacity>
-
 
         {/* Inputs */}
         <View style={{ marginTop: 60 }}>
@@ -210,12 +155,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 15,
   },
-  fondoClaro: {
-    backgroundColor: '#fff',
-  },
-  fondoOscuro: {
-    backgroundColor: '#000',
-  },
+  fondoClaro: { backgroundColor: '#fff' },
+  fondoOscuro: { backgroundColor: '#000' },
 
   imagenPortada: {
     width: '100%',
@@ -230,7 +171,7 @@ const styles = StyleSheet.create({
     top: 90,
     left: 18,
     zIndex: 10,
-    width: 86,      // un poco más que la imagen para que el borde se vea
+    width: 86,
     height: 86,
     borderRadius: 43,
     borderWidth: 3,
@@ -243,7 +184,7 @@ const styles = StyleSheet.create({
   imagenPerfil: {
     width: '100%',
     height: '100%',
-    borderRadius: 43,  // para que sea circular igual que el contenedor
+    borderRadius: 43,
     backgroundColor: '#999',
   },
 
@@ -258,10 +199,10 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     textAlign: 'center',
-    textAlignVertical: 'center', // para android centrar verticalmente
+    textAlignVertical: 'center',
     color: '#fff',
     fontSize: 16,
-    backgroundColor: 'rgba(0,0,0,0.4)', // opcional, para darle sombra oscura al texto y mejorar visibilidad
+    backgroundColor: 'rgba(0,0,0,0.4)',
     zIndex: 10,
     borderRadius: 10,
   },
@@ -276,9 +217,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 40, // para que coincida con borde redondeado de la imagen perfil
+    borderRadius: 40,
     zIndex: 10,
   },
-
-
 });

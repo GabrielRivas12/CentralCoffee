@@ -11,7 +11,6 @@ export const IniciarLogin = async (auth, email, password) => {
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    // Aquí podrías navegar o esperar a que onAuthStateChanged se dispare
   } catch (error) {
     Alert.alert('Error', 'Correo o contraseña incorrectos');
   }

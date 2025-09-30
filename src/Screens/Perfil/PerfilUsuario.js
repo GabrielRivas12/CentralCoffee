@@ -1,164 +1,63 @@
 import { View, Text, StyleSheet, Image, ActivityIndicator, ScrollView } from 'react-native';
-import React, { useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import Boton from '../../Components/Boton';
+import { useCallback, useState } from 'react';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { usarTema } from '../../Containers/TemaApp';
-
-import { getAuth } from 'firebase/auth';
-import {
-  collection,
-  getFirestore,
-  query, doc,
-  setDoc, getDocs, getDoc,
-  deleteDoc, updateDoc, where
-} from 'firebase/firestore';
-
-
-import appFirebase from '../../Services/Firebase';
-
+import Boton from '../../Components/Boton';
 import OfertasCard from '../../Components/OfertasCard';
 
-
-
-const auth = getAuth(appFirebase);
-const db = getFirestore(appFirebase);
+import { PerfilDatos } from '../../Containers/DatosUsuario';
 
 export default function PerfilUsuario({ navigation, route }) {
-  const oferta = route?.params?.oferta;
+  const { modoOscuro } = usarTema();
 
-
-
-  const { modoOscuro, alternarTema } = usarTema();
-  const [user, setUser] = useState(null);
-
-  const [Ofertass, setOfertass] = useState([]);
-
-  const [usuarioData, setUsuarioData] = useState(null);
-  const [cargando, setCargando] = useState(true);
-  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
-  const [usuarioMostrado, setUsuarioMostrado] = useState(null);
-
-
-  useFocusEffect(
-    React.useCallback(() => {
-      if (user) {
-        LeerDatos();
-      } else {
-        setOfertass([]);
-      }
-    }, [user])
-  );
-
-  const LeerDatos = async () => {
-    const q = query(
-      collection(db, "oferta"),
-      where("userId", "==", user.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const d = [];
-    querySnapshot.forEach((doc) => {
-      d.push({ id: doc.id, ...doc.data() });
-    });
-    setOfertass(d);
-  };
-
-  useEffect(() => {
-    async function cargarDatosUsuario() {
-      try {
-        const usuarioParam = route?.params?.usuario;
-
-        if (usuarioParam) {
-          setUsuarioData(usuarioParam);
-          setUser({ uid: usuarioParam.uid });
-        } else {
-          const auth = getAuth(appFirebase);
-          const user = auth.currentUser;
-
-          if (user) {
-            setUser(user);
-            const docRef = doc(db, 'usuarios', user.uid);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-              setUsuarioData(docSnap.data());
-            } else {
-              console.log('No se encontró el usuario en Firestore');
-            }
-          } else {
-            console.log('No hay usuario logueado');
-          }
-        }
-      } catch (error) {
-        console.error('Error al cargar datos del usuario:', error);
-      } finally {
-        setCargando(false);
-      }
-    }
-
-    cargarDatosUsuario();
-  }, [route?.params?.usuario]);
-
-
-
-  if (cargando) {
-    return (
-      <SafeAreaView style={[styles.contenedor, modoOscuro ? styles.contenedorOscuro : styles.contenedorClaro, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color={modoOscuro ? '#fff' : '#000'} />
-      </SafeAreaView>
-    );
-  }
+  const {
+    auth,
+    usuarioData,
+    ofertas,
+    cargando,
+  } = PerfilDatos(route);
 
   if (!usuarioData) {
     return (
       <SafeAreaView style={[styles.contenedor, modoOscuro ? styles.contenedorOscuro : styles.contenedorClaro, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={[styles.textoNombre, modoOscuro && styles.textoOscuro]}>No se encontraron datos del usuario</Text>
+        <Text style={[styles.textoNombre, modoOscuro && styles.textoOscuro]}>
+          No se encontraron datos del usuario
+        </Text>
       </SafeAreaView>
     );
   }
 
-
   return (
     <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
       <ScrollView style={[modoOscuro ? styles.contenedorOscuro : styles.contenedorClaro]}>
-
+        
         {/* Imagen de portada */}
         <View>
-          <Image
-            source={{ uri: usuarioData.fotoPortada }}
-
-            style={styles.imagenPortada}
-          />
+          <Image source={{ uri: usuarioData.fotoPortada }} style={styles.imagenPortada} />
         </View>
 
         {/* Imagen de perfil */}
         <View style={styles.contenedorImagenPerfil}>
-          <Image
-            source={{ uri: usuarioData.fotoPerfil }}
-            style={styles.imagenPerfil}
-          />
+          <Image source={{ uri: usuarioData.fotoPerfil }} style={styles.imagenPerfil} />
         </View>
 
         <Text style={[styles.textoNombre, modoOscuro && styles.textoOscuro]}>{usuarioData.nombre}</Text>
         <Text style={[styles.textoRol, modoOscuro && styles.textoOscuro]}>{usuarioData.rol}</Text>
 
         <View style={styles.botonEM}>
-          {auth.currentUser?.uid !== usuarioData?.uid && (
+          {auth.currentUser?.uid !== usuarioData?.uid ? (
             <Boton
               nombreB="Mensaje"
               alto={30}
               ancho={90}
-              onPress={() => {
-                navigation.navigate('Chat', {
-                  otroUsuarioId: usuarioData.uid,
-                });
-              }}
+              onPress={() =>
+                navigation.navigate('Chat', { otroUsuarioId: usuarioData.uid })
+              }
             />
-          )}
-
-
-          {auth.currentUser?.uid === usuarioData?.uid && (
+          ) : (
             <Boton
               nombreB="Editar perfil"
               alto={30}
@@ -168,9 +67,7 @@ export default function PerfilUsuario({ navigation, route }) {
               }}
             />
           )}
-
         </View>
-
 
         <View style={[styles.separador, modoOscuro && { backgroundColor: '#555' }]} />
 
@@ -182,7 +79,6 @@ export default function PerfilUsuario({ navigation, route }) {
           </Text>
         </View>
 
-
         {/* Ubicación */}
         <View style={styles.cajaUbicacion}>
           <Text style={[styles.textoUbicacion, modoOscuro && styles.textoOscuro]}>
@@ -190,13 +86,9 @@ export default function PerfilUsuario({ navigation, route }) {
           </Text>
         </View>
 
-
-
-
-
-        <Text style={[styles.textoOferta, modoOscuro && styles.textoOscuro]}> Mis Ofertas</Text>
-
-        {Ofertass.map((item, index) => (
+        {/* Ofertas */}
+        <Text style={[styles.textoOferta, modoOscuro && styles.textoOscuro]}>Mis Ofertas</Text>
+        {ofertas.map((item, index) => (
           <OfertasCard
             key={index}
             ImagenOferta={item.imagen}
@@ -207,7 +99,6 @@ export default function PerfilUsuario({ navigation, route }) {
             modoOscuro={modoOscuro}
           />
         ))}
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -238,7 +129,7 @@ const styles = StyleSheet.create({
     marginLeft: 7.5
   },
   contenedorImagenPerfil: {
-    marginTop: -35, // superpone un poco sobre la portada
+    marginTop: -35, 
     marginLeft: 15,
   },
   imagenPerfil: {

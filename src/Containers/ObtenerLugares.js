@@ -1,4 +1,3 @@
-// Containers/ObtenerLugares.js
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
 export const obtenerLugares = async (auth, db, setLugares) => {

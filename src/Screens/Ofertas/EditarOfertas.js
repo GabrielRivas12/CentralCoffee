@@ -91,6 +91,7 @@ export default function EditarOfertas({ navigation }) {
                                     <Feather name="x-circle" size={24} color="gray" />
                                 )}
                             </TouchableOpacity>
+                            
                             <TouchableOpacity
                                 onPress={() => navigation.navigate('Crear', {
                                     oferta: {

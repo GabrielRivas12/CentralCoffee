@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { IniciarLogin } from '../../Containers/IniciarSesion';
 import { enviarRecuperacion, IniciarTemporizador } from '../../Containers/RecuperarCuenta';
 import { usarTema } from '../../Containers/TemaApp';
+import Imagen from '../../Components/Imagen';
 
 
 import {
@@ -55,11 +56,20 @@ export default function Login({ navigation }) {
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
-      <StatusBar backgroundColor='#ED6D4A' barStyle='light-content' />
-      <SafeAreaView style={{ backgroundColor: '#ED6D4A', flex: 1, alignItems: 'center' }}>
+      <StatusBar backgroundColor='#F1A89B' barStyle='light-content' />
+      <SafeAreaView style={{ backgroundColor: '#F1A89B', flex: 1, alignItems: 'center' }}>
         <View style={styles.containerBanner}>
-
+          <View style={styles.bannerContent}>
+            <View style={styles.logoContainer}>
+            <Image
+              source={require('../../../assets/logo.png')}
+               style={styles.bannerLogo}
+            />
+            </View>
+            <Text style={styles.bannerTexto}>Donde el café une historias</Text>
+          </View>
         </View>
+
       </SafeAreaView>
       <View style={styles.containerCuerpo}>
 
@@ -68,9 +78,7 @@ export default function Login({ navigation }) {
         <TouchableOpacity style={styles.button} disabled={!request}
           onPress={() => promptAsync()}>
           <Image
-            source={{
-              uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png?20230822192911',
-            }}
+            source={require('../../../assets/Google_Icon.png')}
             style={styles.logo}
           />
           <Text style={styles.text}>Sign in with Google</Text>
@@ -168,7 +176,7 @@ const styles = StyleSheet.create({
 
   containerBanner: {
     flex: 1,
-    backgroundColor: '#ED6D4A',
+    backgroundColor: '#F1A89B',
     justifyContent: 'center',
     alignItems: 'center'
 
@@ -211,6 +219,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 20,
     height: 20,
+    marginRight: 10,
   },
   button: {
     flexDirection: 'row',
@@ -256,4 +265,39 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
   },
+  bannerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    width: '50%',
+  },
+
+  bannerTexto: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: 10,
+  },
+
+  logoContainer: {
+    width: 200,
+    height: 200,
+    overflow: 'hidden',
+    marginLeft: 150
+  },
+
+  logoImagen: {
+    width: '50%',
+    height: '50%',
+    resizeMode: 'contain',
+  },
+
+ bannerLogo: {
+  width: 200,
+  height: 200,
+}
+
+
+
 });

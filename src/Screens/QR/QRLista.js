@@ -48,7 +48,7 @@ export default function QRLista({ navigation }) {
 
     const q = query(
       collection(db, "oferta"),
-      where("userId", "==", user.uid) // 🔍 Solo las ofertas del usuario actual
+      where("userId", "==", user.uid)
     );
 
     const querySnapshot = await getDocs(q);

@@ -15,7 +15,6 @@ CentralCoffee es una aplicación móvil desarrollada para conectar **productores
 ## 🛠️ Requerimientos técnicos
 
 - **Node.js** >= 22.19.0  
-- **npm** >= 9.x  
 - **Expo CLI**  
   Instálalo globalmente si no lo tienes:
   ```bash
@@ -25,7 +24,7 @@ CentralCoffee es una aplicación móvil desarrollada para conectar **productores
 
     Android 8.0 (API 26) o superior
 
-    3 GB de RAM
+    4 GB de RAM
 
     500MB de Almacenamiento
 
