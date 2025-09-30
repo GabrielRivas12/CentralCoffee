@@ -24,7 +24,7 @@ const db = getFirestore(appFirebase);
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, setUser }) {
 
   const { modoOscuro } = usarTema();
 
@@ -46,13 +46,28 @@ export default function Login({ navigation }) {
     if (response?.type === 'success' && response.authentication) {
       const { idToken, accessToken } = response.authentication;
       const credential = GoogleAuthProvider.credential(idToken, accessToken);
+
       signInWithCredential(auth, credential)
-        .then(() => navigation.navigate('DrawerNavigate'))
-        .catch(err => {
-          console.error('Firebase signIn error:', err);
-        });
+        .then(async (res) => {
+          const uid = auth.currentUser.uid;
+          const docRef = doc(db, 'usuarios', uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const userData = { uid, ...docSnap.data() };
+            // Aquí podrías usar un state global, context, redux, o pasar por params
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'DrawerNavigate', params: { user: userData } }],
+            });
+          } else {
+            console.log('Usuario no encontrado en Firestore');
+          }
+        })
+        .catch(err => console.error(err));
     }
   }, [response]);
+
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
@@ -61,10 +76,10 @@ export default function Login({ navigation }) {
         <View style={styles.containerBanner}>
           <View style={styles.bannerContent}>
             <View style={styles.logoContainer}>
-            <Image
-              source={require('../../../assets/logo.png')}
-               style={styles.bannerLogo}
-            />
+              <Image
+                source={require('../../../assets/logo.png')}
+                style={styles.bannerLogo}
+              />
             </View>
             <Text style={styles.bannerTexto}>Donde el café une historias</Text>
           </View>
@@ -119,7 +134,9 @@ export default function Login({ navigation }) {
           <View style={styles.vboton}>
             <Boton
               nombreB='Iniciar'
-              onPress={() => IniciarLogin(auth, Correo, Contraseña)} />
+              onPress={() => IniciarLogin(auth, Correo, Contraseña, setUser)}
+            />
+
           </View>
 
           <Boton
@@ -293,10 +310,10 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 
- bannerLogo: {
-  width: 200,
-  height: 200,
-}
+  bannerLogo: {
+    width: 200,
+    height: 200,
+  }
 
 
 
