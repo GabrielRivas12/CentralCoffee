@@ -41,7 +41,8 @@
     },
     "plugins": [
       "expo-web-browser",
-      "expo-image-picker"
+      "expo-image-picker",
+      "expo-font"
     ],
     "extra": {
       "eas": {
