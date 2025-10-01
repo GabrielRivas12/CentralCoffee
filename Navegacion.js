@@ -4,6 +4,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -137,16 +138,41 @@ function DrawerNavigate({ user, setUser }) {
             }}
         >
             {screens.map(screen => (
-                <Drawer.Screen
-                    key={screen.name}
-                    name={screen.name}
-                    component={screen.component}
-                    options={{ drawerIcon: ({ color }) => React.cloneElement(screen.icon, { color }) }}
-                />
-            ))}
+  <Drawer.Screen
+    key={screen.name}
+    name={screen.name}
+    component={screen.component}
+    options={({ route }) => {
+      // obtiene la pantalla enfocada dentro del stack
+      const routeName = getFocusedRouteNameFromRoute(route) ?? getInitialRouteName(screen.name);
+
+      return {
+        // mostrar header del drawer solo si estamos en la raíz del stack
+        headerShown: routeName === getInitialRouteName(screen.name),
+        drawerIcon: ({ color }) =>
+          React.cloneElement(screen.icon, { color }),
+      };
+    }}
+  />
+))}
+
+
+
         </Drawer.Navigator>
     );
 }
+
+function getInitialRouteName(screenName) {
+  return {
+    'Ofertas': 'ScreenOfertas',
+    'Gestionar ofertas': 'ScreenEditar',
+    'Mapa': 'ScreenMapa',
+    'QR': 'ScreenQR',
+    'Perfil': 'ScreenUsuario',
+    'Bandeja de entrada': 'ScreenChat',
+  }[screenName];
+}
+
 
 // Drawer personalizado
 function CustomDrawerContent({ handleLogout, ...props }) {
