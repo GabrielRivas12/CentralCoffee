@@ -155,7 +155,7 @@ export default function Chat({ navigation, route }) {
                             )}
 
                             {/* Input de mensaje */}
-                            <View style={[styles.inputContainer, modoOscuro && { backgroundColor: '#1a1a1a', borderTopColor: '#333' }]}>
+                            <View style={[styles.inputContainer, modoOscuro && { backgroundColor: '#1a1a1a', borderTopColor: '#333', borderColor: '#333' }]}>
                                 <TextInput
                                     style={[styles.input, modoOscuro && { backgroundColor: '#333', color: '#fff', borderColor: '#555' }]}
                                     value={mensaje}
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
         maxWidth: '80%',
     },
     mensajePropio: {
-        backgroundColor: '#dcf8c6', 
+        backgroundColor: '#f8dbd7', 
         alignSelf: 'flex-end',
     },
     mensajeOtroClaro: {
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     botonEnviar: {
-        backgroundColor: '#25d366',
+        backgroundColor: '#ED6D4A',
         borderRadius: 25,
         paddingVertical: 10,
         paddingHorizontal: 15,

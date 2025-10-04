@@ -209,7 +209,6 @@ const styles = StyleSheet.create({
         color: '#eee',
     },
     opciones: {
-        width: '101.5%',
         marginBottom: 10,
     },
     vboton: {

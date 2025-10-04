@@ -153,7 +153,7 @@ function DrawerNavigate({ user, setUser }) {
                     }}
                 >
                     {props => {
-                        if (screen.name === "Ofertas" || screen.name ==="Mapa") {
+                        if (screen.name === "Ofertas" || screen.name === "Mapa") {
                             return <screen.component {...props} user={user} />;
                         }
                         return <screen.component {...props} />;
@@ -188,7 +188,7 @@ function CustomDrawerContent({ handleLogout, ...props }) {
         <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1, backgroundColor: modoOscuro ? '#000' : '#fff' }}>
             <View style={{ padding: 20 }}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20, color: modoOscuro ? '#fff' : '#000' }}>
-                    Central Coffee
+                    CentralCoffee
                 </Text>
             </View>
             <DrawerItemList {...props} />
@@ -288,7 +288,7 @@ function StackEditar() {
     )
 }
 
-function StackMapa() {
+function StackMapa({ user }) {
     return (
         <Stack.Navigator initialRouteName='ScreenMapa'
 
@@ -300,7 +300,9 @@ function StackMapa() {
             })}
 
         >
-            <Stack.Screen name='ScreenMapa' component={Mapa} />
+             <Stack.Screen name='ScreenMapa'>
+                {props => <Mapa {...props} user={user} />}
+            </Stack.Screen>
             <Stack.Screen name='Crear Marcador' component={CrearMarcador} />
             <Stack.Screen name='Más Información' component={DetallesMapa} />
 
