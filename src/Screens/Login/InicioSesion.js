@@ -8,6 +8,7 @@ import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth, appFirebase } from '../../Services/Firebase'; // importa auth y appFirebase
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+
 import { IniciarLogin } from '../../Containers/IniciarSesion';
 import { enviarRecuperacion, IniciarTemporizador } from '../../Containers/RecuperarCuenta';
 import { usarTema } from '../../Containers/TemaApp';
@@ -17,7 +18,7 @@ import Imagen from '../../Components/Imagen';
 import {
   getFirestore,
   doc,
-  getDoc
+  getDoc, setDoc
 } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
@@ -38,7 +39,7 @@ export default function Login({ navigation, setUser }) {
   const [correoReset, setCorreoReset] = useState('');
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',       // solo este es necesario
+    expoClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',
     androidClientId: '373897650374-3jtsm00ovu83o7l25gkjl2q5hpkpfek2.apps.googleusercontent.com'
   });
 
@@ -49,24 +50,38 @@ export default function Login({ navigation, setUser }) {
 
       signInWithCredential(auth, credential)
         .then(async (res) => {
-          const uid = auth.currentUser.uid;
+          const uid = res.user.uid;
           const docRef = doc(db, 'usuarios', uid);
           const docSnap = await getDoc(docRef);
 
-          if (docSnap.exists()) {
-            const userData = { uid, ...docSnap.data() };
-            // Aquí podrías usar un state global, context, redux, o pasar por params
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'DrawerNavigate', params: { user: userData } }],
+          if (!docSnap.exists()) {
+            // Crear usuario en Firestore si no existe
+            await setDoc(docRef, {
+              nombre: res.user.displayName,
+              correo: res.user.email,
+              foto: res.user.photoURL,
+              creadoEn: new Date()
             });
-          } else {
-            console.log('Usuario no encontrado en Firestore');
           }
+
+          // Navegar al Drawer con los datos del usuario
+          const userData = {
+            uid,
+            nombre: res.user.displayName,
+            correo: res.user.email,
+            foto: res.user.photoURL
+          };
+
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'DrawerNavigate', params: { user: userData } }]
+          });
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error('Error con Google Sign-In:', err));
     }
   }, [response]);
+
+
 
 
   return (
