@@ -17,9 +17,16 @@ export const zoomOut = (region, setRegion) => {
   });
 };
 
-export const handleMapPress = (event, navigation) => {
+export const handleMapPress = (event, navigation, user) => {
   const { coordinate } = event.nativeEvent;
 
+  if (user?.rol !== 'Comerciante') {
+    // Si no es comerciante, no hace nada o muestra alerta
+    Alert.alert('Acceso denegado', 'Solo los comerciantes pueden agregar marcadores.');
+    return;
+  }
+
+  // Solo los comerciantes pueden registrar lugares
   Alert.alert(
     'Agregar lugar',
     '¿Deseas registrar un nuevo lugar aquí?',
@@ -38,6 +45,7 @@ export const handleMapPress = (event, navigation) => {
     { cancelable: true }
   );
 };
+
 
 export const handleMarkerPress = (marker, setSelectedMarker) => {
   setSelectedMarker(marker);

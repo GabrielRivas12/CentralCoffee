@@ -75,7 +75,10 @@ export default function Navegacion() {
                     <Stack.Screen name="Login">
                         {props => <Login {...props} setUser={setUser} />}
                     </Stack.Screen>
-                    <Stack.Screen name="Registro" component={Registro} />
+                    <Stack.Screen name="Registro">
+                        {props => <Registro {...props} setUser={setUser} />}
+                    </Stack.Screen>
+
                 </Stack.Navigator>
             )}
 
@@ -138,23 +141,26 @@ function DrawerNavigate({ user, setUser }) {
             }}
         >
             {screens.map(screen => (
-  <Drawer.Screen
-    key={screen.name}
-    name={screen.name}
-    component={screen.component}
-    options={({ route }) => {
-      // obtiene la pantalla enfocada dentro del stack
-      const routeName = getFocusedRouteNameFromRoute(route) ?? getInitialRouteName(screen.name);
+                <Drawer.Screen
+                    key={screen.name}
+                    name={screen.name}
+                    options={({ route }) => {
+                        const routeName = getFocusedRouteNameFromRoute(route) ?? getInitialRouteName(screen.name);
+                        return {
+                            headerShown: routeName === getInitialRouteName(screen.name),
+                            drawerIcon: ({ color }) => React.cloneElement(screen.icon, { color }),
+                        };
+                    }}
+                >
+                    {props => {
+                        if (screen.name === "Ofertas" || screen.name ==="Mapa") {
+                            return <screen.component {...props} user={user} />;
+                        }
+                        return <screen.component {...props} />;
+                    }}
+                </Drawer.Screen>
+            ))}
 
-      return {
-        // mostrar header del drawer solo si estamos en la raíz del stack
-        headerShown: routeName === getInitialRouteName(screen.name),
-        drawerIcon: ({ color }) =>
-          React.cloneElement(screen.icon, { color }),
-      };
-    }}
-  />
-))}
 
 
 
@@ -163,14 +169,14 @@ function DrawerNavigate({ user, setUser }) {
 }
 
 function getInitialRouteName(screenName) {
-  return {
-    'Ofertas': 'ScreenOfertas',
-    'Gestionar ofertas': 'ScreenEditar',
-    'Mapa': 'ScreenMapa',
-    'QR': 'ScreenQR',
-    'Perfil': 'ScreenUsuario',
-    'Bandeja de entrada': 'ScreenChat',
-  }[screenName];
+    return {
+        'Ofertas': 'ScreenOfertas',
+        'Gestionar ofertas': 'ScreenEditar',
+        'Mapa': 'ScreenMapa',
+        'QR': 'ScreenQR',
+        'Perfil': 'ScreenUsuario',
+        'Bandeja de entrada': 'ScreenChat',
+    }[screenName];
 }
 
 
@@ -209,7 +215,7 @@ function CustomDrawerContent({ handleLogout, ...props }) {
 
 
 
-function StackOfertas() {
+function StackOfertas({ user }) {
     return (
         <Stack.Navigator initialRouteName='ScreenOfertas'
 
@@ -223,7 +229,9 @@ function StackOfertas() {
             })}
 
         >
-            <Stack.Screen name='ScreenOfertas' component={Ofertas} />
+            <Stack.Screen name='ScreenOfertas'>
+                {props => <Ofertas {...props} user={user} />}
+            </Stack.Screen>
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
             <Stack.Screen name='Perfil' component={PerfilUsuario} />

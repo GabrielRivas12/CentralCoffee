@@ -1,47 +1,107 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, View, Animated, Pressable } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { usarTema } from '../Containers/TemaApp';
 
-export default function ComboBox(props) {
+export default function ComboBox({ NombrePicker, value, onValuechange, items }) {
   const { modoOscuro } = usarTema();
+  const [open, setOpen] = useState(false);
+  const animation = useRef(new Animated.Value(0)).current;
+
+  const toggleDropdown = () => {
+    Animated.timing(animation, {
+      toValue: open ? 0 : 1,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+    setOpen(!open);
+  };
+
+  const containerHeight = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, items.length * 45], // altura animada según número de ítems
+  });
+
+  const handleSelect = (item) => {
+    onValuechange(item.value);
+    toggleDropdown();
+  };
+
+  const selectedLabel = items.find(i => i.value === value)?.label || 'Seleccionar...';
 
   return (
-      <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+    <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
       <Text style={[styles.label, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>
-        {props.NombrePicker}
+        {NombrePicker}
       </Text>
-      <View style={[
-        styles.pickerContainer,
-        modoOscuro ? styles.pickerContainerOscuro : styles.pickerContainerClaro
-      ]}>
-        <Picker
-          style={[styles.picker, { color: modoOscuro ? '#fff' : '#000' }]}
-          selectedValue={props.value}
-          onValueChange={props.onValuechange}
+
+      <Pressable
+        onPress={toggleDropdown}
+        style={[
+          styles.pickerContainer,
+          modoOscuro ? styles.pickerContainerOscuro : styles.pickerContainerClaro,
+        ]}
+      >
+        <Text style={{ color: modoOscuro ? '#fff' : '#000', fontSize: 16 }}>
+          {selectedLabel}
+        </Text>
+        <Animated.View
+          style={{
+            transform: [
+              {
+                rotate: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', '180deg'],
+                }),
+              },
+            ],
+          }}
         >
-          {props.items.map((item, index) => (
-            <Picker.Item
-              key={index}
-              label={item.label}
-              value={item.value}
-              color={modoOscuro ? '#000' : '#000'}
-            />
-          ))}
-        </Picker>
-      </View>
+          <Feather name="chevron-down" size={20} color={modoOscuro ? '#fff' : '#000'} />
+        </Animated.View>
+      </Pressable>
+
+      <Animated.View
+        style={[
+          styles.dropdownContainer,
+          {
+            height: containerHeight,
+            opacity: animation,
+          },
+          modoOscuro ? styles.dropdownOscuro : styles.dropdownClaro,
+        ]}
+      >
+        {items.map((item, index) => (
+          <Pressable
+            key={item.value}
+            onPress={() => handleSelect(item)}
+            style={[
+              styles.option,
+              index !== items.length - 1 && styles.optionBorder, // Borde solo entre items
+            ]}
+          >
+            <Text style={{ 
+              color: modoOscuro ? '#fff' : '#000',
+              fontWeight: value === item.value ? 'bold' : 'normal'
+            }}>
+              {item.label}
+            </Text>
+          </Pressable>
+        ))}
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-container: {
-    paddingBottom: 5,
+  container: {
+    paddingBottom: 10,
   },
   containerClaro: {
     backgroundColor: '#fff',
   },
   containerOscuro: {
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
   },
   label: {
     fontSize: 16,
@@ -49,29 +109,52 @@ container: {
     marginLeft: '2.5%',
     marginBottom: 5,
   },
-  labelClaro: {
-    color: '#000',
-  },
-  labelOscuro: {
-    color: '#fff',
-  },
+  labelClaro: { color: '#000' },
+  labelOscuro: { color: '#fff' },
   pickerContainer: {
     borderWidth: 1,
     borderRadius: 5,
     width: 350,
     height: 52,
-    overflow: 'hidden', // esto mantiene las esquinas redondeadas
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   pickerContainerClaro: {
     backgroundColor: '#fff',
     borderColor: '#999',
   },
   pickerContainerOscuro: {
-    backgroundColor: '#fff',
-    borderColor: '#999',
+    backgroundColor: '#333',
+    borderColor: '#555',
   },
-  picker: {
-    height: 52,
-    width: '100%',
+  dropdownContainer: {
+  overflow: 'hidden',
+  width: 344,
+  alignSelf: 'center',
+  borderTopLeftRadius: 0,     // Esquina superior izquierda sin redondear
+  borderTopRightRadius: 0,    // Esquina superior derecha sin redondear
+  borderBottomLeftRadius: 5,  // Esquina inferior izquierda redondeada
+  borderBottomRightRadius: 5, // Esquina inferior derecha redondeada
+},
+dropdownClaro: {
+  backgroundColor: '#EBEBEB',
+  borderColor: '#ccc',
+  borderWidth: 1,
+},
+dropdownOscuro: {
+  backgroundColor: '#222',
+  borderColor: '#444',
+  borderWidth: 1,
+},
+  option: {
+    height: 45,
+    justifyContent: 'center',
+    paddingHorizontal: 15,
+  },
+  optionBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#e4dcdcff',
   },
 });

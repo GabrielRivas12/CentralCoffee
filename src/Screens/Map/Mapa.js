@@ -20,7 +20,7 @@ import {
 
 const db = getFirestore(appFirebase);
 
-export default function Mapa({ navigation }) {
+export default function Mapa({ navigation, user }) {
 
   const [markers, setMarkers] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
@@ -47,7 +47,7 @@ useFocusEffect(
           region={region}
           onRegionChangeComplete={setRegion}
           onPress={() => setSelectedMarker(null)}
-          onLongPress={(event) => handleMapPress(event, navigation)}
+          onLongPress={(event) => handleMapPress(event, navigation, user)}
         >
           {markers.map((marker, index) => (
             <Marker

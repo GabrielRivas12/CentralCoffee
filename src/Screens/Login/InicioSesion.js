@@ -50,26 +50,29 @@ export default function Login({ navigation, setUser }) {
       </SafeAreaView>
       <View style={styles.containerCuerpo}>
 
-        <Text style={[styles.Titulo, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>Login</Text>
-
-        <View style={{  backgroundColor: '#ccc', width: 140, marginVertical: 32, alignSelf: 'flex-start', marginLeft: 25, }} />
-
-
-        <View style={{ backgroundColor: '#ccc', width: 140, marginVertical: 173, alignSelf: 'flex-end', position: 'absolute', marginRight: 20, }} />
+        <Text style={[styles.bienvenido, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>
+          ¡Bienvenido!
+        </Text>
+        <Text style={[styles.subtitulo, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>
+          Inicie sesión en su cuenta para continuar
+        </Text>
+        <View style={{ backgroundColor: '#ccc', width: 140, marginVertical: 20, alignSelf: 'flex-start', marginLeft: 25, }} />
 
         <View style={styles.containerInput}>
           <InputText
             NombreLabel='Correo'
             Valor={Correo}
             onchangetext={setCorreo}
-            placeholder='Ingrese el correo' />
+            placeholder='Ingrese el correo'
+          />
 
           <InputText
             NombreLabel='Contraseña'
             Valor={Contraseña}
             onchangetext={setContraseña}
             placeholder='Ingrese su contraseña'
-            esPassword={true} />
+            esPassword={true}
+          />
 
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Text style={styles.label}>¿Olvidaste tu contraseña?</Text>
@@ -85,9 +88,9 @@ export default function Login({ navigation, setUser }) {
           <Boton
             nombreB='Registrarse'
             onPress={() => navigation.navigate('Registro')} />
-
         </View>
       </View>
+
       <Modal
         visible={modalVisible}
         transparent
@@ -152,9 +155,8 @@ const styles = StyleSheet.create({
   Titulo: {
     fontSize: 30,
     fontWeight: 'bold',
-    paddingLeft: 230,
     paddingTop: 10,
-    paddingBottom: 40
+    paddingBottom: 40,
   },
   label: {
     color: '#ED6D4A',
@@ -223,28 +225,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
-    width: '50%',
+    width: '50%'
   },
   bannerTexto: {
     color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 23,
+    fontWeight: '700',
     marginLeft: 10,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+    letterSpacing: 0.5,
+    marginTop: 30
   },
   logoContainer: {
     width: 200,
     height: 200,
     overflow: 'hidden',
-    marginLeft: 150
+    marginLeft: 170
   },
   logoImagen: {
-    width: '50%',
-    height: '50%',
+    width: '60%',
+    height: '60%',
     resizeMode: 'contain',
   },
   bannerLogo: {
-    width: 200,
-    height: 200,
-  }
+    width: 230,
+    height: 230,
+  },
+
+  bienvenido: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    marginTop: 40,
+  },
+  subtitulo: {
+    fontSize: 16,
+    color: '#888',
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+
 });

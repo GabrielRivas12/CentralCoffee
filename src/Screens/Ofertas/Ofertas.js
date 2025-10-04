@@ -12,7 +12,7 @@ import { BuscarOferta } from '../../Containers/BuscadorOferta';
 
 import { usarTema } from '../../Containers/TemaApp';
 
-export default function Ofertas({ navigation }) {
+export default function Ofertas({ navigation, user }) {
 
   const [Ofertass, setOfertass] = useState([]);
   const [valorBusqueda, setValorBusqueda] = useState('');
@@ -72,17 +72,20 @@ export default function Ofertas({ navigation }) {
             />
           ))}
         </ScrollView>
-        <View style={styles.botoncrear} >
-          <Boton
+      {user?.rol === 'Comerciante' && (
+    <View style={styles.botoncrear}>
+        <Boton
             onPress={() => navigation.navigate('Crear')}
             alto={60}
             ancho={60}
             borderRadius={40}
-          />
-          <View pointerEvents="none" style={{ position: 'absolute', top: 20, left: 20 }}>
+        />
+        <View pointerEvents="none" style={{ position: 'absolute', top: 20, left: 20 }}>
             <Octicons name="pencil" size={24} color="white" />
-          </View>
         </View>
+    </View>
+)}
+
       </SafeAreaView>
     </View>
   );
