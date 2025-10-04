@@ -1,266 +1,192 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, onScroll, Text, TextInput, InteractionManager, FlatList, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
-import appFirebase from '../../Services/Firebase';
 import { getAuth } from 'firebase/auth';
-import { usarTema } from '../../Containers/TemaApp';
-
 import Ionicons from '@expo/vector-icons/Ionicons';
-
-const db = getFirestore(appFirebase);
-const auth = getAuth(appFirebase);
-
-// Combina las ID para generar un ID de chat
-const generarChatId = (id1, id2) => {
-    if (!id1 || !id2) return null;
-    return id1 < id2 ? `${id1}_${id2}` : `${id2}_${id1}`;
-};
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { usarTema } from '../../Containers/TemaApp';
+import {
+    generarChatId,
+    crearChatSiNoExiste,
+    suscribirseAMensajes,
+    enviarMensaje,
+    enviarReferencia
+} from '../../Containers/SalaChat';
 
 export default function Chat({ navigation, route }) {
-
     const { modoOscuro } = usarTema();
-    const { ofertaReferencia } = route.params || {};
-    const [referenciaPendiente, setReferenciaPendiente] = useState(ofertaReferencia || null);
+    const { ofertaReferencia, otroUsuarioId, nombreOtroUsuario, fotoPerfil, inicial, colorFondo } = route.params || {};
 
-    const flatListRef = React.useRef(null);
+    const [referenciaPendiente, setReferenciaPendiente] = useState(ofertaReferencia || null);
 
     const [mensaje, setMensaje] = useState('');
     const [mensajes, setMensajes] = useState([]);
     const [chatId, setChatId] = useState(null);
+    const [isAtBottom, setIsAtBottom] = useState(true);
 
-    const { otroUsuarioId } = route.params;
-    const currentUser = auth.currentUser;
-    const userId = currentUser ? currentUser.uid : null;
+    const flatListRef = useRef(null);
+    const auth = getAuth();
+    const userId = auth.currentUser ? auth.currentUser.uid : null;
 
-    // ✅ Genera el chat ID si son validos
+    const formatHora = (timestamp) => {
+        if (!timestamp) return '';
+        const date = timestamp.toDate ? timestamp.toDate() : timestamp; // Firestore Timestamp
+        const horas = date.getHours();
+        const minutos = date.getMinutes();
+        const formatoHoras = horas % 12 || 12;
+        const ampm = horas >= 12 ? 'PM' : 'AM';
+        const formatoMinutos = minutos < 10 ? `0${minutos}` : minutos;
+        return `${formatoHoras}:${formatoMinutos} ${ampm}`;
+    };
+
+
+    // 🔥 Un solo useEffect: inicialización completa del chat
     useEffect(() => {
-        if (userId && otroUsuarioId) {
-            const id = generarChatId(userId, otroUsuarioId);
-            setChatId(id);
-        }
+        if (!userId || !otroUsuarioId) return;
+
+        const id = generarChatId(userId, otroUsuarioId);
+        setChatId(id);
+
+        // Crear chat si no existe y suscribirse a mensajes
+        crearChatSiNoExiste(id, userId, otroUsuarioId);
+
+        const unsubscribe = suscribirseAMensajes(id, setMensajes);
+
+        return () => unsubscribe && unsubscribe(); // limpiar suscripción
     }, [userId, otroUsuarioId]);
 
-    // ✅ Leer mensajes del chat
-    useEffect(() => {
-        const crearChatSiNoExiste = async () => {
-            if (!chatId || !userId || !otroUsuarioId) return;
 
-            const chatDocRef = doc(db, 'chats', chatId);
-            const chatSnapshot = await getDoc(chatDocRef);
+return (
+    <View style={[styles.container, { backgroundColor: modoOscuro ? '#000' : '#fff' }]}>
+        <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={95}
+            >
+                {/* Solo un TouchableWithoutFeedback que cubre todo */}
+                <TouchableWithoutFeedback
+                    onPress={() => {
+                        Keyboard.dismiss();
 
-            if (!chatSnapshot.exists()) {
-                await setDoc(chatDocRef, {
-                    participantes: [userId, otroUsuarioId],
-                    creadoEn: new Date(),
-                });
-            }
-        };
-
-        crearChatSiNoExiste();
-    }, [chatId]);
-
-    useEffect(() => {
-        if (!chatId) return;
-
-        const q = query(
-            collection(db, 'chats', chatId, 'mensajes'),
-            orderBy('timestamp', 'asc')
-        );
-
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const mensajesFirestore = [];
-            querySnapshot.forEach((doc) => {
-                mensajesFirestore.push({ id: doc.id, ...doc.data() });
-            });
-            setMensajes(mensajesFirestore);
-        });
-
-        return () => unsubscribe();
-    }, [chatId]);
-
-
-
-    const enviarMensaje = async () => {
-        if (mensaje.trim() === '' || !chatId || !userId) return;
-
-        try {
-            const chatDocRef = doc(db, 'chats', chatId);
-
-            const chatExists = await getDoc(chatDocRef);
-
-            if (!chatExists.exists()) {
-                await setDoc(chatDocRef, {
-                    participantes: [userId, otroUsuarioId],
-                    creadoEn: new Date()
-                });
-            }
-
-            await addDoc(collection(db, 'chats', chatId, 'mensajes'), {
-                texto: mensaje,
-                timestamp: new Date(),
-                de: userId,
-            });
-
-            setMensaje('');
-        } catch (error) {
-        }
-    };
-    useEffect(() => {
-        if (mensajes.length > 0) {
-            flatListRef.current?.scrollToEnd({ animated: false }); // animated: false para que no se vea el scroll
-        }
-    }, [mensajes]);
-
-const [isAtBottom, setIsAtBottom] = useState(true);
-
-const onScroll = (event) => {
-    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-
-    // Si el scroll está a menos de 20 px del final, consideramos que está "pegado"
-    const distanceFromBottom = contentSize.height - (contentOffset.y + layoutMeasurement.height);
-
-    setIsAtBottom(distanceFromBottom < 20);
-};
-
-useEffect(() => {
-    if (isAtBottom && mensajes.length > 0) {
-        flatListRef.current?.scrollToEnd({ animated: true });
-    }
-}, [mensajes, isAtBottom]);
-
-
-    return (
-        <View style={[styles.container, { backgroundColor: modoOscuro ? '#000' : '#fff' }]}>
-            <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
-                <KeyboardAvoidingView
+                        // Scroll al último mensaje usando InteractionManager
+                        if (flatListRef.current) {
+                            InteractionManager.runAfterInteractions(() => {
+                                flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+                            });
+                        }
+                    }}
                     style={{ flex: 1 }}
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    keyboardVerticalOffset={95}
                 >
-                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                        <View style={{ flex: 1 }}>
-                            <FlatList
-                                data={mensajes}
-                                renderItem={({ item }) => (
-                                    <View
-                                        style={[
-                                            styles.mensajeContainer,
-                                            item.de === userId
-                                                ? styles.mensajePropio
-                                                : modoOscuro
-                                                    ? styles.mensajeOtroOscuro
-                                                    : styles.mensajeOtroClaro
-                                        ]}
-                                    >
+                    <View style={{ flex: 1 }}>
+                        <FlatList
+                            data={mensajes.slice().reverse()}
+                            inverted
+                            renderItem={({ item }) => (
+                                <View
+                                    style={[
+                                        styles.mensajeContainer,
+                                        item.de === userId
+                                            ? styles.mensajePropio
+                                            : modoOscuro
+                                                ? styles.mensajeOtroOscuro
+                                                : styles.mensajeOtroClaro
+                                    ]}
+                                >
+                                    <View style={{ maxWidth: '100%' }}>
                                         <Text
                                             style={[
                                                 styles.textoMensaje,
                                                 item.de === userId
-                                                    ? { color: '#000' } // mensaje propio: negro siempre
+                                                    ? { color: '#000' }
                                                     : modoOscuro
-                                                        ? { color: '#fff' } // mensaje ajeno modo oscuro: blanco
-                                                        : { color: '#000' } // mensaje ajeno modo claro: negro
+                                                        ? { color: '#fff' }
+                                                        : { color: '#000' }
                                             ]}
                                         >
                                             {item.texto}
                                         </Text>
-
-                                    </View>
-                                )}
-                                keyExtractor={(item) => item.id}
-                                contentContainerStyle={{ padding: 10, flexGrow: 1 }}
-                                style={{ flex: 1 }}
-                                ref={flatListRef}
-                                onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                                onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
-                                keyboardShouldPersistTaps="handled"
-                            />
-
-                            {referenciaPendiente && (
-                                <View style={[
-                                    styles.referenciaPreview,
-                                    modoOscuro && {
-                                        backgroundColor: '#2a2a2a',
-                                        borderLeftColor: '#ED6D4A'
-                                    }
-                                ]}>
-                                    <Text style={[styles.referenciaTitulo, modoOscuro && { color: '#fff' }]}>{referenciaPendiente.titulo}</Text>
-                                    <Text style={{ color: modoOscuro ? '#ccc' : '#000' }}>🫘 Tipo: {referenciaPendiente.tipoCafe}</Text>
-                                    <Text style={{ color: modoOscuro ? '#ccc' : '#000' }}>📦 Cantidad: {referenciaPendiente.cantidadProduccion}</Text>
-                                    <Text style={{ color: modoOscuro ? '#ccc' : '#000' }}>💲 Precio/libra: {referenciaPendiente.ofertaLibra}</Text>
-
-                                    <View style={styles.botonesReferencia}>
-                                        <TouchableOpacity
-                                            style={[styles.botonEnviar, { backgroundColor: '#f16a34ff' }]}
-                                            onPress={async () => {
-                                                if (!chatId || !userId) return;
-
-                                                const chatDocRef = doc(db, 'chats', chatId);
-                                                const chatSnapshot = await getDoc(chatDocRef);
-
-                                                if (!chatSnapshot.exists()) {
-                                                    await setDoc(chatDocRef, {
-                                                        participantes: [userId, otroUsuarioId],
-                                                        creadoEn: new Date(),
-                                                    });
-                                                }
-
-                                                const resumen = `📌 Oferta: ${referenciaPendiente.titulo}\n🫘 Tipo: ${referenciaPendiente.tipoCafe}\n📦 Cantidad: ${referenciaPendiente.cantidadProduccion}\n💲 Precio/libra: ${referenciaPendiente.ofertaLibra}`;
-
-                                                await addDoc(collection(db, 'chats', chatId, 'mensajes'), {
-                                                    texto: resumen,
-                                                    timestamp: new Date(),
-                                                    de: userId,
-                                                    tipo: 'referencia',
-                                                });
-
-                                                setReferenciaPendiente(null);
-                                            }}
+                                        <Text
+                                            style={[
+                                                styles.horaMensaje,
+                                                item.de === userId
+                                                    ? { alignSelf: 'flex-end', color: '#555' }
+                                                    : { alignSelf: 'flex-start', color: modoOscuro ? '#aaa' : '#555' }
+                                            ]}
                                         >
-                                            <Text style={styles.botonTexto}>Enviar</Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity
-                                            style={[styles.botonEnviar, { backgroundColor: '#545454' }]}
-                                            onPress={() => setReferenciaPendiente(null)}
-                                        >
-                                            <Text style={styles.botonTexto}>Cancelar</Text>
-                                        </TouchableOpacity>
+                                            {formatHora(item.timestamp)}
+                                        </Text>
                                     </View>
                                 </View>
                             )}
+                            keyExtractor={(item) => item.id}
+                            contentContainerStyle={{ padding: 10, flexGrow: 1 }}
+                            style={{ flex: 1 }}
+                            ref={flatListRef}
+                            keyboardShouldPersistTaps="handled"
+                        />
 
-                            <View style={[styles.inputContainer, modoOscuro && { backgroundColor: '#1a1a1a', borderTopColor: '#333' }]}>
-                                <TextInput
-                                    style={[
-                                        styles.input,
-                                        modoOscuro && {
-                                            backgroundColor: '#333',
-                                            color: '#fff',
-                                            borderColor: '#555'
-                                        }
-                                    ]}
-                                    value={mensaje}
-                                    onChangeText={setMensaje}
-                                    placeholder="Escribe un mensaje..."
-                                    placeholderTextColor={modoOscuro ? '#aaa' : '#999'}
-                                    multiline
-                                />
-                                <TouchableOpacity style={styles.botonEnviar} onPress={enviarMensaje}>
-                                    <Ionicons name="send-outline" size={24} color="white" />
-                                </TouchableOpacity>
+                        {referenciaPendiente && (
+                            <View style={[
+                                styles.referenciaPreview,
+                                modoOscuro && { backgroundColor: '#2a2a2a', borderLeftColor: '#ED6D4A' }
+                            ]}>
+                                <Text style={[styles.referenciaTitulo, modoOscuro && { color: '#fff' }]}>{referenciaPendiente.titulo}</Text>
+                                <Text style={{ color: modoOscuro ? '#ccc' : '#000' }}>🫘 Tipo: {referenciaPendiente.tipoCafe}</Text>
+                                <Text style={{ color: modoOscuro ? '#ccc' : '#000' }}>📦 Cantidad: {referenciaPendiente.cantidadProduccion}</Text>
+                                <Text style={{ color: modoOscuro ? '#ccc' : '#000' }}>💲 Precio/libra: {referenciaPendiente.ofertaLibra}</Text>
+
+                                <View style={styles.botonesReferencia}>
+                                    <TouchableOpacity
+                                        style={[styles.botonEnviar, { backgroundColor: '#f16a34ff' }]}
+                                        onPress={async () => {
+                                            await enviarReferencia(chatId, userId, otroUsuarioId, referenciaPendiente);
+                                            setReferenciaPendiente(null);
+                                        }}
+                                    >
+                                        <Text style={styles.botonTexto}>Enviar</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[styles.botonEnviar, { backgroundColor: '#545454' }]}
+                                        onPress={() => setReferenciaPendiente(null)}
+                                    >
+                                        <Text style={styles.botonTexto}>Cancelar</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
+                        )}
+
+                        <View style={[styles.inputContainer, modoOscuro && { backgroundColor: '#1a1a1a', borderTopColor: '#333' }]}>
+                            <TextInput
+                                style={[
+                                    styles.input,
+                                    modoOscuro && { backgroundColor: '#333', color: '#fff', borderColor: '#555' }
+                                ]}
+                                value={mensaje}
+                                onChangeText={setMensaje}
+                                placeholder="Escribe un mensaje..."
+                                placeholderTextColor={modoOscuro ? '#aaa' : '#999'}
+                                multiline
+                            />
+                            <TouchableOpacity
+                                style={styles.botonEnviar}
+                                onPress={() => enviarMensaje(chatId, userId, otroUsuarioId, mensaje).then(() => setMensaje(''))}
+                            >
+                                <FontAwesome name="send-o" size={24} color="black" />
+                            </TouchableOpacity>
                         </View>
-                    </TouchableWithoutFeedback>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-        </View>
-    );
+                    </View>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    </View>
+
+);
 
 }
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -340,4 +266,9 @@ const styles = StyleSheet.create({
         marginTop: 10,
         gap: 10,
     },
+    horaMensaje: {
+        fontSize: 11,
+        marginTop: 2,
+    },
+
 });

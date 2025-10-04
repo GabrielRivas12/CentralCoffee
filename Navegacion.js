@@ -369,39 +369,74 @@ function StackUsuario() {
 function StackChat() {
     return (
         <Stack.Navigator
-            initialRouteName='ScreenChat'
+            initialRouteName="ScreenChat"
             screenOptions={({ route }) => ({
-                headerShown: route.name !== 'ScreenChat',
+                headerShown: route.name !== "ScreenChat",
                 headerStyle: {
-                    backgroundColor: '#ED6D4A',
+                    backgroundColor: "#ED6D4A",
                 },
             })}
         >
-            <Stack.Screen name='ScreenChat' component={ChatEntrantes} />
+            <Stack.Screen name="ScreenChat" component={ChatEntrantes} />
             <Stack.Screen
-                name='Chat'
+                name="Chat"
                 component={Chat}
-                options={({ route }) => ({
-                    headerTitle: () => (
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            {route.params?.fotoPerfil ? (
-                                <Image
-                                    source={{ uri: route.params.fotoPerfil }}
+                options={({ route }) => {
+                    const fotoPerfil = route.params?.fotoPerfil;
+                    const nombre = route.params?.nombreOtroUsuario || "Chat";
+                    const inicial = route.params?.inicial || nombre.charAt(0).toUpperCase();
+                    const colorFondo = route.params?.colorFondo || "#b55034";
+
+                    return {
+                        headerTitle: () => (
+                            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                {fotoPerfil ? (
+                                    <Image
+                                        source={{ uri: fotoPerfil }}
+                                        style={{
+                                            width: 35,
+                                            height: 35,
+                                            borderRadius: 17.5,
+                                            marginRight: 10,
+                                        }}
+                                    />
+                                ) : (
+                                    <View
+                                        style={{
+                                            width: 35,
+                                            height: 35,
+                                            borderRadius: 17.5,
+                                            marginRight: 10,
+                                            backgroundColor: colorFondo,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <Text
+                                            style={{
+                                                color: "#fff",
+                                                fontWeight: "bold",
+                                                fontSize: 16,
+                                            }}
+                                        >
+                                            {inicial}
+                                        </Text>
+                                    </View>
+                                )}
+                                <Text
                                     style={{
-                                        width: 35,
-                                        height: 35,
-                                        borderRadius: 17.5,
-                                        marginRight: 10,
+                                        fontSize: 16,
+                                        fontWeight: "bold",
+                                        color: "#000",
                                     }}
-                                />
-                            ) : null}
-                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>
-                                {route.params?.nombre || 'Chat'}
-                            </Text>
-                        </View>
-                    ),
-                    headerTintColor: '#000', // color de los íconos en el header
-                })}
+                                >
+                                    {nombre}
+                                </Text>
+                            </View>
+                        ),
+                        headerTintColor: "#000",
+                    };
+                }}
             />
         </Stack.Navigator>
     );

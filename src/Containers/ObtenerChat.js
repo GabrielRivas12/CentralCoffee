@@ -1,8 +1,9 @@
 import { collection, getDocs, query, orderBy, limit, doc, setDoc, serverTimestamp, getFirestore } from 'firebase/firestore';
 import appFirebase from '../Services/Firebase';
+import { obtenerDatosUsuario } from './ObtenerUsuario';
+import { decryptText } from './Encrintar';
 
 const db = getFirestore(appFirebase);
-import { obtenerDatosUsuario } from './ObtenerUsuario';
 
 export const obtenerChatsDelUsuario = async (userId) => {
     const snapshot = await getDocs(collection(db, 'chats'));
@@ -25,7 +26,8 @@ export const obtenerChatsDelUsuario = async (userId) => {
             let ultimoTimestamp = null;
             mensajesSnapshot.forEach(msgDoc => {
                 const data = msgDoc.data();
-                ultimoMensaje = data.texto || '';
+                // ✅ desencriptar el mensaje aquí
+                ultimoMensaje = data.texto ? decryptText(data.texto) : '';
                 ultimoTimestamp = data.timestamp ? data.timestamp.toDate() : null;
             });
 
@@ -50,12 +52,4 @@ export const obtenerChatsDelUsuario = async (userId) => {
     });
 
     return chats;
-};
-
-export const crearChatSiNoExiste = async (chatId, userId, otroUsuarioId) => {
-    const chatRef = doc(db, 'chats', chatId);
-    await setDoc(chatRef, {
-        participantes: [userId, otroUsuarioId],
-        creadoEn: serverTimestamp()
-    }, { merge: true });
 };

@@ -1,25 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar, Modal, TextInput } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth, appFirebase } from '../../Services/Firebase'; // importa auth y appFirebase
+import { auth, appFirebase } from '../../Services/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 import { IniciarLogin } from '../../Containers/IniciarSesion';
 import { enviarRecuperacion, IniciarTemporizador } from '../../Containers/RecuperarCuenta';
 import { usarTema } from '../../Containers/TemaApp';
-import Imagen from '../../Components/Imagen';
 
 
-import {
-  getFirestore,
-  doc,
-  getDoc, setDoc
-} from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 const db = getFirestore(appFirebase);
 
@@ -37,52 +30,6 @@ export default function Login({ navigation, setUser }) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [correoReset, setCorreoReset] = useState('');
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',
-    androidClientId: '373897650374-3jtsm00ovu83o7l25gkjl2q5hpkpfek2.apps.googleusercontent.com'
-  });
-
-  useEffect(() => {
-    if (response?.type === 'success' && response.authentication) {
-      const { idToken, accessToken } = response.authentication;
-      const credential = GoogleAuthProvider.credential(idToken, accessToken);
-
-      signInWithCredential(auth, credential)
-        .then(async (res) => {
-          const uid = res.user.uid;
-          const docRef = doc(db, 'usuarios', uid);
-          const docSnap = await getDoc(docRef);
-
-          if (!docSnap.exists()) {
-            // Crear usuario en Firestore si no existe
-            await setDoc(docRef, {
-              nombre: res.user.displayName,
-              correo: res.user.email,
-              foto: res.user.photoURL,
-              creadoEn: new Date()
-            });
-          }
-
-          // Navegar al Drawer con los datos del usuario
-          const userData = {
-            uid,
-            nombre: res.user.displayName,
-            correo: res.user.email,
-            foto: res.user.photoURL
-          };
-
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'DrawerNavigate', params: { user: userData } }]
-          });
-        })
-        .catch(err => console.error('Error con Google Sign-In:', err));
-    }
-  }, [response]);
-
-
-
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
@@ -105,28 +52,10 @@ export default function Login({ navigation, setUser }) {
 
         <Text style={[styles.Titulo, modoOscuro ? styles.labelOscuro : styles.labelClaro]}>Login</Text>
 
-        <TouchableOpacity style={styles.button} disabled={!request}
-          onPress={() => promptAsync()}>
-          <Image
-            source={require('../../../assets/Google_Icon.png')}
-            style={styles.logo}
-          />
-          <Text style={styles.text}>Sign in with Google</Text>
-          <Text style={styles.text}></Text>
-        </TouchableOpacity>
+        <View style={{  backgroundColor: '#ccc', width: 140, marginVertical: 32, alignSelf: 'flex-start', marginLeft: 25, }} />
 
-        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 32, alignSelf: 'flex-start', marginLeft: 25, }} />
-        <Text
-          style={[
-            styles.label,
-            modoOscuro ? styles.labelOscuro : styles.labelClaro,
-            { position: 'absolute', marginVertical: 145, marginLeft: 10 }
-          ]}
-        >
-          O
-        </Text>
 
-        <View style={{ height: 1, backgroundColor: '#ccc', width: 140, marginVertical: 173, alignSelf: 'flex-end', position: 'absolute', marginRight: 20, }} />
+        <View style={{ backgroundColor: '#ccc', width: 140, marginVertical: 173, alignSelf: 'flex-end', position: 'absolute', marginRight: 20, }} />
 
         <View style={styles.containerInput}>
           <InputText
@@ -151,7 +80,6 @@ export default function Login({ navigation, setUser }) {
               nombreB='Iniciar'
               onPress={() => IniciarLogin(auth, Correo, Contraseña, setUser)}
             />
-
           </View>
 
           <Boton
@@ -192,7 +120,6 @@ export default function Login({ navigation, setUser }) {
               deshabilitado={bloquearBoton} />
 
             <Boton nombreB='Cancelar' onPress={() => setModalVisible(false)} backgroundColor="#ccc" ancho='270' />
-
           </View>
         </View>
       </Modal>
@@ -205,14 +132,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-
   containerBanner: {
     flex: 1,
     backgroundColor: '#F1A89B',
     justifyContent: 'center',
     alignItems: 'center'
-
-
   },
   containerClaro: {
     backgroundColor: '#fff',
@@ -220,7 +144,6 @@ const styles = StyleSheet.create({
   containerOscuro: {
     backgroundColor: '#000',
   },
-
   containerCuerpo: {
     flex: 2.5,
     justifyContent: 'flex-start',
@@ -287,7 +210,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-
   },
   modalInput: {
     width: '100%',
@@ -304,32 +226,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: '50%',
   },
-
   bannerTexto: {
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
     marginLeft: 10,
   },
-
   logoContainer: {
     width: 200,
     height: 200,
     overflow: 'hidden',
     marginLeft: 150
   },
-
   logoImagen: {
     width: '50%',
     height: '50%',
     resizeMode: 'contain',
   },
-
   bannerLogo: {
     width: 200,
     height: 200,
   }
-
-
-
 });

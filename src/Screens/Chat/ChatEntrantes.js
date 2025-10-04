@@ -1,55 +1,25 @@
-// /screens/ChatEntrantes.js
 import React, { useState, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { obtenerChatsDelUsuario } from '../../Containers/ObtenerChat';
 import { usarTema } from '../../Containers/TemaApp';
 import { auth } from '../../Services/Firebase';
+import { fetchChats, irAlChat, formatDate } from '../../Containers/ObtenerChats';
 
 export default function ChatEntrantes({ navigation }) {
-
     const { modoOscuro } = usarTema();
     const [chatsUsuario, setChatsUsuario] = useState([]);
     const userId = auth.currentUser ? auth.currentUser.uid : null;
 
     useFocusEffect(
         useCallback(() => {
-            const fetchChats = async () => {
-                if (!userId) return;
-
-                try {
-                    const chats = await obtenerChatsDelUsuario(userId);
-                    setChatsUsuario(chats);
-                } catch (error) {
-                    console.error('Error al obtener chats:', error);
-                }
-            };
-
-            fetchChats();
+            fetchChats(userId, setChatsUsuario);
         }, [userId])
     );
 
-    const irAlChat = (otroUsuarioId, nombre, fotoPerfil) => {
-        navigation.navigate('Chat', {
-            otroUsuarioId,
-            nombre,
-            fotoPerfil
-        });
-    };
-
-    const formatDate = (date) => {
-        if (!date) return '';
-        const now = new Date();
-        if (date.toDateString() === now.toDateString()) {
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        return date.toLocaleDateString();
-    };
-
     return (
-         <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
+        <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
             <SafeAreaView edges={['bottom']} style={{ flex: 1, width: '100%' }}>
                 <FlatList
                     data={chatsUsuario}
@@ -57,13 +27,30 @@ export default function ChatEntrantes({ navigation }) {
                     renderItem={({ item }) => (
                         <TouchableOpacity
                             style={styles.chatItem}
-                            onPress={() => irAlChat(item.otroUsuarioId, item.nombreOtroUsuario, item.fotoPerfil)}
+                            onPress={() => {
+                                const inicial = item.nombreOtroUsuario?.charAt(0).toUpperCase() || '?';
+                                const colorFondo = '#b55034'; // mismo color que usas en avatarPlaceholder
+                                irAlChat(
+                                    navigation,
+                                    item.otroUsuarioId,
+                                    item.nombreOtroUsuario,
+                                    item.fotoPerfil,
+                                    inicial,
+                                    colorFondo
+                                );
+                            }}
+
                         >
                             {item.fotoPerfil ? (
                                 <Image source={{ uri: item.fotoPerfil }} style={styles.avatar} />
                             ) : (
-                                <View style={styles.avatarPlaceholder} />
+                                <View style={styles.avatarPlaceholder}>
+                                    <Text style={styles.avatarLetter}>
+                                        {item.nombreOtroUsuario?.charAt(0).toUpperCase() || '?'}
+                                    </Text>
+                                </View>
                             )}
+
 
                             <View style={styles.chatContent}>
                                 <View style={styles.headerRow}>
@@ -97,7 +84,7 @@ export default function ChatEntrantes({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-     container: {
+    container: {
         flex: 1,
     },
     containerClaro: {
@@ -123,8 +110,15 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 25,
-        backgroundColor: '#bbb',
-        marginRight: 12
+        backgroundColor: '#b55034',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    avatarLetter: {
+        color: '#fff',
+        fontSize: 20,
+        fontWeight: 'bold',
     },
     chatContent: {
         flex: 1,
