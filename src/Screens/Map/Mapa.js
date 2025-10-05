@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   bottomPanel: {
     position: 'absolute',
-    bottom: 10,
+    bottom: 55,
     left: 10,
     right: 20,
     backgroundColor: 'rgba(255,255,255,0.8)',
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'Transparent',
     borderRadius: 8,
-    bottom: 100,
+    bottom: 150,
     right: 10,
   },
 

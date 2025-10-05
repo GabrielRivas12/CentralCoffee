@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   botoncrear: {
     position: 'absolute',
     right: 10,
-    bottom: '20'
+    bottom: '55'
   },
   containerBusqueda: {
     alignItems: 'center',
