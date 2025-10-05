@@ -59,7 +59,7 @@ export default function DetallesMapa({ route, navigation }) {
 
         <View style={styles.PanelUbicacion}>
           <View style={styles.Icono}>
-            <Feather name="map-pin" size={24} color={modoOscuro ? 'white' : 'black'} />
+            <Feather name="map-pin" size={24} color={"black"} />
           </View>
 
           <Text
@@ -76,12 +76,15 @@ export default function DetallesMapa({ route, navigation }) {
         </View>
 
         <View style={styles.containerDescripcion}>
-          <Text style={[styles.DescripcionText, modoOscuro ? styles.textOscuro : styles.textClaro]}>
-            Descripción:
-          </Text>
-          <Text style={[modoOscuro ? styles.textOscuro : styles.textClaro]}>
+          <Text
+            style={[
+              modoOscuro ? styles.textOscuro : styles.textClaro,
+              styles.descripcionTexto,
+            ]}
+          >
             {marker.descripcion}
           </Text>
+
         </View>
 
         <View style={styles.botonllegar}>
@@ -118,6 +121,7 @@ export default function DetallesMapa({ route, navigation }) {
               style={styles.botonAccion}
             >
               <Feather name="edit" size={28} color="blue" />
+              <Text style={styles.labelAccion}>Editar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -147,8 +151,10 @@ export default function DetallesMapa({ route, navigation }) {
               style={styles.botonAccion}
             >
               <Feather name="trash" size={28} color="red" />
+              <Text style={styles.labelAccion}>Borrar</Text>
             </TouchableOpacity>
           </View>
+
         )}
       </SafeAreaView>
     </View>
@@ -176,16 +182,20 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 15,
     top: 10,
-    left: 8,
     borderRadius: 10,
     borderColor: '#000',
     overflow: 'hidden',
   },
   containerDescripcion: {
-    width: 375,
-    height: 200,
-    top: 50,
-    left: 8,
+    width: '94%',
+    alignSelf: 'flex-start',
+    marginTop: 50,
+    padding: 10,
+    borderRadius: 10,
+  },
+  descripcionTexto: {
+    textAlign: 'justify',
+    lineHeight: 20,
   },
   PanelUbicacion: {
     borderRadius: 10,
@@ -195,7 +205,7 @@ const styles = StyleSheet.create({
   Icono: {
     width: 50,
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: '#EBEBEB',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -240,11 +250,18 @@ const styles = StyleSheet.create({
   },
   botonesAccionContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginTop: 15,
+    justifyContent: 'flex-end',
+    marginTop: 40,
   },
   botonAccion: {
     marginLeft: 20,
     padding: 5,
   },
+    labelAccion: {
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 2,
+    color: '#888', // gris neutro, puedes cambiar a blanco o negro según tema
+  },
+
 });

@@ -10,7 +10,6 @@ import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { usarTema } from './src/Containers/TemaApp';
-import Logout from './src/Containers/CerrarSesión';
 
 // Screens
 import Ofertas from './src/Screens/Ofertas/Ofertas';

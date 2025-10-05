@@ -7,6 +7,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/Services/Firebase';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ProveedorTema } from './src/Containers/TemaApp';
+import NavTema from './src/Containers/NavTema';
+
 
 enableScreens();
 
@@ -24,6 +26,7 @@ export default function App() {
 
  return (
     <ProveedorTema> 
+      <NavTema />
       <SafeAreaProvider>
         {checkingAuth ? (
           <View style={styles.container}>

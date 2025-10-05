@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   Icono: {
     width: 50,
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: '#EBEBEB',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
