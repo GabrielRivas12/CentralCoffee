@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar, Modal, TextInput } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
 import * as WebBrowser from 'expo-web-browser';
 import { auth, appFirebase } from '../../Services/Firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import * as Google from 'expo-auth-session/providers/google';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
 
 import { IniciarLogin } from '../../Containers/IniciarSesion';
@@ -30,6 +33,28 @@ export default function Login({ navigation, setUser }) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [correoReset, setCorreoReset] = useState('');
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: '958973898936-q2ddijbqhbhs07358ahij8bmg1o919b3.apps.googleusercontent.com',
+    webClientId: '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com',
+  });
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      const credential = GoogleAuthProvider.credential(id_token);
+      signInWithCredential(auth, credential)
+        .then(userCredential => {
+          setUser(userCredential.user);
+        })
+        .catch(err => {
+          console.error('Error en login con Google:', err);
+        });
+    }
+  }, [response]);
+
+  const IniciarConGoogle = async () => {
+    await promptAsync();
+  };
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
@@ -57,6 +82,12 @@ export default function Login({ navigation, setUser }) {
           Inicie sesión en su cuenta para continuar
         </Text>
         <View style={{ backgroundColor: '#ccc', width: 140, marginVertical: 20, alignSelf: 'flex-start', marginLeft: 25, }} />
+
+      <View style={{ marginTop: 15 }}>
+        <TouchableOpacity style={styles.googleButton} onPress={IniciarConGoogle}>
+          <Text style={styles.googleText}>Iniciar con Google</Text>
+        </TouchableOpacity>
+      </View>
 
         <View style={styles.containerInput}>
           <InputText
@@ -90,6 +121,8 @@ export default function Login({ navigation, setUser }) {
             onPress={() => navigation.navigate('Registro')} />
         </View>
       </View>
+
+
 
       <Modal
         visible={modalVisible}
@@ -266,5 +299,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 10,
   },
+  googleButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#fff',
+  borderRadius: 10,
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  shadowColor: '#000',
+  shadowOpacity: 0.1,
+  shadowRadius: 5,
+  elevation: 3,
+},
 
 });
