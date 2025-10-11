@@ -4,8 +4,12 @@ import { View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
-import { decode as atob } from 'base-64';
+import { decode as atob, encode as btoa } from 'base-64';
 import { supabase } from '../Services/SupaBase';
+
+// Define las URLs
+const WEB_APP_BASE_URL = 'https://tudominio.com/oferta';
+const APP_SCHEME = 'centralcoffee';
 
 export const generarYSubirQR = async (oferta, setQrRender, setQrImageUrl, setModalVisible) => {
   const nombreQR = `${oferta.id}.png`;
@@ -23,22 +27,31 @@ export const generarYSubirQR = async (oferta, setQrRender, setQrImageUrl, setMod
     return;
   }
 
-  const fullQRData = {
+  // Preparar datos para el deep link
+  const ofertaData = {
     id: oferta.id,
-    titulo: oferta.titulo,
-    tipoCafe: oferta.tipoCafe,
-    variedad: oferta.variedad,
-    estadoGrano: oferta.estadoGrano,
-    clima: oferta.clima,
-    altura: oferta.altura,
-    procesoCorte: oferta.procesoCorte,
-    fechaCosecha: oferta.fechaCosecha,
-    cantidadProduccion: oferta.cantidadProduccion,
-    ofertaLibra: oferta.ofertaLibra,
-    imagen: oferta.imagen,
+    titulo: oferta.titulo || '',
+    tipoCafe: oferta.tipoCafe || '',
+    variedad: oferta.variedad || '',
+    estadoGrano: oferta.estadoGrano || '',
+    clima: oferta.clima || '',
+    altura: oferta.altura || '',
+    procesoCorte: oferta.procesoCorte || '',
+    fechaCosecha: oferta.fechaCosecha || '',
+    cantidadProduccion: oferta.cantidadProduccion || '',
+    ofertaLibra: oferta.ofertaLibra || '',
+    imagen: oferta.imagen || '',
+    lugarSeleccionado: oferta.lugarSeleccionado || '',
+    userId: oferta.userId || ''
   };
 
-  const qrJson = JSON.stringify(fullQRData);
+  // SOLUCIÓN: Solo usar Base64, sin encodeURIComponent
+  const jsonString = JSON.stringify(ofertaData);
+  const compressedData = btoa(jsonString); // <- Quita encodeURIComponent
+
+  // Crear deep link para la app
+  const deepLink = `${APP_SCHEME}://oferta/${oferta.id}?data=${compressedData}`;
+
   const tempRef = React.createRef();
 
   // Crear una promesa para esperar la renderización
@@ -84,7 +97,7 @@ export const generarYSubirQR = async (oferta, setQrRender, setQrImageUrl, setMod
 
     return (
       <View ref={tempRef} collapsable={false} style={{ position: 'absolute', top: -1000, left: -1000 }}>
-        <QRCode value={qrJson} size={200} />
+        <QRCode value={deepLink} size={200} />
       </View>
     );
   };

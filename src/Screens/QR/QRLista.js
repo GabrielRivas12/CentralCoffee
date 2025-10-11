@@ -85,7 +85,8 @@ export default function QRLista({ navigation }) {
               <TouchableOpacity
                 onPress={() => generarYSubirQR(item, setQrRender, setQrImageUrl, setModalVisible)}
                 style={styles.botonCrearQR}>
-                <Ionicons name="qr-code-outline" size={24} color={modoOscuro ? '#fff' : '#000'} />
+                <Ionicons name="qr-code-outline" size={20} color={'#fff'} />
+                <Text style={{ color: '#fff', marginLeft: 5, fontWeight:'bold' }}>Generar QR</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -160,8 +161,16 @@ const styles = StyleSheet.create({
 
   botonCrearQR: {
     position: 'absolute',
-    top: 205,
-    right: 110
+    top: 201,
+    right: 90,
+    backgroundColor: '#ED6D4A',
+    borderRadius: 5, 
+    height: 30,
+    width: 115,
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingHorizontal: 8, 
   },
 
   modalOverlay: {

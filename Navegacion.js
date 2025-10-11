@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-
+import { decode as atob } from 'base-64';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
@@ -20,7 +20,6 @@ import Mapa from './src/Screens/Map/Mapa';
 import CrearMarcador from './src/Screens/Map/CrearMarcador';
 import DetallesMapa from './src/Screens/Map/DetallesMapa';
 import QRLista from './src/Screens/QR/QRLista';
-import ScannerQR from './src/Screens/QR/ScannerQR';
 import PerfilUsuario from './src/Screens/Perfil/PerfilUsuario';
 import EditarPerfil from './src/Screens/Perfil/EditarPerfil';
 import Chat from './src/Screens/Chat/Chat';
@@ -29,6 +28,7 @@ import Asistente from './src/Screens/IA/Asistente';
 import IAScanner from './src/Screens/AnalizarCultivo/ScannearImagen';
 import Login from './src/Screens/Login/InicioSesion';
 import Registro from './src/Screens/Login/Registro';
+import DetalleOfertaQRScreen from './src/Screens/QR/DetallesQR';
 
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
@@ -36,53 +36,95 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-export default function Navegacion() {
+export default function Navegacion({ initialUrl }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [deepLinkData, setDeepLinkData] = useState(null);
 
+    // Manejar el deep link cuando llegue
     useEffect(() => {
-        const fetchUser = async () => {
-            const authUser = getAuth().currentUser;
-            if (!authUser) {
-                setLoading(false);
-                return;
-            }
-            const docRef = doc(getFirestore(), 'usuarios', authUser.uid);
-            const docSnap = await getDoc(docRef);
+        if (initialUrl) {
+            handleDeepLink(initialUrl);
+        }
+    }, [initialUrl]);
 
-            if (docSnap.exists()) {
-                setUser({ uid: authUser.uid, ...docSnap.data() });
+    // Función para procesar deep links
+    const handleDeepLink = (url) => {
+        try {
+            if (url && url.startsWith('centralcoffee://')) {
+                console.log('Deep Link recibido en Navegacion:', url);
+
+                const route = url.replace('centralcoffee://', '');
+                const path = route.split('?')[0];
+                const queryParams = route.split('?')[1];
+
+                const pathParts = path.split('/');
+                const screen = pathParts[0];
+                const offerId = pathParts[1];
+
+                if (screen === 'oferta') {
+                    const params = new URLSearchParams(queryParams);
+                    const data = params.get('data');
+
+                    if (data) {
+                        // SOLUCIÓN: Solo usar atob, sin decodeURIComponent
+                        const jsonString = atob(data); // <- Quita decodeURIComponent
+                        const ofertaData = JSON.parse(jsonString);
+
+                        console.log('Datos de oferta del QR:', ofertaData);
+                        setDeepLinkData(ofertaData);
+                    }
+                }
             }
+        } catch (error) {
+            console.log('Error procesando deep link:', error);
+            console.log('Data que llegó:', data); // Para debug
+        }
+};
+
+useEffect(() => {
+    const fetchUser = async () => {
+        const authUser = getAuth().currentUser;
+        if (!authUser) {
             setLoading(false);
-        };
-        fetchUser();
-    }, []);
+            return;
+        }
+        const docRef = doc(getFirestore(), 'usuarios', authUser.uid);
+        const docSnap = await getDoc(docRef);
 
-    if (loading) return <Text></Text>;
+        if (docSnap.exists()) {
+            setUser({ uid: authUser.uid, ...docSnap.data() });
+        }
+        setLoading(false);
+    };
+    fetchUser();
+}, []);
 
-    return (
-        <NavigationContainer>
-            {user ? (
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="DrawerNavigate">
-                        {() => <DrawerNavigate user={user} setUser={setUser} />}
-                    </Stack.Screen>
-                </Stack.Navigator>
-            ) : (
-                // ← Aquí va el fragmento que mencionamos
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="Login">
-                        {props => <Login {...props} setUser={setUser} />}
-                    </Stack.Screen>
-                    <Stack.Screen name="Registro">
-                        {props => <Registro {...props} setUser={setUser} />}
-                    </Stack.Screen>
+if (loading) return <Text></Text>;
 
-                </Stack.Navigator>
-            )}
+return (
+    <NavigationContainer>
+        {user ? (
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="DrawerNavigate">
+                    {() => <DrawerNavigate user={user} setUser={setUser} deepLinkData={deepLinkData} />}
+                </Stack.Screen>
+            </Stack.Navigator>
+        ) : (
+            // ← Aquí va el fragmento que mencionamos
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Login">
+                    {props => <Login {...props} setUser={setUser} />}
+                </Stack.Screen>
+                <Stack.Screen name="Registro">
+                    {props => <Registro {...props} setUser={setUser} />}
+                </Stack.Screen>
 
-        </NavigationContainer>
-    );
+            </Stack.Navigator>
+        )}
+
+    </NavigationContainer>
+);
 }
 
 // Definir pantallas según rol
@@ -109,9 +151,18 @@ function getDrawerScreens(rol) {
 }
 
 // Drawer dinámico
-function DrawerNavigate({ user, setUser }) {
+function DrawerNavigate({ user, setUser, deepLinkData }) {
     const { modoOscuro } = usarTema();
     const screens = getDrawerScreens(user.rol);
+
+    // Navegar automáticamente a la oferta del QR si hay datos
+    useEffect(() => {
+        if (deepLinkData) {
+            console.log('Navegando automáticamente a oferta del QR:', deepLinkData);
+            // Aquí podrías implementar navegación automática si lo deseas
+        }
+    }, [deepLinkData]);
+
     const handleLogout = async () => {
         try {
             await getAuth().signOut();
@@ -154,6 +205,9 @@ function DrawerNavigate({ user, setUser }) {
                     {props => {
                         if (screen.name === "Ofertas" || screen.name === "Mapa") {
                             return <screen.component {...props} user={user} />;
+                        }
+                        if (screen.name === "QR") {
+                            return <screen.component {...props} deepLinkData={deepLinkData} />;
                         }
                         return <screen.component {...props} />;
                     }}
@@ -216,17 +270,16 @@ function CustomDrawerContent({ handleLogout, ...props }) {
 
 function StackOfertas({ user }) {
     return (
-        <Stack.Navigator initialRouteName='ScreenOfertas'
-
+        <Stack.Navigator
+            initialRouteName='ScreenOfertas'
             screenOptions={({ route }) => ({
                 headerShown: route.name !== 'ScreenOfertas',
                 cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                 gestureDirection: 'horizontal',
                 headerStyle: {
-                    backgroundColor: '#ED6D4A', // color header
+                    backgroundColor: '#ED6D4A',
                 },
             })}
-
         >
             <Stack.Screen name='ScreenOfertas'>
                 {props => <Ofertas {...props} user={user} />}
@@ -234,6 +287,7 @@ function StackOfertas({ user }) {
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
             <Stack.Screen name='Perfil' component={PerfilUsuario} />
+            <Stack.Screen name='Detalle Oferta QR' component={DetalleOfertaQRScreen} />
             <Stack.Screen
                 name='Chat'
                 component={Chat}
@@ -256,12 +310,10 @@ function StackOfertas({ user }) {
                             </Text>
                         </View>
                     ),
-                    headerTintColor: '#000', // color de los íconos en el header
+                    headerTintColor: '#000',
                 })}
             />
             <Stack.Screen name='Más Información' component={DetallesMapa} />
-
-
         </Stack.Navigator>
     )
 }
@@ -299,7 +351,7 @@ function StackMapa({ user }) {
             })}
 
         >
-             <Stack.Screen name='ScreenMapa'>
+            <Stack.Screen name='ScreenMapa'>
                 {props => <Mapa {...props} user={user} />}
             </Stack.Screen>
             <Stack.Screen name='Crear Marcador' component={CrearMarcador} />
@@ -310,24 +362,44 @@ function StackMapa({ user }) {
     )
 }
 
-function StackQR() {
+function StackQR({ deepLinkData }) {
     return (
         <Stack.Navigator initialRouteName='ScreenQR'
-
             screenOptions={({ route }) => ({
                 headerShown: route.name !== 'ScreenQR',
                 headerStyle: {
-                    backgroundColor: '#ED6D4A', // color header
+                    backgroundColor: '#ED6D4A',
                 },
             })}
-
         >
-            <Stack.Screen name='ScreenQR' component={QRLista} />
+            <Stack.Screen name='ScreenQR'>
+                {props => <QRListaWithNavigation {...props} deepLinkData={deepLinkData} />}
+            </Stack.Screen>
             <Stack.Screen name='Informacion' component={DetallesOferta} />
-            <Stack.Screen name='ScannerQR' component={ScannerQR} />
-
+            <Stack.Screen name='Detalle Oferta QR' component={DetalleOfertaQRScreen} />
         </Stack.Navigator>
     )
+}
+
+// En QRListaWithNavigation en StackQR
+function QRListaWithNavigation({ deepLinkData, ...props }) {
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        if (deepLinkData) {
+            console.log('Navegando desde QR a Detalle Oferta QR:', deepLinkData);
+            const timer = setTimeout(() => {
+                navigation.navigate('Detalle Oferta QR', { 
+                    oferta: deepLinkData,
+                    fromQR: true 
+                });
+            }, 1000);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [deepLinkData, navigation]);
+
+    return <QRLista {...props} deepLinkData={deepLinkData} />;
 }
 
 function StackUsuario() {
