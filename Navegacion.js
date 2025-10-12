@@ -50,36 +50,37 @@ export default function Navegacion({ initialUrl }) {
 
     // Función para procesar deep links
     const handleDeepLink = (url) => {
-        try {
-            if (url && url.startsWith('centralcoffee://')) {
-                console.log('Deep Link recibido en Navegacion:', url);
+    try {
+        if (url && url.startsWith('centralcoffee://')) {
+            console.log('Deep Link recibido en Navegacion:', url);
 
-                const route = url.replace('centralcoffee://', '');
-                const path = route.split('?')[0];
-                const queryParams = route.split('?')[1];
+            const route = url.replace('centralcoffee://', '');
+            const path = route.split('?')[0];
+            const queryParams = route.split('?')[1];
 
-                const pathParts = path.split('/');
-                const screen = pathParts[0];
-                const offerId = pathParts[1];
+            const pathParts = path.split('/');
+            const screen = pathParts[0];
+            const offerId = pathParts[1];
 
-                if (screen === 'oferta') {
-                    const params = new URLSearchParams(queryParams);
-                    const data = params.get('data');
+            if (screen === 'oferta' && queryParams) {
+                const params = new URLSearchParams(queryParams);
+                const data = params.get('data');
 
-                    if (data) {
-                        // SOLUCIÓN: Solo usar atob, sin decodeURIComponent
-                        const jsonString = atob(data); // <- Quita decodeURIComponent
-                        const ofertaData = JSON.parse(jsonString);
+                if (data) {
+                    // SOLUCIÓN: Solo usar atob, sin decodeURIComponent
+                    const jsonString = atob(data);
+                    const ofertaData = JSON.parse(jsonString);
 
-                        console.log('Datos de oferta del QR:', ofertaData);
-                        setDeepLinkData(ofertaData);
-                    }
+                    console.log('Datos de oferta del QR:', ofertaData);
+                    setDeepLinkData(ofertaData);
                 }
             }
-        } catch (error) {
-            console.log('Error procesando deep link:', error);
-            console.log('Data que llegó:', data); // Para debug
         }
+    } catch (error) {
+        console.log('Error procesando deep link:', error);
+        // Remover la referencia a 'data' que no existe en este scope
+        console.log('URL que causó el error:', url); // Para debug
+    }
 };
 
 useEffect(() => {
@@ -381,12 +382,11 @@ function StackQR({ deepLinkData }) {
     )
 }
 
-// En QRListaWithNavigation en StackQR
 function QRListaWithNavigation({ deepLinkData, ...props }) {
     const navigation = useNavigation();
 
     useEffect(() => {
-        if (deepLinkData) {
+        if (deepLinkData && deepLinkData.id) {
             console.log('Navegando desde QR a Detalle Oferta QR:', deepLinkData);
             const timer = setTimeout(() => {
                 navigation.navigate('Detalle Oferta QR', { 
