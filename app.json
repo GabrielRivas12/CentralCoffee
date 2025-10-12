@@ -42,7 +42,13 @@
     "plugins": [
       "expo-web-browser",
       "expo-image-picker",
-      "expo-font"
+      "expo-font",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
+      ]
     ],
     "extra": {
       "eas": {
