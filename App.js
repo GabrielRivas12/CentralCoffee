@@ -1,4 +1,4 @@
-import { StyleSheet, View, ActivityIndicator, Linking } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import Navegacion from './Navegacion';
 import { enableScreens } from 'react-native-screens';
 import { useEffect, useState } from 'react';
@@ -13,29 +13,6 @@ enableScreens();
 export default function App() {
   const [user, setUser] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [initialUrl, setInitialUrl] = useState(null);
-
-  // Manejar Deep Links
-  useEffect(() => {
-    const handleDeepLink = (url) => {
-      if (url && url.startsWith('centralcoffee://')) {
-        console.log('Deep Link recibido en App:', url);
-        setInitialUrl(url);
-      }
-    };
-
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      handleDeepLink(url);
-    });
-
-    Linking.getInitialURL().then((url) => {
-      if (url) handleDeepLink(url);
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -56,7 +33,6 @@ export default function App() {
         ) : (
           <Navegacion 
             user={user} 
-            initialUrl={initialUrl}
           />
         )}
       </SafeAreaProvider>

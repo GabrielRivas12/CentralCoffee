@@ -4,12 +4,11 @@ import { View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
-import { decode as atob, encode as btoa } from 'base-64';
+import { decode as atob } from 'base-64';
 import { supabase } from '../Services/SupaBase';
 
-// Define las URLs
+// URL base de tu página web - CAMBIA ESTO POR TU DOMINIO REAL
 const WEB_APP_BASE_URL = 'https://tudominio.com/oferta';
-const APP_SCHEME = 'centralcoffee';
 
 export const generarYSubirQR = async (oferta, setQrRender, setQrImageUrl, setModalVisible) => {
   const nombreQR = `${oferta.id}.png`;
@@ -27,34 +26,40 @@ export const generarYSubirQR = async (oferta, setQrRender, setQrImageUrl, setMod
     return;
   }
 
-  // Preparar datos para el deep link
-  const ofertaData = {
+  const fullQRData = {
     id: oferta.id,
-    titulo: oferta.titulo || '',
-    tipoCafe: oferta.tipoCafe || '',
-    variedad: oferta.variedad || '',
-    estadoGrano: oferta.estadoGrano || '',
-    clima: oferta.clima || '',
-    altura: oferta.altura || '',
-    procesoCorte: oferta.procesoCorte || '',
-    fechaCosecha: oferta.fechaCosecha || '',
-    cantidadProduccion: oferta.cantidadProduccion || '',
-    ofertaLibra: oferta.ofertaLibra || '',
-    imagen: oferta.imagen || '',
-    lugarSeleccionado: oferta.lugarSeleccionado || '',
-    userId: oferta.userId || ''
+    titulo: oferta.titulo,
+    tipoCafe: oferta.tipoCafe,
+    variedad: oferta.variedad,
+    estadoGrano: oferta.estadoGrano,
+    clima: oferta.clima,
+    altura: oferta.altura,
+    procesoCorte: oferta.procesoCorte,
+    fechaCosecha: oferta.fechaCosecha,
+    cantidadProduccion: oferta.cantidadProduccion,
+    ofertaLibra: oferta.ofertaLibra,
+    imagen: oferta.imagen,
+    lugarSeleccionado: oferta.lugarSeleccionado,
+    userId: oferta.userId
   };
 
-  // SOLUCIÓN: Solo usar Base64, sin encodeURIComponent
-  const jsonString = JSON.stringify(ofertaData);
-  const compressedData = btoa(jsonString); // <- Quita encodeURIComponent
+  // Crear URL con parámetros
+  const urlParams = new URLSearchParams();
+  
+  // Agregar cada campo como parámetro codificado
+  Object.keys(fullQRData).forEach(key => {
+    if (fullQRData[key] !== null && fullQRData[key] !== undefined && fullQRData[key] !== '') {
+      urlParams.append(key, encodeURIComponent(fullQRData[key]));
+    }
+  });
 
-  // Crear deep link para la app
-  const deepLink = `${APP_SCHEME}://oferta/${oferta.id}?data=${compressedData}`;
+  // Construir la URL final
+  const qrUrl = `${WEB_APP_BASE_URL}?${urlParams.toString()}`;
+
+  console.log('URL generada para QR:', qrUrl); // Para verificar
 
   const tempRef = React.createRef();
 
-  // Crear una promesa para esperar la renderización
   const onRendered = async () => {
     try {
       const uri = await captureRef(tempRef.current, {
@@ -97,7 +102,7 @@ export const generarYSubirQR = async (oferta, setQrRender, setQrImageUrl, setMod
 
     return (
       <View ref={tempRef} collapsable={false} style={{ position: 'absolute', top: -1000, left: -1000 }}>
-        <QRCode value={deepLink} size={200} />
+        <QRCode value={qrUrl} size={200} />
       </View>
     );
   };
