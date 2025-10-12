@@ -36,7 +36,6 @@ export default function Login({ navigation, setUser }) {
   const [correoReset, setCorreoReset] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Configurar Google Signin DENTRO del componente
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: '958973898936-q2ddijbqhbhs07358ahij8bmg1o919b3.apps.googleusercontent.com',
   });
@@ -103,6 +102,25 @@ export default function Login({ navigation, setUser }) {
       </SafeAreaView>
 
       <View style={styles.containerCuerpo}>
+
+         {/* --- BOTÓN GOOGLE SIGN-IN CORREGIDO --- */}
+          <TouchableOpacity 
+            style={[
+              styles.googleBtn, 
+              loading && styles.googleBtnDisabled
+            ]} 
+            onPress={signInWithGoogle} 
+            disabled={!request || loading}
+          >
+            <Image
+              source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png' }}
+              style={styles.googleLogo}
+            />
+            <Text style={styles.googleText}>
+              {loading ? 'Cargando...' : 'Iniciar con Google'}
+            </Text>
+          </TouchableOpacity>
+          
         <Text
           style={[
             styles.bienvenido,
@@ -161,24 +179,6 @@ export default function Login({ navigation, setUser }) {
             nombreB="Registrarse"
             onPress={() => navigation.navigate('Registro')}
           />
-
-          {/* --- BOTÓN GOOGLE SIGN-IN CORREGIDO --- */}
-          <TouchableOpacity 
-            style={[
-              styles.googleBtn, 
-              loading && styles.googleBtnDisabled
-            ]} 
-            onPress={signInWithGoogle} 
-            disabled={!request || loading}
-          >
-            <Image
-              source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png' }}
-              style={styles.googleLogo}
-            />
-            <Text style={styles.googleText}>
-              {loading ? 'Cargando...' : 'Iniciar con Google'}
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
 
