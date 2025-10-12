@@ -40,92 +40,95 @@ export default function Navegacion({ initialUrl }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [deepLinkData, setDeepLinkData] = useState(null);
+    const [isProcessingDeepLink, setIsProcessingDeepLink] = useState(false);
 
     // Manejar el deep link cuando llegue
     useEffect(() => {
-        if (initialUrl) {
+        if (initialUrl && !isProcessingDeepLink) {
+            setIsProcessingDeepLink(true);
             handleDeepLink(initialUrl);
         }
     }, [initialUrl]);
 
     // Función para procesar deep links
     const handleDeepLink = (url) => {
-    try {
-        if (url && url.startsWith('centralcoffee://')) {
-            console.log('Deep Link recibido en Navegacion:', url);
+        try {
+            if (url && url.startsWith('centralcoffee://')) {
+                console.log('Deep Link recibido en Navegacion:', url);
 
-            const route = url.replace('centralcoffee://', '');
-            const path = route.split('?')[0];
-            const queryParams = route.split('?')[1];
+                const route = url.replace('centralcoffee://', '');
+                const path = route.split('?')[0];
+                const queryParams = route.split('?')[1];
 
-            const pathParts = path.split('/');
-            const screen = pathParts[0];
-            const offerId = pathParts[1];
+                const pathParts = path.split('/');
+                const screen = pathParts[0];
+                const offerId = pathParts[1];
 
-            if (screen === 'oferta' && queryParams) {
-                const params = new URLSearchParams(queryParams);
-                const data = params.get('data');
+                if (screen === 'oferta' && queryParams) {
+                    const params = new URLSearchParams(queryParams);
+                    const data = params.get('data');
 
-                if (data) {
-                    // SOLUCIÓN: Solo usar atob, sin decodeURIComponent
-                    const jsonString = atob(data);
-                    const ofertaData = JSON.parse(jsonString);
+                    if (data) {
+                        const jsonString = atob(data);
+                        const ofertaData = JSON.parse(jsonString);
 
-                    console.log('Datos de oferta del QR:', ofertaData);
-                    setDeepLinkData(ofertaData);
+                        console.log('Datos de oferta del QR:', ofertaData);
+                        setDeepLinkData(ofertaData);
+                    }
                 }
             }
+        } catch (error) {
+            console.log('Error procesando deep link:', error);
+            console.log('URL que causó el error:', url);
+        } finally {
+            setIsProcessingDeepLink(false);
         }
-    } catch (error) {
-        console.log('Error procesando deep link:', error);
-        // Remover la referencia a 'data' que no existe en este scope
-        console.log('URL que causó el error:', url); // Para debug
-    }
-};
-
-useEffect(() => {
-    const fetchUser = async () => {
-        const authUser = getAuth().currentUser;
-        if (!authUser) {
-            setLoading(false);
-            return;
-        }
-        const docRef = doc(getFirestore(), 'usuarios', authUser.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            setUser({ uid: authUser.uid, ...docSnap.data() });
-        }
-        setLoading(false);
     };
-    fetchUser();
-}, []);
 
-if (loading) return <Text></Text>;
 
-return (
-    <NavigationContainer>
-        {user ? (
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="DrawerNavigate">
-                    {() => <DrawerNavigate user={user} setUser={setUser} deepLinkData={deepLinkData} />}
-                </Stack.Screen>
-            </Stack.Navigator>
-        ) : (
-            // ← Aquí va el fragmento que mencionamos
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Login">
-                    {props => <Login {...props} setUser={setUser} />}
-                </Stack.Screen>
-                <Stack.Screen name="Registro">
-                    {props => <Registro {...props} setUser={setUser} />}
-                </Stack.Screen>
+    useEffect(() => {
+        const fetchUser = async () => {
+            const authUser = getAuth().currentUser;
+            if (!authUser) {
+                setLoading(false);
+                return;
+            }
+            const docRef = doc(getFirestore(), 'usuarios', authUser.uid);
+            const docSnap = await getDoc(docRef);
 
-            </Stack.Navigator>
-        )}
+            if (docSnap.exists()) {
+                setUser({ uid: authUser.uid, ...docSnap.data() });
+            }
+            setLoading(false);
+        };
+        fetchUser();
+    }, []);
 
-    </NavigationContainer>
-);
+    if (loading) return <Text></Text>;
+
+    return (
+        <NavigationContainer>
+            {user ? (
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="DrawerNavigate">
+                        {() => <DrawerNavigate user={user} setUser={setUser} deepLinkData={deepLinkData} />}
+                    </Stack.Screen>
+                </Stack.Navigator>
+            ) : (
+                // ← Aquí va el fragmento que mencionamos
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Login">
+                        {props => <Login {...props} setUser={setUser} />}
+                    </Stack.Screen>
+                    <Stack.Screen name="Registro">
+                        {props => <Registro {...props} setUser={setUser} />}
+                    </Stack.Screen>
+
+                </Stack.Navigator>
+            )}
+
+        </NavigationContainer>
+    );
 }
 
 // Definir pantallas según rol
@@ -155,14 +158,27 @@ function getDrawerScreens(rol) {
 function DrawerNavigate({ user, setUser, deepLinkData }) {
     const { modoOscuro } = usarTema();
     const screens = getDrawerScreens(user.rol);
+    const navigation = useNavigation();
 
     // Navegar automáticamente a la oferta del QR si hay datos
     useEffect(() => {
-        if (deepLinkData) {
+        if (deepLinkData && deepLinkData.id) {
             console.log('Navegando automáticamente a oferta del QR:', deepLinkData);
-            // Aquí podrías implementar navegación automática si lo deseas
+
+            // Navegar directamente a la pantalla de detalles
+            const timer = setTimeout(() => {
+                navigation.navigate('Ofertas', {
+                    screen: 'Detalle Oferta QR',
+                    params: {
+                        oferta: deepLinkData,
+                        fromQR: true
+                    }
+                });
+            }, 500);
+
+            return () => clearTimeout(timer);
         }
-    }, [deepLinkData]);
+    }, [deepLinkData, navigation]);
 
     const handleLogout = async () => {
         try {
@@ -288,7 +304,15 @@ function StackOfertas({ user }) {
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
             <Stack.Screen name='Perfil' component={PerfilUsuario} />
-            <Stack.Screen name='Detalle Oferta QR' component={DetalleOfertaQRScreen} />
+            <Stack.Screen
+                name='Detalle Oferta QR'
+                component={DetalleOfertaQRScreen}
+                options={{
+                    headerShown: true,
+                    headerTitle: 'Detalles de Oferta',
+                    headerStyle: { backgroundColor: '#ED6D4A' },
+                }}
+            />
             <Stack.Screen
                 name='Chat'
                 component={Chat}
@@ -389,12 +413,12 @@ function QRListaWithNavigation({ deepLinkData, ...props }) {
         if (deepLinkData && deepLinkData.id) {
             console.log('Navegando desde QR a Detalle Oferta QR:', deepLinkData);
             const timer = setTimeout(() => {
-                navigation.navigate('Detalle Oferta QR', { 
+                navigation.navigate('Detalle Oferta QR', {
                     oferta: deepLinkData,
-                    fromQR: true 
+                    fromQR: true
                 });
             }, 1000);
-            
+
             return () => clearTimeout(timer);
         }
     }, [deepLinkData, navigation]);
