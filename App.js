@@ -1,3 +1,15 @@
+import { StyleSheet, View, ActivityIndicator, Linking } from 'react-native';
+import Navegacion from './Navegacion';
+import { enableScreens } from 'react-native-screens';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './src/Services/Firebase';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ProveedorTema } from './src/Containers/TemaApp';
+import NavTema from './src/Containers/NavTema';
+
+enableScreens();
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -51,3 +63,11 @@ export default function App() {
     </ProveedorTema>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
