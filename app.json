@@ -10,7 +10,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,11 +18,6 @@
       "supportsTablet": true
     },
     "android": {
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyDLHMLnJVzvuMiVoLrVPhIGiX1Y7Zul8FA"
-        }
-      },
       "googleServicesFile": "./src/Services/google-services.json",
       "permissions": [
         "android.permission.CAMERA",

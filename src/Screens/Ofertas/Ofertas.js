@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, StatusBar, ScrollView } from 'react-native';
+import { View, StyleSheet, StatusBar, ScrollView, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Octicons from '@expo/vector-icons/Octicons';
@@ -58,7 +58,11 @@ export default function Ofertas({ navigation, user }) {
           />
         </View>
 
+        
+
         <ScrollView showsVerticalScrollIndicator={false}  >
+
+          
 
           {Ofertass.map((item, index) => (
             <OfertasCard
@@ -72,19 +76,19 @@ export default function Ofertas({ navigation, user }) {
             />
           ))}
         </ScrollView>
-      {user?.rol === 'Comerciante' && (
-    <View style={styles.botoncrear}>
-        <Boton
-            onPress={() => navigation.navigate('Crear')}
-            alto={60}
-            ancho={60}
-            borderRadius={40}
-        />
-        <View pointerEvents="none" style={{ position: 'absolute', top: 20, left: 20 }}>
-            <Octicons name="pencil" size={24} color="white" />
-        </View>
-    </View>
-)}
+        {user?.rol === 'Comerciante' && (
+          <View style={styles.botoncrear}>
+            <Boton
+              onPress={() => navigation.navigate('Crear')}
+              alto={60}
+              ancho={60}
+              borderRadius={10}
+            />
+            <View pointerEvents="none" style={{ position: 'absolute', top: 20, left: 20 }}>
+              <Octicons name="pencil" size={24} color="white" />
+            </View>
+          </View>
+        )}
 
       </SafeAreaView>
     </View>
@@ -105,7 +109,7 @@ const styles = StyleSheet.create({
   botoncrear: {
     position: 'absolute',
     right: 10,
-    bottom: '55'
+    bottom: '20'
   },
   containerBusqueda: {
     alignItems: 'center',

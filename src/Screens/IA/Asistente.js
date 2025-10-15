@@ -1,19 +1,13 @@
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Animated,
-} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Animated} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import useCoffeeAssistantLogic from '../../Containers/IALogin';
+import useCoffeeAssistantLogic from '../../Containers/IALogic';
+import { usarTema } from '../../Containers/TemaApp';
 
-const CoffeeAssistant = ({ modoOscuro }) => {
+const CoffeeAssistant = () => {
+  // Obtener el tema del contexto
+  const { modoOscuro } = usarTema();
+
   // Usar la lógica del hook
   const {
     messages,
@@ -42,14 +36,14 @@ const CoffeeAssistant = ({ modoOscuro }) => {
   // Colores basados en el tema
   const colors = {
     primary: '#ff5722',
-    secondary: '#27160f',
-    accent: '#ff8a65',
+    secondary: 'red',
+    accent: '#bb897aff',
     light: '#ffffff',
     dark: '#121212',
-    chatUserBg: modoOscuro ? '#2d2d2d' : 'rgba(255, 87, 34, 0.7)', 
-    chatAiBg: modoOscuro ? 'rgba(255, 87, 34, 0.7)' : '#e8e8e8',
-    textDark: modoOscuro ? '#e0e0e0' : '#333333',
-    textLight: '#000',
+    chatUserBg: modoOscuro ? '#f8dbd7' : '#f8dbd7',
+    chatAiBg: modoOscuro ? '#2d2d2d' : '#e8e8e8',
+    textDark: modoOscuro ? '#000' : '#000',
+    textLight: modoOscuro ? '#fff' : '#000',
     inputBg: modoOscuro ? '#1e1e1e' : '#ffffff',
     inputBorder: modoOscuro ? '#444' : '#ccc',
     containerBg: modoOscuro ? '#121212' : '#f5f5f5',
@@ -83,39 +77,38 @@ const CoffeeAssistant = ({ modoOscuro }) => {
     return (
       <View style={[styles.message, styles.aiMessage, { backgroundColor: colors.chatAiBg }]}>
         <View style={styles.typingDots}>
-          <Animated.View 
+          <Animated.View
             style={[
-              styles.typingDot, 
-              { 
+              styles.typingDot,
+              {
                 backgroundColor: colors.textLight,
-                opacity: dot1 
+                opacity: dot1
               }
-            ]} 
+            ]}
           />
-          <Animated.View 
+          <Animated.View
             style={[
-              styles.typingDot, 
-              { 
+              styles.typingDot,
+              {
                 backgroundColor: colors.textLight,
-                opacity: dot2 
+                opacity: dot2
               }
-            ]} 
+            ]}
           />
-          <Animated.View 
+          <Animated.View
             style={[
-              styles.typingDot, 
-              { 
+              styles.typingDot,
+              {
                 backgroundColor: colors.textLight,
-                opacity: dot3 
+                opacity: dot3
               }
-            ]} 
+            ]}
           />
         </View>
       </View>
     );
   };
 
-  // Estilos
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -256,8 +249,8 @@ const CoffeeAssistant = ({ modoOscuro }) => {
           <View style={styles.welcomeMessage}>
             <Text style={styles.welcomeTitle}>¡Bienvenido a CentralCoffeeIA!</Text>
             <Text style={styles.welcomeText}>
-              Soy tu asistente especializado en el café de Nicaragua. 
-              Puedo ayudarte con información sobre producción, trazabilidad, 
+              Soy tu asistente especializado en el café de Nicaragua.
+              Puedo ayudarte con información sobre producción, trazabilidad,
               tueste y comercio del café nicaragüense.
             </Text>
           </View>
@@ -268,7 +261,7 @@ const CoffeeAssistant = ({ modoOscuro }) => {
       </ScrollView>
 
       {/* Área de entrada */}
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.inputContainer}
       >
@@ -282,23 +275,23 @@ const CoffeeAssistant = ({ modoOscuro }) => {
           maxLength={500}
           onSubmitEditing={sendMessage}
         />
-        
-        <TouchableOpacity 
-          style={styles.clearButton} 
+
+        <TouchableOpacity
+          style={styles.clearButton}
           onPress={clearChat}
         >
-          <Ionicons 
-            name="trash-outline" 
-            size={20} 
-            color={colors.secondary} 
+          <Ionicons
+            name="trash-outline"
+            size={20}
+            color={colors.secondary}
           />
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={[
-            styles.sendButton, 
+            styles.sendButton,
             !userInput.trim() && styles.sendButtonDisabled
-          ]} 
+          ]}
           onPress={sendMessage}
           disabled={!userInput.trim()}
         >
