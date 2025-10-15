@@ -3,7 +3,7 @@
     "name": "CentralCoffee",
     "slug": "centralcoffee",
     "scheme": "centralcoffee",
-    "owner": "gabrielr12",
+    "owner": "gabrielr28",
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,15 +25,16 @@
       },
       "googleServicesFile": "./src/Services/google-services.json",
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "READ_MEDIA_IMAGES"
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.RECORD_AUDIO"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": false,
+      "edgeToEdgeEnabled": true,
       "package": "com.gabrielr12.centralcoffee"
     },
     "web": {
@@ -52,7 +53,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "4c89cea2-2887-4307-be2d-91f6c5b76d05"
+        "projectId": "8c375756-7e6a-41a1-8c5a-168ae8b3b761"
       }
     }
   }

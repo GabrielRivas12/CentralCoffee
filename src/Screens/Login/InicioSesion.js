@@ -22,6 +22,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
+
+
 const db = getFirestore(appFirebase);
 WebBrowser.maybeCompleteAuthSession();
 
@@ -37,45 +39,58 @@ export default function Login({ navigation, setUser }) {
   const [loading, setLoading] = useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: '958973898936-q2ddijbqhbhs07358ahij8bmg1o919b3.apps.googleusercontent.com',
+    androidClientId: '958973898936-1m6uhbt60o0jh1j1j9q1uevti5sr5av2.apps.googleusercontent.com'
   });
 
   // Manejar respuesta de Google
-  useEffect(() => {
-    if (response?.type === 'success') {
-      handleGoogleSignIn(response);
-    }
-  }, [response]);
+useEffect(() => {
+  console.log('📌 Google response:', response);
+  if (response?.type === 'success') {
+    handleGoogleSignIn(response);
+  }
+}, [response]);
+
 
   const handleGoogleSignIn = async (response) => {
-    try {
-      setLoading(true);
-      
-      if (response.authentication?.accessToken) {
-        const credential = GoogleAuthProvider.credential(
-          null,
-          response.authentication.accessToken
-        );
-        
-        const userCredential = await signInWithCredential(auth, credential);
-        setUser(userCredential.user);
-        console.log('✅ Sesión con Google exitosa:', userCredential.user.email);
-      }
-    } catch (error) {
-      console.error('❌ Error en Firebase:', error);
-      alert('Error al iniciar sesión con Google');
-    } finally {
-      setLoading(false);
-    }
-  };
+  console.log('🔥 handleGoogleSignIn called', response);
+  try {
+    setLoading(true);
 
-  const signInWithGoogle = async () => {
-    try {
-      await promptAsync();
-    } catch (error) {
-      console.log('Error al iniciar Google Sign-In:', error);
+    if (!response.authentication) {
+      console.log('⚠️ No hay authentication en la respuesta');
+      return;
     }
-  };
+
+    console.log('🎯 idToken:', response.authentication.idToken);
+    console.log('🎯 accessToken:', response.authentication.accessToken);
+
+    const credential = GoogleAuthProvider.credential(
+      response.authentication.idToken
+    );
+
+    const userCredential = await signInWithCredential(auth, credential);
+    console.log('✅ userCredential:', userCredential);
+
+    setUser(userCredential.user);
+    console.log('✅ Sesión con Google exitosa:', userCredential.user.email);
+  } catch (error) {
+    console.error('❌ Error en Firebase:', error);
+    alert('Error al iniciar sesión con Google');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const signInWithGoogle = async () => {
+  console.log('➡️ Iniciando Google Sign-In');
+  try {
+    await promptAsync();
+  } catch (error) {
+    console.log('❌ Error al iniciar Google Sign-In:', error);
+  }
+};
+
 
   return (
     <View
