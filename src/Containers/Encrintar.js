@@ -1,4 +1,3 @@
-// utils/encryption.js
 import CryptoJS from 'react-native-crypto-js';
 
 const SECRET_KEY = 'tu_clave_secreta_32_caracteres!!!';

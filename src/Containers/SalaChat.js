@@ -27,7 +27,7 @@ export const crearChatSiNoExiste = async (chatId, userId, otroUsuarioId) => {
 };
 
 /** ✅ Escucha los mensajes de un chat en tiempo real */
-export const suscribirseAMensajes = (chatId, setMensajes) => {
+export const LeerMensajes = (chatId, setMensajes) => {
     if (!chatId) return;
 
     const q = query(collection(db, 'chats', chatId, 'mensajes'), orderBy('timestamp', 'asc'));
@@ -112,33 +112,3 @@ export const enviarReferencia = async (chatId, userId, otroUsuarioId, referencia
     });
 };
 
-/** ✅ Función para migrar mensajes existentes (opcional) */
-export const migrarMensajesAEncriptados = async (chatId) => {
-    if (!chatId) return;
-    
-    try {
-        const mensajesRef = collection(db, 'chats', chatId, 'mensajes');
-        const q = query(mensajesRef);
-        const querySnapshot = await getDocs(q);
-        
-        const batch = writeBatch(db);
-        
-        querySnapshot.forEach((doc) => {
-            const mensaje = doc.data();
-            // Si el mensaje no está encriptado y no es una referencia, encriptarlo
-            if (!mensaje.encriptado && mensaje.tipo !== 'referencia' && mensaje.texto) {
-                const textoEncriptado = encryptText(mensaje.texto);
-                const mensajeRef = doc.ref;
-                batch.update(mensajeRef, {
-                    texto: textoEncriptado,
-                    encriptado: true
-                });
-            }
-        });
-        
-        await batch.commit();
-        console.log('Migración de mensajes completada');
-    } catch (error) {
-        console.error('Error en migración:', error);
-    }
-};

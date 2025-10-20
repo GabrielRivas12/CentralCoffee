@@ -40,7 +40,7 @@ export default function Login({ navigation, setUser }) {
   const [loading, setLoading] = useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: '958973898936-1m6uhbt60o0jh1j1j9q1uevti5sr5av2.apps.googleusercontent.com'
+    androidClientId:  '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com'
   });
 
   // Manejar respuesta de Google
@@ -127,23 +127,7 @@ export default function Login({ navigation, setUser }) {
         >
           <View style={styles.containerCuerpo}>
 
-            {/* --- BOTÓN GOOGLE SIGN-IN --- */}
-            <TouchableOpacity
-              style={[
-                styles.googleBtn,
-                loading && styles.googleBtnDisabled
-              ]}
-              onPress={signInWithGoogle}
-              disabled={!request || loading}
-            >
-              <Image
-                source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png' }}
-                style={styles.googleLogo}
-              />
-              <Text style={styles.googleText}>
-                {loading ? 'Cargando...' : 'Iniciar con Google'}
-              </Text>
-            </TouchableOpacity>
+           
 
             <Text
               style={[

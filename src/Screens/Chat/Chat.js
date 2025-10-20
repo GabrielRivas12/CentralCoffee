@@ -9,7 +9,7 @@ import { Feather } from '@expo/vector-icons';
 import {
     generarChatId,
     crearChatSiNoExiste,
-    suscribirseAMensajes,
+    LeerMensajes,
     enviarMensaje,
     enviarReferencia
 } from '../../Containers/SalaChat';
@@ -45,7 +45,7 @@ export default function Chat({ navigation, route }) {
         setChatId(id);
 
         crearChatSiNoExiste(id, userId, otroUsuarioId);
-        const unsubscribe = suscribirseAMensajes(id, setMensajes);
+        const unsubscribe = LeerMensajes(id, setMensajes);
 
         return () => unsubscribe && unsubscribe();
     }, [userId, otroUsuarioId]);
@@ -154,7 +154,6 @@ export default function Chat({ navigation, route }) {
                                 </View>
                             )}
 
-                            {/* Input de mensaje */}
                             <View style={[styles.inputContainer, modoOscuro && { backgroundColor: '#1a1a1a', borderTopColor: '#333', borderColor: '#333' }]}>
                                 <TextInput
                                     style={[styles.input, modoOscuro && { backgroundColor: '#333', color: '#fff', borderColor: '#555' }]}
