@@ -21,9 +21,7 @@ import { enviarRecuperacion, IniciarTemporizador } from '../../Containers/Recupe
 import { usarTema } from '../../Containers/TemaApp';
 import { getFirestore } from 'firebase/firestore';
 
-import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
 const db = getFirestore(appFirebase);
 WebBrowser.maybeCompleteAuthSession();
@@ -37,59 +35,6 @@ export default function Login({ navigation, setUser }) {
   const [tiempoRestante, setTiempoRestante] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [correoReset, setCorreoReset] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: '958973898936-i5fnl40c1kncf6a78907sr6ravesh82f.apps.googleusercontent.com',
-    webClientId: '958973898936-2g5hhp09005j6q4d5pae890pv8of8lin.apps.googleusercontent.com',
-  });
-
-  // Manejar respuesta de Google
-  useEffect(() => {
-    console.log('📌 Google response:', response);
-    if (response?.type === 'success') {
-      handleGoogleSignIn(response);
-    }
-  }, [response]);
-
-  const handleGoogleSignIn = async (response) => {
-    console.log('🔥 handleGoogleSignIn called', response);
-    try {
-      setLoading(true);
-
-      if (!response.authentication) {
-        console.log('⚠️ No hay authentication en la respuesta');
-        return;
-      }
-
-      console.log('🎯 idToken:', response.authentication.idToken);
-      console.log('🎯 accessToken:', response.authentication.accessToken);
-
-      const credential = GoogleAuthProvider.credential(
-        response.authentication.idToken
-      );
-
-      const userCredential = await signInWithCredential(auth, credential);
-      console.log('✅ userCredential:', userCredential);
-
-      setUser(userCredential.user);
-      console.log('✅ Sesión con Google exitosa:', userCredential.user.email);
-    } catch (error) {
-      console.error('❌ Error en Firebase:', error);
-      alert('Error al iniciar sesión con Google');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    console.log('➡️ Iniciando Google Sign-In');
-    try {
-      await promptAsync();
-    } catch (error) {
-      console.log('❌ Error al iniciar Google Sign-In:', error);
-    }
-  };
 
   return (
     <View
@@ -100,7 +45,6 @@ export default function Login({ navigation, setUser }) {
     >
       <StatusBar backgroundColor="#F1A89B" barStyle="light-content" />
 
-      {/* BANNER FIJO - Altura fija */}
       <SafeAreaView style={styles.bannerSafeArea}>
         <View style={styles.containerBanner}>
           <View style={styles.bannerContent}>
@@ -184,26 +128,7 @@ export default function Login({ navigation, setUser }) {
                 <View style={styles.separator} />
               </View>
 
-              {/* Botón de Google */}
-              <TouchableOpacity
-                style={[
-                  styles.googleBtn,
-                  modoOscuro ? styles.googleBtnOscuro : styles.googleBtnClaro
-                ]}
-                onPress={signInWithGoogle}
-                disabled={!request || loading}
-              >
-                <Image
-                  source={{ uri: 'https://developers.google.com/identity/images/g-logo.png' }}
-                  style={styles.googleLogo}
-                />
-                <Text style={[
-                  styles.googleText,
-                  modoOscuro ? styles.googleTextOscuro : styles.googleTextClaro
-                ]}>
-                  {loading ? 'Cargando...' : 'Continuar con Google'}
-                </Text>
-              </TouchableOpacity>
+             
 
               <Boton
                 nombreB="Registrarse"
