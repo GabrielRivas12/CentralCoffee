@@ -6,7 +6,7 @@ node_modules/
 # Android
 android/
 
-src/Screens/Services/
+src/Services
 
 # Expo
 .expo/

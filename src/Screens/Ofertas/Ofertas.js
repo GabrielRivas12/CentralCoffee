@@ -3,6 +3,7 @@ import { View, StyleSheet, StatusBar, ScrollView, TouchableOpacity } from 'react
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Octicons from '@expo/vector-icons/Octicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'; // Importa el ícono para el scanner
 
 import OfertasCard from '../../Components/OfertasCard';
 import Boton from '../../Components/Boton'
@@ -58,12 +59,11 @@ export default function Ofertas({ navigation, user }) {
           />
         </View>
 
-        
-
-        <ScrollView showsVerticalScrollIndicator={false}  >
-
-          
-
+        <ScrollView 
+          showsVerticalScrollIndicator={false} 
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+        >
           {Ofertass.map((item, index) => (
             <OfertasCard
               key={index}
@@ -76,8 +76,23 @@ export default function Ofertas({ navigation, user }) {
             />
           ))}
         </ScrollView>
+
+        {/* Botón para escanear oferta (lado izquierdo) */}
+        <View style={styles.botonEscanear}>
+          <TouchableOpacity
+            style={[
+              styles.botonEscanearTouchable,
+              { backgroundColor: '#ED6D4A' }
+            ]}
+            onPress={() => navigation.navigate('EscanearQR')}
+          >
+            <MaterialIcons name="qr-code-scanner" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Botón para crear oferta (Comerciante) - lado derecho */}
         {user?.rol === 'Comerciante' && (
-          <View style={styles.botoncrear}>
+          <View style={styles.botonCrear}>
             <Boton
               onPress={() => navigation.navigate('Crear')}
               alto={60}
@@ -106,10 +121,33 @@ const styles = StyleSheet.create({
   contenedorOscuro: {
     backgroundColor: '#000',
   },
-  botoncrear: {
+  scrollView: {
+    width: '100%',
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 100, // Espacio para que el contenido no quede detrás de los botones
+  },
+  botonCrear: {
     position: 'absolute',
-    right: 10,
-    bottom: '20'
+    right: 20,
+    bottom: 20,
+    zIndex: 10,
+  },
+  botonEscanear: {
+    position: 'absolute',
+    left: 20, 
+    bottom: 20,
+    zIndex: 10,
+    
+  },
+  botonEscanearTouchable: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    
   },
   containerBusqueda: {
     alignItems: 'center',

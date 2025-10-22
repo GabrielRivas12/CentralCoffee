@@ -28,6 +28,7 @@ import Asistente from './src/Screens/IA/Asistente';
 import IAScanner from './src/Screens/AnalizarCultivo/ScannearImagen';
 import Login from './src/Screens/Login/InicioSesion';
 import Registro from './src/Screens/Login/Registro';
+import ScaneerOferta from './src/Screens/Ofertas/ScaneerOferta';
 
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
@@ -262,7 +263,6 @@ function CustomDrawerContent({ handleLogout, ...props }) {
     );
 }
 
-// Los componentes Stack restantes se mantienen igual...
 function StackOfertas({ user }) {
     return (
         <Stack.Navigator
@@ -281,6 +281,7 @@ function StackOfertas({ user }) {
             </Stack.Screen>
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
+            <Stack.Screen name='EscanearQR' component={ScaneerOferta} /> 
             <Stack.Screen name='Perfil' component={PerfilUsuario} />
             <Stack.Screen
                 name='Chat'

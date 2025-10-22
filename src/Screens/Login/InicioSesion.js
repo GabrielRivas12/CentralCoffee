@@ -40,7 +40,8 @@ export default function Login({ navigation, setUser }) {
   const [loading, setLoading] = useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId:  '958973898936-1qq10di6u0uf71ju0acsraeli5rmhdhk.apps.googleusercontent.com'
+    androidClientId: '958973898936-i5fnl40c1kncf6a78907sr6ravesh82f.apps.googleusercontent.com',
+    webClientId: '958973898936-2g5hhp09005j6q4d5pae890pv8of8lin.apps.googleusercontent.com',
   });
 
   // Manejar respuesta de Google
@@ -127,8 +128,6 @@ export default function Login({ navigation, setUser }) {
         >
           <View style={styles.containerCuerpo}>
 
-           
-
             <Text
               style={[
                 styles.bienvenido,
@@ -145,7 +144,6 @@ export default function Login({ navigation, setUser }) {
             >
               Inicie sesión en su cuenta para continuar
             </Text>
-
 
             <View style={styles.containerInput}>
               <InputText
@@ -173,6 +171,39 @@ export default function Login({ navigation, setUser }) {
                   onPress={() => IniciarLogin(auth, Correo, Contraseña, setUser)}
                 />
               </View>
+
+              {/* Separador */}
+              <View style={styles.separatorContainer}>
+                <View style={styles.separator} />
+                <Text style={[
+                  styles.separatorText,
+                  modoOscuro ? styles.separatorTextOscuro : styles.separatorTextClaro
+                ]}>
+                  O
+                </Text>
+                <View style={styles.separator} />
+              </View>
+
+              {/* Botón de Google */}
+              <TouchableOpacity
+                style={[
+                  styles.googleBtn,
+                  modoOscuro ? styles.googleBtnOscuro : styles.googleBtnClaro
+                ]}
+                onPress={signInWithGoogle}
+                disabled={!request || loading}
+              >
+                <Image
+                  source={{ uri: 'https://developers.google.com/identity/images/g-logo.png' }}
+                  style={styles.googleLogo}
+                />
+                <Text style={[
+                  styles.googleText,
+                  modoOscuro ? styles.googleTextOscuro : styles.googleTextClaro
+                ]}>
+                  {loading ? 'Cargando...' : 'Continuar con Google'}
+                </Text>
+              </TouchableOpacity>
 
               <Boton
                 nombreB="Registrarse"
@@ -206,7 +237,10 @@ export default function Login({ navigation, setUser }) {
               Recuperar contraseña
             </Text>
             <TextInput
-              style={styles.modalInput}
+              style={[
+                styles.modalInput,
+                modoOscuro ? styles.modalInputOscuro : styles.modalInputClaro
+              ]}
               placeholder="Ingresa tu correo"
               keyboardType="email-address"
               autoCapitalize="none"
@@ -251,7 +285,7 @@ const styles = StyleSheet.create({
   // Banner con altura fija
   bannerSafeArea: {
     backgroundColor: '#F1A89B',
-    height: 250, 
+    height: 250,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -263,14 +297,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   keyboardAvoidingView: {
-    flex: 1, 
+    flex: 1,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 20, 
+    paddingBottom: 20,
   },
   containerClaro: { backgroundColor: '#fff' },
   containerOscuro: { backgroundColor: '#000' },
@@ -278,7 +312,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    minHeight: 500, 
+    minHeight: 500,
   },
   label: {
     color: '#ED6D4A',
@@ -287,35 +321,73 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   labelClaro: {
-     color: '#000'
-     },
+    color: '#000'
+  },
   labelOscuro: {
-     color: '#eee'
-     },
+    color: '#eee'
+  },
   vboton: { marginBottom: 5 },
+  
+  // Estilos para el botón de Google
   googleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 10,
+    justifyContent: 'center',
+    paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
-    elevation: 4,
-    marginTop: 15,
+    borderRadius: 8,
+    marginVertical: 10,
+    width: '80%',
+    borderWidth: 1,
+  },
+  googleBtnClaro: {
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
+  },
+  googleBtnOscuro: {
+    backgroundColor: '#333',
+    borderColor: '#555',
   },
   googleLogo: {
-    width: 24,
-    height: 24,
-    marginRight: 10
+    width: 20,
+    height: 20,
+    marginRight: 12,
   },
   googleText: {
-    color: '#000',
-    fontWeight: 'bold'
+    fontSize: 16,
+    fontWeight: '600',
   },
+  googleTextClaro: {
+    color: '#000',
+  },
+  googleTextOscuro: {
+    color: '#fff',
+  },
+  
+  // Separador
+  separatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+    width: '80%',
+  },
+  separator: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#ddd',
+  },
+  separatorText: {
+    marginHorizontal: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  separatorTextClaro: {
+    color: '#666',
+  },
+  separatorTextOscuro: {
+    color: '#999',
+  },
+  
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -337,10 +409,18 @@ const styles = StyleSheet.create({
   modalInput: {
     width: '100%',
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
+  },
+  modalInputClaro: {
+    borderColor: '#ccc',
+    color: '#000',
+  },
+  modalInputOscuro: {
+    borderColor: '#555',
+    color: '#fff',
+    backgroundColor: '#333',
   },
   bannerContent: {
     flexDirection: 'row',
@@ -383,14 +463,6 @@ const styles = StyleSheet.create({
     color: '#888',
     alignSelf: 'center',
     marginBottom: 20,
-  },
-  separator: {
-    backgroundColor: '#ccc',
-    width: 140,
-    height: 1,
-    marginVertical: 20,
-    alignSelf: 'flex-start',
-    marginLeft: 25,
   },
   containerInput: {
     width: '100%',
