@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-    StyleSheet, 
-    Text, 
-    View, 
-    StatusBar, 
-    Image, 
-    ScrollView, 
-    KeyboardAvoidingView, 
-    Platform 
+import {
+    StyleSheet,
+    Text,
+    View,
+    StatusBar,
+    Image,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform
 } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
@@ -42,7 +42,6 @@ export default function Registro({ navigation, setUser }) {
         <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
             <StatusBar backgroundColor='#F1A89B' barStyle='light-content' />
 
-            {/* BANNER FIJO - Misma estructura que Login */}
             <SafeAreaView style={styles.bannerSafeArea}>
                 <View style={styles.containerBanner}>
                     <View style={styles.bannerContent}>
@@ -57,8 +56,7 @@ export default function Registro({ navigation, setUser }) {
                 </View>
             </SafeAreaView>
 
-            {/* CONTENIDO DESPLAZABLE - Misma estructura que Login */}
-            <KeyboardAvoidingView 
+            <KeyboardAvoidingView
                 style={styles.keyboardAvoidingView}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
@@ -139,10 +137,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff'
     },
-    // Banner con altura fija - igual que Login
-    bannerSafeArea: { 
-        backgroundColor: '#F1A89B', 
-        height: 250, // Misma altura que Login
+    bannerSafeArea: {
+        backgroundColor: '#F1A89B',
+        height: 250, 
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -153,8 +150,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
-    // KeyboardAvoidingView toma el espacio restante - igual que Login
-    keyboardAvoidingView: { 
+    keyboardAvoidingView: {
         flex: 1,
     },
     scrollView: {
@@ -168,7 +164,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: 600, // Un poco más alto por el formulario más largo
+        minHeight: 600,
     },
     containerClaro: {
         backgroundColor: '#fff',
@@ -227,7 +223,6 @@ const styles = StyleSheet.create({
     },
     opciones: {
         marginBottom: 10,
-        width: '100%',
     },
     vboton: {
         marginBottom: 20,

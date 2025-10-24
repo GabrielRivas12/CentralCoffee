@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Platform, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import appFirebase from '../../Services/Firebase';
 import { useRoute } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
-import { collection, getFirestore, query, getDocs, where } from 'firebase/firestore';
+import { getFirestore} from 'firebase/firestore';
 
 import { Guardar } from '../../Containers/GuardarOferta';
 import { SubirImagenASupabase } from '../../Containers/SubirImagen';
@@ -27,7 +27,6 @@ export default function CrearOferta({ navigation }) {
   const db = getFirestore(appFirebase);
   const { modoOscuro } = usarTema();
 
-
   const [imagen, SetImagen] = useState('');
   const [Titulo, setTitulo] = useState('');
   const [TipoCafe, setTipoCafe] = useState('');
@@ -40,14 +39,38 @@ export default function CrearOferta({ navigation }) {
   const [CantidadProduccion, setCantidadProduccion] = useState('');
   const [OfertaLibra, setOfertaLibra] = useState('');
   const [Estado, setEstado] = useState('Activo');
-
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState('date');
   const [text, setText] = useState('Ingrese la fecha');
-
   const [lugares, setLugares] = useState([]);
   const [lugarSeleccionado, setLugarSeleccionado] = useState();
+  const [lugaresCargados, setLugaresCargados] = useState(false);
+
+  const [cargandoLugares, setCargandoLugares] = useState(false);
+
+const manejarTapComboBox = async () => {
+  if (lugaresCargados || cargandoLugares || lugares.length > 0) return;
+
+  setCargandoLugares(true);
+  const resultado = await obtenerLugares(auth, db, setLugares);
+  
+  if (resultado === null) {
+    Alert.alert(
+      'Sin ubicaciones',
+      'No tienes ubicaciones registradas. Serás redirigido al mapa para agregar una.',
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Mapa')
+        }
+      ]
+    );
+  } else {
+    setLugaresCargados(true);
+  }
+  setCargandoLugares(false);
+};
 
   const GuardarOferta = () => {
     Guardar({
@@ -81,11 +104,6 @@ export default function CrearOferta({ navigation }) {
       SetImagen(ofertaEditar.Imagen || '');
     }
   }, [ofertaEditar]);
-
-useEffect(() => {
-  obtenerLugares(auth, db, setLugares);
-}, []);
-
 
   return (
     <View style={[styles.container, modoOscuro ? styles.containerOscuro : styles.containerClaro]}>
@@ -212,12 +230,13 @@ useEffect(() => {
             </View>
 
             <View style={styles.panelopciones}>
-              <ComboBox
-                NombrePicker="Ubicación"
-                value={lugarSeleccionado}
-                onValuechange={(itemValue) => setLugarSeleccionado(itemValue)}
-                items={lugares}
-              />
+                <ComboBox
+                  NombrePicker="Ubicación"
+                  value={lugarSeleccionado}
+                  onValuechange={(itemValue) => setLugarSeleccionado(itemValue)}
+                  items={lugares}
+                  onOpen={manejarTapComboBox}
+                />
               <Text style={styles.textopequeño}> Debe registrar una ubicación propia en el mapa</Text>
               <Boton nombreB='Publicar' onPress={GuardarOferta} />
             </View>
@@ -227,7 +246,6 @@ useEffect(() => {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

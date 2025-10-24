@@ -11,73 +11,48 @@ export const IniciarLogin = async (auth, email, password, setUser, navigation) =
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    const uid = user.uid;
 
-    // 🔥 VERIFICACIÓN DOBLE - Forzar cierre de sesión inmediato si no está verificado
+    // Verificación de email
     if (!user.emailVerified) {
-      console.log('Usuario no verificado, forzando cierre de sesión...');
+      await signOut(auth); // Un solo cierre de sesión
       
-      // Cerrar sesión inmediatamente
-      await signOut(auth);
-      
-      // Esperar un momento para asegurar que se cerró la sesión
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Verificar nuevamente el estado de autenticación
-      if (auth.currentUser) {
-        // Si todavía hay usuario autenticado, forzar otro cierre
-        await signOut(auth);
-      }
-
       Alert.alert(
         'Verificación requerida',
-        'Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.',
+        'Debes verificar tu correo electrónico antes de iniciar sesión.',
         [
           {
             text: 'Reenviar correo',
             onPress: async () => {
               try {
-                // Volver a autenticar temporalmente para reenviar
-                const tempCredential = await signInWithEmailAndPassword(auth, email, password);
-                await sendEmailVerification(tempCredential.user);
+                // Reautenticar temporalmente SOLO para reenviar
+                const tempUser = await signInWithEmailAndPassword(auth, email, password);
+                await sendEmailVerification(tempUser.user);
                 await signOut(auth);
-                
-                Alert.alert(
-                  'Correo enviado',
-                  'Se ha reenviado el correo de verificación. Por favor verifica tu cuenta.'
-                );
-              } catch (reenvioError) {
+                Alert.alert('Correo enviado', 'Se ha reenviado el correo de verificación.');
+              } catch (error) {
                 Alert.alert('Error', 'No se pudo reenviar el correo');
               }
             }
           },
-          {
+          { 
             text: 'Entendido',
-            style: 'cancel',
-            onPress: () => {
-              if (setUser) setUser(null);
-            }
+            onPress: () => setUser?.(null)
           }
         ]
       );
       return;
     }
 
-    // ✅ SOLO si pasa la verificación, continuar
-    const docRef = doc(getFirestore(), 'usuarios', uid);
-    const docSnap = await getDoc(docRef);
+    // Usuario verificado - proceder
+    const db = getFirestore();
+    const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
 
-    if (docSnap.exists()) {
-      const userData = { uid, ...docSnap.data() };
-      setUser(userData);
-      
-      if (navigation) {
-        navigation.replace('DrawerPrincipal');
-      }
+    if (userDoc.exists()) {
+      const userData = { uid: user.uid, ...userDoc.data() };
+      setUser?.(userData);
+      navigation?.replace('DrawerPrincipal');
     } else {
-      Alert.alert('Error', 'Usuario no encontrado');
-      await signOut(auth);
-      if (setUser) setUser(null);
+      throw new Error('Usuario no encontrado en la base de datos');
     }
 
   } catch (error) {

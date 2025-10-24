@@ -3,12 +3,17 @@ import { StyleSheet, Text, View, Animated, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { usarTema } from '../Containers/TemaApp';
 
-export default function ComboBox({ NombrePicker, value, onValuechange, items }) {
+export default function ComboBox({ NombrePicker, value, onValuechange, items, onOpen }) {
   const { modoOscuro } = usarTema();
   const [open, setOpen] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
 
   const toggleDropdown = () => {
+    // Llamar a onOpen si existe, solo cuando se abre (no cuando se cierra)
+    if (!open && onOpen) {
+      onOpen();
+    }
+    
     Animated.timing(animation, {
       toValue: open ? 0 : 1,
       duration: 250,

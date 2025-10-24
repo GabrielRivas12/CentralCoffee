@@ -46,25 +46,25 @@ export const RegistroUsuario = async ({
   }
 
   // Validar nombre
-  if (nombre.trim().length < 2) {
-    Alert.alert('Error', 'El nombre debe tener al menos 2 caracteres');
+  if (nombre.trim().length < 5) {
+    Alert.alert('Error', 'El nombre debe tener al menos 5 caracteres');
     return;
   }
 
   try {
     console.log('Iniciando registro para:', correo);
     
-    // 🔥 CREAR USUARIO EN FIREBASE AUTH
+    // CREAR USUARIO EN FIREBASE AUTH
     const userCredential = await createUserWithEmailAndPassword(auth, correo.trim(), contrasena);
     const user = userCredential.user;
     
     console.log('Usuario creado en Auth:', user.uid);
 
-    // 🔥 ENVIAR CORREO DE VERIFICACIÓN
+    //  ENVIAR CORREO DE VERIFICACIÓN
     await sendEmailVerification(user);
     console.log('Correo de verificación enviado');
 
-    // 🔥 GUARDAR DATOS EN FIRESTORE
+    // GUARDAR DATOS EN FIRESTORE
     const userData = {
       nombre: nombre.trim(),
       correo: correo.trim(),
@@ -78,7 +78,7 @@ export const RegistroUsuario = async ({
     await setDoc(doc(db, "usuarios", user.uid), userData);
     console.log('Usuario guardado en Firestore');
 
-    // 🔥 CERRAR SESIÓN INMEDIATAMENTE
+    // CERRAR SESIÓN INMEDIATAMENTE
     await signOut(auth);
     console.log('Sesión cerrada');
 
@@ -86,7 +86,7 @@ export const RegistroUsuario = async ({
     if (setUser) setUser(null);
 
     Alert.alert(
-      '✅ Registro exitoso', 
+      'Registro exitoso', 
       'Te hemos enviado un correo de verificación. Debes verificar tu cuenta antes de poder iniciar sesión.',
       [
         {
@@ -105,7 +105,7 @@ export const RegistroUsuario = async ({
     
     let errorMessage = 'Error al registrar usuario';
     
-    // 🔥 MANEJO DETALLADO DE ERRORES
+    // MANEJO DETALLADO DE ERRORES
     switch (error.code) {
       case 'auth/email-already-in-use':
         errorMessage = 'Este correo electrónico ya está registrado';
@@ -134,7 +134,7 @@ export const RegistroUsuario = async ({
     
     Alert.alert('Error en el registro', errorMessage);
     
-    // 🔥 LIMPIAR EN CASO DE ERROR
+    // LIMPIAR EN CASO DE ERROR
     try {
       if (auth.currentUser) {
         await signOut(auth);
