@@ -25,10 +25,10 @@ import EditarPerfil from './src/Screens/Perfil/EditarPerfil';
 import Chat from './src/Screens/Chat/Chat';
 import ChatEntrantes from './src/Screens/Chat/ChatEntrantes';
 import Asistente from './src/Screens/IA/Asistente';
-import IAScanner from './src/Screens/AnalizarCultivo/ScannearImagen';
 import Login from './src/Screens/Login/InicioSesion';
 import Registro from './src/Screens/Login/Registro';
 import ScaneerOferta from './src/Screens/Ofertas/ScaneerOferta';
+import MachineView from './src/Screens/IARCI/MachineView';
 
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
@@ -38,29 +38,29 @@ const Drawer = createDrawerNavigator();
 
 // Funciones para cache
 const saveUserToCache = async (userData) => {
-  try {
-    await AsyncStorage.setItem('cachedUser', JSON.stringify(userData));
-  } catch (error) {
-    console.log('Error guardando cache:', error);
-  }
+    try {
+        await AsyncStorage.setItem('cachedUser', JSON.stringify(userData));
+    } catch (error) {
+        console.log('Error guardando cache:', error);
+    }
 };
 
 const getUserFromCache = async () => {
-  try {
-    const cachedUser = await AsyncStorage.getItem('cachedUser');
-    return cachedUser ? JSON.parse(cachedUser) : null;
-  } catch (error) {
-    console.log('Error leyendo cache:', error);
-    return null;
-  }
+    try {
+        const cachedUser = await AsyncStorage.getItem('cachedUser');
+        return cachedUser ? JSON.parse(cachedUser) : null;
+    } catch (error) {
+        console.log('Error leyendo cache:', error);
+        return null;
+    }
 };
 
 const clearUserCache = async () => {
-  try {
-    await AsyncStorage.removeItem('cachedUser');
-  } catch (error) {
-    console.log('Error limpiando cache:', error);
-  }
+    try {
+        await AsyncStorage.removeItem('cachedUser');
+    } catch (error) {
+        console.log('Error limpiando cache:', error);
+    }
 };
 
 export default function Navegacion() {
@@ -82,7 +82,7 @@ export default function Navegacion() {
                 setLoading(false);
                 return;
             }
-            
+
             try {
                 const docRef = doc(getFirestore(), 'usuarios', authUser.uid);
                 const docSnap = await getDoc(docRef);
@@ -106,11 +106,11 @@ export default function Navegacion() {
     }, []);
 
     if (loading) return (
-        <View style={{ 
-            flex: 1, 
-            justifyContent: 'center', 
+        <View style={{
+            flex: 1,
+            justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: modoOscuro ? '#000' : '#fff' 
+            backgroundColor: modoOscuro ? '#000' : '#fff'
         }}>
             <ActivityIndicator size="large" color="#ED6D4A" />
         </View>
@@ -147,14 +147,15 @@ function getDrawerScreens(rol) {
         { name: 'QR', component: StackQR, icon: <Feather name="layers" size={15} /> },
         { name: 'Mapa', component: StackMapa, icon: <Feather name="map" size={15} /> },
         { name: 'Asistente IA', component: Asistente, icon: <Feather name="cpu" size={15} /> },
-        { name: 'Analizar cultivo', component: IAScanner, icon: <Feather name="image" size={15} /> },
+        { name: 'Máquina IA', component: MachineView, icon: <Feather name="settings" size={15} /> },
         { name: 'Perfil', component: StackUsuario, icon: <Feather name="user" size={15} /> },
+
     ];
 
     if (rol === 'Comerciante') return allScreens;
     if (rol === 'Comprador')
         return allScreens.filter(screen =>
-            ['Ofertas', 'Mapa', 'Asistente IA', 'Analizar cultivo', 'Bandeja de entrada', 'Perfil'].includes(screen.name)
+            ['Ofertas', 'Mapa', 'Asistente IA', 'Máquina IA', 'Bandeja de entrada', 'Perfil'].includes(screen.name)
         );
 
     // Pantalla por defecto para roles desconocidos
@@ -281,7 +282,7 @@ function StackOfertas({ user }) {
             </Stack.Screen>
             <Stack.Screen name='Crear' component={CrearOferta} />
             <Stack.Screen name='Informacion' component={DetallesOferta} />
-            <Stack.Screen name='EscanearQR' component={ScaneerOferta} /> 
+            <Stack.Screen name='EscanearQR' component={ScaneerOferta} />
             <Stack.Screen name='Perfil' component={PerfilUsuario} />
             <Stack.Screen
                 name='Chat'
@@ -482,4 +483,44 @@ function StackChat() {
             />
         </Stack.Navigator>
     );
+}
+
+function IARCI() {
+    return (
+        <Stack.Navigator initialRouteName='ScreenRCI'
+            screenOptions={({ route }) => ({
+                headerShown: route.name !== 'ScreenRCI',
+                headerStyle: {
+                    backgroundColor: '#ED6D4A',
+                },
+            })}
+        >
+            <Stack.Screen name='ScreenRCI' component={MachineView} />
+            <Stack.Screen
+                name='IA RCI'
+                component={IARCI}
+                options={({ route }) => ({
+                    headerTitle: () => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            {route.params?.fotoPerfil ? (
+                                <Image
+                                    source={{ uri: route.params.fotoPerfil }}
+                                    style={{
+                                        width: 35,
+                                        height: 35,
+                                        borderRadius: 17.5,
+                                        marginRight: 10,
+                                    }}
+                                />
+                            ) : null}
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000' }}>
+                                {route.params?.nombre || 'Chat'}
+                            </Text>
+                        </View>
+                    ),
+                    headerTintColor: '#000',
+                })}
+            />
+        </Stack.Navigator>
+    )
 }
