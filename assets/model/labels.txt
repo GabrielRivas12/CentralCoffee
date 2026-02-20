@@ -1,9 +1,0 @@
-0 Café AAA
-1 Clase AA
-2 Café A
-3 Café AB
-4 Café C
-5 Café PB-1
-6 Café PB-2
-7 Café Bulk
-8 Café Defectuoso

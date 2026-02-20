@@ -6,8 +6,6 @@ node_modules/
 # Android
 android/
 
-__test__
-
 src/Services
 
 # Expo
