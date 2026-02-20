@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100, // Espacio para que el contenido no quede detrás de los botones
+    paddingBottom: 100, 
   },
   botonCrear: {
     position: 'absolute',

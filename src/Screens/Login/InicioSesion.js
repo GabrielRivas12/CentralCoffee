@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  ActivityIndicator
 } from 'react-native';
 import InputText from '../../Components/TextInput';
 import Boton from '../../Components/Boton';
@@ -20,7 +21,10 @@ import { IniciarLogin } from '../../Containers/IniciarSesion';
 import { enviarRecuperacion, IniciarTemporizador } from '../../Containers/RecuperarCuenta';
 import { usarTema } from '../../Containers/TemaApp';
 import { getFirestore } from 'firebase/firestore';
-
+import { loginWithGoogle } from '../../Containers/LoginGoogle';
+import { setDoc, doc } from 'firebase/firestore';
+import { Alert } from 'react-native';
+import ComboBox from '../../Components/Picker';
 import * as WebBrowser from 'expo-web-browser';
 
 const db = getFirestore(appFirebase);
@@ -35,6 +39,10 @@ export default function Login({ navigation, setUser }) {
   const [tiempoRestante, setTiempoRestante] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [correoReset, setCorreoReset] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [googleModalVisible, setGoogleModalVisible] = useState(false);
+  const [googleUserData, setGoogleUserData] = useState(null);
+  const [valorSeleccionadoGoogle, setValorSeleccionadoGoogle] = useState('');
 
   return (
     <View
@@ -89,6 +97,115 @@ export default function Login({ navigation, setUser }) {
               Inicie sesión en su cuenta para continuar
             </Text>
 
+            {loading ? (
+              <ActivityIndicator size="large" color="#ED6D4A" />
+            ) : (
+              <TouchableOpacity
+                onPress={async () => {
+                  const googleData = await loginWithGoogle(null, setLoading);
+                  if (!googleData) return;
+
+                  if (!googleData.rol) {
+                    setGoogleUserData({
+                      uid: googleData.uid,
+                      nombre: googleData.nombre,
+                      correo: googleData.correo,
+                      fotoPerfil: googleData.fotoPerfil || null, 
+                    });
+                    setGoogleModalVisible(true);
+                  } else {
+                    setUser?.(googleData);
+                    console.log('Usuario existente, navegando al Drawer automáticamente');
+                  }
+                }}
+                style={[
+                  styles.googleBtn,
+                  modoOscuro ? styles.googleBtnOscuro : styles.googleBtnClaro,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.googleText,
+                    modoOscuro ? styles.googleTextOscuro : styles.googleTextClaro,
+                  ]}
+                >
+                  Iniciar sesión con Google
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <Modal
+              visible={googleModalVisible}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setGoogleModalVisible(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View
+                  style={[
+                    styles.modalContainerLogin,
+                    modoOscuro ? styles.containerOscuro : styles.containerClaro,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.modalTitle,
+                      modoOscuro ? styles.labelOscuro : styles.labelClaro,
+                    ]}
+                  >
+                    Selecciona tu rol
+                  </Text>
+
+                  <ComboBox
+                    NombrePicker="Rol"
+                    value={valorSeleccionadoGoogle}
+                    onValuechange={setValorSeleccionadoGoogle}
+                    items={[
+                      { label: 'Comerciante', value: '1' },
+                      { label: 'Comprador', value: '2' },
+                    ]}
+                  />
+
+                  <Boton
+                    nombreB="Continuar"
+                    onPress={async () => {
+                      if (!valorSeleccionadoGoogle) {
+                        Alert.alert('Selecciona un rol', 'Por favor selecciona tu rol.');
+                        return;
+                      }
+
+                      try {
+                        const db = getFirestore();
+                        const userData = {
+                          uid: googleUserData.uid,
+                          nombre: googleUserData.nombre,
+                          correo: googleUserData.correo,
+                          rol: valorSeleccionadoGoogle === '1' ? 'Comerciante' : 'Comprador',
+                          descripcion: 'Este usuario no tiene una descripción',
+                          emailVerified: true,
+                          fotoPerfil: googleUserData.fotoPerfil || null,
+                          createdAt: new Date(),
+                        };
+
+                        await setDoc(doc(db, 'usuarios', googleUserData.uid), userData);
+                        setUser?.(userData);
+                        setGoogleModalVisible(false);
+                      } catch (error) {
+                        console.log('Error registrando Google user:', error);
+                        Alert.alert('Error', 'No se pudo completar el registro. Intenta nuevamente.');
+                      }
+                    }}
+                  />
+
+                  <Boton
+                    nombreB="Cancelar"
+                    onPress={() => setGoogleModalVisible(false)}
+                    backgroundColor="#ccc"
+                  />
+                </View>
+              </View>
+            </Modal>
+
             <View style={styles.containerInput}>
               <InputText
                 NombreLabel="Correo"
@@ -128,7 +245,7 @@ export default function Login({ navigation, setUser }) {
                 <View style={styles.separator} />
               </View>
 
-             
+
 
               <Boton
                 nombreB="Registrarse"
@@ -252,8 +369,7 @@ const styles = StyleSheet.create({
     color: '#eee'
   },
   vboton: { marginBottom: 5 },
-  
-  // Estilos para el botón de Google
+
   googleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -262,7 +378,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     marginVertical: 10,
-    width: '80%',
+    width: '90%',
     borderWidth: 1,
   },
   googleBtnClaro: {
@@ -288,7 +404,7 @@ const styles = StyleSheet.create({
   googleTextOscuro: {
     color: '#fff',
   },
-  
+
   // Separador
   separatorContainer: {
     flexDirection: 'row',
@@ -312,7 +428,7 @@ const styles = StyleSheet.create({
   separatorTextOscuro: {
     color: '#999',
   },
-  
+
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -324,6 +440,13 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: '80%',
+    alignItems: 'center',
+  },
+  modalContainerLogin: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '95%',
     alignItems: 'center',
   },
   modalTitle: {
@@ -392,5 +515,6 @@ const styles = StyleSheet.create({
   containerInput: {
     width: '100%',
     alignItems: 'center',
+    marginTop: 10,
   },
 });
