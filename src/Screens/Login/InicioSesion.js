@@ -58,11 +58,10 @@ export default function Login({ navigation, setUser }) {
           <View style={styles.bannerContent}>
             <View style={styles.logoContainer}>
               <Image
-                source={require('../../../assets/logo.png')}
+                source={require('../../../assets/logodos.png')}
                 style={styles.bannerLogo}
               />
             </View>
-            <Text style={styles.bannerTexto}>Donde el café une historias</Text>
           </View>
         </View>
       </SafeAreaView>
@@ -110,7 +109,7 @@ export default function Login({ navigation, setUser }) {
                       uid: googleData.uid,
                       nombre: googleData.nombre,
                       correo: googleData.correo,
-                      fotoPerfil: googleData.fotoPerfil || null, 
+                      fotoPerfil: googleData.fotoPerfil || null,
                     });
                     setGoogleModalVisible(true);
                   } else {
@@ -123,6 +122,11 @@ export default function Login({ navigation, setUser }) {
                   modoOscuro ? styles.googleBtnOscuro : styles.googleBtnClaro,
                 ]}
               >
+                <Image
+                  source={require('../../../assets/Google_Icon.png')}
+                  style={styles.googleLogo}
+                  resizeMode="contain"
+                />
                 <Text
                   style={[
                     styles.googleText,
@@ -359,9 +363,8 @@ const styles = StyleSheet.create({
   label: {
     color: '#ED6D4A',
     marginLeft: 180,
-    paddingBottom: 20,
-    paddingTop: 20,
-  },
+    marginTop: 10,
+    marginBottom: 10,},
   labelClaro: {
     color: '#000'
   },
@@ -409,7 +412,7 @@ const styles = StyleSheet.create({
   separatorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
     width: '80%',
   },
   separator: {
@@ -494,11 +497,12 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     overflow: 'hidden',
-    marginBottom: 20,
+    paddingTop: 50,
+    alignItems: 'center',
   },
   bannerLogo: {
-    width: 230,
-    height: 230
+    width: 200,
+    height: 100
   },
   bienvenido: {
     fontSize: 28,
